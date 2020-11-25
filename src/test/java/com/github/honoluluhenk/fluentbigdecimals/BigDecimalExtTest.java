@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings({"nullable", "argument.type.incompatible"})
 class BigDecimalExtTest {
 
-    private static final BigDecimal ORIGINAL = new BigDecimal("123.4567890");
-    private static final BigDecimalContext ORIGINAL_CONTEXT = BigDecimalContext.from(10, 7);
+    private static final BigDecimal ORIGINAL = new BigDecimal("123.45");
+    private static final BigDecimalContext ORIGINAL_CONTEXT = BigDecimalContext.from(5, 2);
     private static final BigDecimalExt FIXTURE = ORIGINAL_CONTEXT.withValue(ORIGINAL);
 
     @Nested
@@ -31,17 +31,17 @@ class BigDecimalExtTest {
         @Test
         void is_as_expected() {
             Assertions.assertThat(ORIGINAL.precision())
-                .isEqualTo(10);
+                .isEqualTo(5);
 
             Assertions.assertThat(ORIGINAL.scale())
-                .isEqualTo(7);
+                .isEqualTo(2);
 
             Assertions.assertThat(ORIGINAL.intValue())
                 .isEqualTo(123);
 
             BigDecimal remainder = ORIGINAL.remainder(BigDecimal.ONE);
             Assertions.assertThat(remainder.toPlainString())
-                .isEqualTo("0.4567890");
+                .isEqualTo("0.45");
         }
     }
 
@@ -200,14 +200,14 @@ class BigDecimalExtTest {
 
         @Test
         void rounds_to_smaller_scale() {
-            BigDecimalContext smallScale = ORIGINAL_CONTEXT.withMaxScale(3);
+            BigDecimalContext smallScale = ORIGINAL_CONTEXT.withMaxScale(1);
 
             BigDecimalExt actual = FIXTURE.roundTo(smallScale);
 
             assertThat(actual)
                 .hasPrecision(ORIGINAL_CONTEXT.getPrecision())
                 .hasRoundingMode(ORIGINAL_CONTEXT.getRoundingMode())
-                .hasValue("123.457");
+                .hasValue("123.5");
         }
 
         @ParameterizedTest
@@ -236,7 +236,7 @@ class BigDecimalExtTest {
         }
 
         @ParameterizedTest
-        @CsvSource("10, 7, HALF_UP, 123.4567890, 10, 7")
+        @CsvSource("5, 2, HALF_UP, 123.45, 5, 2")
         void truncating_to_same_values_keeps_same_data(
             int precision,
             int scale,
@@ -257,9 +257,9 @@ class BigDecimalExtTest {
 
         @ParameterizedTest
         @CsvSource({
-            "11, 7, HALF_UP, 123.4567890, 10, 7",
-            "10, 8, HALF_UP, 123.4567890, 10, 7",
-            "11, 8, HALF_UP, 123.4567890, 10, 7",
+            "11, 7, HALF_UP, 123.45, 5, 2",
+            "10, 8, HALF_UP, 123.45, 5, 2",
+            "11, 8, HALF_UP, 123.45, 5, 2",
         })
         void expanding_scale_and_precision_is_limited_by_actual_value(
             int precision,
@@ -281,8 +281,8 @@ class BigDecimalExtTest {
 
         @ParameterizedTest
         @CsvSource({
-            "10, 2, HALF_UP, 123.46, 5, 2",
-            "10, 2, DOWN, 123.45, 5, 2",
+            "5, 1, HALF_UP, 123.5, 4, 1",
+            "5, 1, DOWN, 123.4, 4, 1",
         })
         void truncating_scale_rounds_according_to_parameter(
             int precision,
@@ -304,10 +304,10 @@ class BigDecimalExtTest {
 
         @ParameterizedTest
         @CsvSource({
-            "5, 2, HALF_UP, 123.46, 5, 2",
-            "5, 2, DOWN, 123.45, 5, 2",
+            "4, 1, HALF_UP, 123.5, 4, 1",
+            "4, 1, DOWN, 123.4, 4, 1",
         })
-        void truncating_both_scale_and_precision_rounds_according_to_parameter(
+        void truncating_both_scale_and_precision_rounds_according_to_RoundingMode(
             int precision,
             int scale,
             RoundingMode roundingMode,
@@ -335,7 +335,7 @@ class BigDecimalExtTest {
             String actual = FIXTURE.toString();
 
             Assertions.assertThat(actual)
-                .isEqualTo("BigDecimalExt[123.4567890, context=[10,7,HALF_UP]]");
+                .isEqualTo("BigDecimalExt[123.45, context=[5,2,HALF_UP]]");
         }
     }
 
