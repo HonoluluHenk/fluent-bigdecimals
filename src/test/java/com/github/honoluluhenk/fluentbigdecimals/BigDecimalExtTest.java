@@ -15,13 +15,14 @@ import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExtAssert.asse
 class BigDecimalExtTest {
 
     private final BigDecimal ORIGINAL = new BigDecimal("123.4567890");
-
+    private final BigDecimalContext ORIGINAL_CONTEXT = BigDecimalContext.from(10, 7);
+    private final BigDecimalExt FIXTURE = ORIGINAL_CONTEXT.withValue(ORIGINAL);
 
     /**
      * just in case you cannot remember how precision/scale looks like
      */
     @Test
-    void testSetupIsAsExpected() {
+    void test_setup_is_as_expected() {
         Assertions.assertThat(ORIGINAL.precision())
                 .isEqualTo(10);
 
@@ -38,7 +39,7 @@ class BigDecimalExtTest {
 
 
     @Nested
-    class ConstructorTest {
+    class Constructor {
 
         @ParameterizedTest
         @CsvSource({
@@ -69,7 +70,7 @@ class BigDecimalExtTest {
         @CsvSource({
                 "10, 7, HALF_UP, 123.4567890, 10, 7",
         })
-        void truncatingToSameValuesKeepsSameData(
+        void truncating_to_same_values_keeps_same_data(
                 int precision,
                 int scale,
                 RoundingMode roundingMode,
@@ -93,7 +94,7 @@ class BigDecimalExtTest {
                 "10, 8, HALF_UP, 123.4567890, 10, 7",
                 "11, 8, HALF_UP, 123.4567890, 10, 7",
         })
-        void expandingScaleAndPrecisionIsLimitedByActualValue(
+        void expanding_scale_and_precision_is_limited_by_actual_value(
                 int precision,
                 int scale,
                 RoundingMode roundingMode,
@@ -116,7 +117,7 @@ class BigDecimalExtTest {
                 "10, 2, HALF_UP, 123.46, 5, 2",
                 "10, 2, DOWN, 123.45, 5, 2",
         })
-        void truncatingScaleRoundsAccordingToParameter(
+        void truncating_scale_rounds_according_to_parameter(
                 int precision,
                 int scale,
                 RoundingMode roundingMode,
@@ -139,7 +140,7 @@ class BigDecimalExtTest {
                 "5, 2, HALF_UP, 123.46, 5, 2",
                 "5, 2, DOWN, 123.45, 5, 2",
         })
-        void truncatingBothScaleAndPrecisionRoundsAccordingToParmeter(
+        void truncating_both_scale_and_precision_rounds_according_to_parameter(
                 int precision,
                 int scale,
                 RoundingMode roundingMode,
@@ -159,8 +160,108 @@ class BigDecimalExtTest {
 
     }
 
-//    @Nested
-//    class AddTest {
-//        BigDecimalExt actual = ORIGINAL.add()
-//    }
+    @Nested
+    class HashCodeEquals {
+        @Test
+        void equals_for_same_params_and_value() {
+            BigDecimalExt a = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
+            BigDecimalExt b = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
+
+            assertThat(a)
+                    .isEqualTo(b);
+
+            Assertions.assertThat(a.hashCode())
+                    .isEqualTo(b.hashCode());
+        }
+
+        @Test
+        void differs_for_same_params_and_value_with_differing_precision() {
+            BigDecimalExt a = ORIGINAL_CONTEXT.withValue(new BigDecimal("123"));
+            BigDecimalExt b = ORIGINAL_CONTEXT.withValue(new BigDecimal("123.0"));
+
+            assertThat(a)
+                    .isNotEqualTo(b);
+
+            Assertions.assertThat(a.hashCode())
+                    .isNotEqualTo(b.hashCode());
+        }
+
+        @Test
+        void differs_for_different_contexts() {
+            BigDecimalExt a = BigDecimalContext.from(10, 7).withValue(BigDecimal.valueOf(123));
+            BigDecimalExt b = BigDecimalContext.from(10, 5).withValue(BigDecimal.valueOf(123));
+
+            assertThat(a)
+                    .isNotEqualTo(b);
+
+            Assertions.assertThat(a.hashCode())
+                    .isNotEqualTo(b.hashCode());
+        }
+    }
+
+    @Nested
+    class EqualsComparingValue {
+        @Test
+        void equals_for_same_params_and_value() {
+            BigDecimalExt a = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
+            BigDecimalExt b = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
+
+            assertThat(a)
+                    .isEqualComparingValue(b);
+
+            Assertions.assertThat(a.hashCode())
+                    .isEqualTo(b.hashCode());
+        }
+
+        @Test
+        void equals_for_same_params_and_value_with_differing_precision() {
+            BigDecimalExt a = ORIGINAL_CONTEXT.withValue(new BigDecimal("123"));
+            BigDecimalExt b = ORIGINAL_CONTEXT.withValue(new BigDecimal("123.0"));
+
+            assertThat(a)
+                    .isEqualComparingValue(b);
+
+            Assertions.assertThat(a.hashCode())
+                    .isNotEqualTo(b.hashCode());
+        }
+
+        @Test
+        void differs_for_different_contexts() {
+            BigDecimalExt a = BigDecimalContext.from(10, 7).withValue(BigDecimal.valueOf(123));
+            BigDecimalExt b = BigDecimalContext.from(10, 5).withValue(BigDecimal.valueOf(123));
+
+            assertThat(a)
+                    .isNotEqualComparingValue(b);
+
+            Assertions.assertThat(a.hashCode())
+                    .isNotEqualTo(b.hashCode());
+        }
+    }
+
+    @Nested
+    class RoundToTest {
+
+        @Test
+        void does_nothing_for_same_params() {
+            BigDecimalExt actual = FIXTURE.roundTo(ORIGINAL_CONTEXT);
+
+            assertThat(actual)
+                    .isEqualTo(FIXTURE);
+        }
+
+        @Test
+        void rounds_to_smaller_scale() {
+            BigDecimalContext smallScale = ORIGINAL_CONTEXT.withMaxScale(3);
+
+            BigDecimalExt actual = FIXTURE.roundTo(smallScale);
+
+            assertThat(actual)
+                    .hasPrecision(ORIGINAL_CONTEXT.getPrecision())
+                    .hasRoundingMode(ORIGINAL_CONTEXT.getRoundingMode())
+                    .hasValue("123.457");
+        }
+
+        //FIXME: tests same as constructor tests?
+    }
+
 }

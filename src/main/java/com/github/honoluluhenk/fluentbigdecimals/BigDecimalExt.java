@@ -1,5 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import lombok.EqualsAndHashCode;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
+@EqualsAndHashCode()
 public class BigDecimalExt implements Serializable {
     private static final long serialVersionUID = 1646116594300550112L;
 
@@ -21,21 +23,23 @@ public class BigDecimalExt implements Serializable {
 
     public BigDecimalExt(BigDecimal value, BigDecimalContext context) {
         this.context = context;
-        this.value = clamp(value, context);
+        this.value = roundTo(value, context);
     }
 
     public BigDecimalExt withValue(BigDecimal value) {
         return new BigDecimalExt(value, context);
     }
 
-    public BigDecimalExt apply(Function<BigDecimal, BigDecimal> function) {
+    // FIXME: make public
+    private BigDecimalExt apply(Function<BigDecimal, BigDecimal> function) {
         BigDecimal result = function.apply(getValue());
         requireNonNull(result);
 
         return withValue(result);
     }
 
-    public BigDecimalExt apply(BiFunction<BigDecimal, BigDecimal, BigDecimal> function, BigDecimal argument) {
+    // FIXME: make public
+    private BigDecimalExt apply(BiFunction<BigDecimal, BigDecimal, BigDecimal> function, BigDecimal argument) {
         requireNonNull(argument);
 
         BigDecimal result = function.apply(getValue(), argument);
@@ -44,14 +48,15 @@ public class BigDecimalExt implements Serializable {
         return withValue(result);
     }
 
-    public BigDecimalExt apply(BiFunction<BigDecimal, Integer, BigDecimal> function, int argument) {
+    // FIXME: make public
+    private BigDecimalExt apply(BiFunction<BigDecimal, Integer, BigDecimal> function, int argument) {
         BigDecimal result = function.apply(getValue(), argument);
         requireNonNull(result);
 
         return withValue(result);
     }
 
-    private static BigDecimal clamp(BigDecimal value, BigDecimalContext context) {
+    private static BigDecimal roundTo(BigDecimal value, BigDecimalContext context) {
         BigDecimal result = value
                 .round(context.getMathContext());
 
@@ -60,6 +65,10 @@ public class BigDecimalExt implements Serializable {
         }
 
         return result;
+    }
+
+    public BigDecimalExt roundTo(BigDecimalContext context) {
+        return new BigDecimalExt(getValue(), context);
     }
 
     public BigDecimal getValue() {
@@ -229,6 +238,29 @@ public class BigDecimalExt implements Serializable {
         BigDecimal result = multiplyImpl(value, HUNDRED);
 
         return withValue(result);
+    }
+
+    public boolean equalsComparingValue(@Nullable Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof BigDecimalExt)) {
+            return false;
+        }
+        BigDecimalExt other = (BigDecimalExt) o;
+        if (!other.canEqual(this)) {
+            return false;
+        }
+        BigDecimal this$value = getValue();
+        BigDecimal other$value = other.getValue();
+        if (this$value == null ? other$value != null : this$value.compareTo(other$value) != 0) {
+            return false;
+        }
+        BigDecimalContext this$context = getContext();
+        BigDecimalContext other$context = other.getContext();
+        boolean result = Objects.equals(this$context, other$context);
+
+        return result;
     }
 
 //    private void validatePrecision(BigDecimal value) {

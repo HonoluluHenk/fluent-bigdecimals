@@ -17,9 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+// we want to test runtime null-checks:
 @SuppressWarnings("argument.type.incompatible")
-        // we want to test runtime null-checks
-class BigDecimalContextConstructorTest {
+class BigDecimalContextTest {
 
     @Nested
     class From {
@@ -186,5 +186,58 @@ class BigDecimalContextConstructorTest {
 
         assertThat(ctx.getRoundingMode())
                 .isEqualTo(roundingMode);
+    }
+
+    @Nested
+    class HashCodeEquals {
+
+        @Test
+        void equals_for_same_values() {
+            BigDecimalContext a = BigDecimalContext.from(5, 1, HALF_UP);
+            BigDecimalContext b = BigDecimalContext.from(5, 1, HALF_UP);
+
+            assertThat(a)
+                    .isEqualTo(b);
+
+            assertThat(a.hashCode())
+                    .isEqualTo(b.hashCode());
+        }
+
+        @Test
+        void differs_on_different_precision() {
+            BigDecimalContext a = BigDecimalContext.from(5, 1, HALF_UP);
+            BigDecimalContext b = BigDecimalContext.from(9, 1, HALF_UP);
+
+            assertThat(a)
+                    .isNotEqualTo(b);
+
+            assertThat(a.hashCode())
+                    .isNotEqualTo(b.hashCode());
+        }
+
+        @Test
+        void differs_on_different_scale() {
+            BigDecimalContext a = BigDecimalContext.from(5, 1, HALF_UP);
+            BigDecimalContext b = BigDecimalContext.from(5, 2, HALF_UP);
+
+            assertThat(a)
+                    .isNotEqualTo(b);
+
+            assertThat(a.hashCode())
+                    .isNotEqualTo(b.hashCode());
+        }
+
+        @Test
+        void differs_on_different_rounding() {
+            BigDecimalContext a = BigDecimalContext.from(5, 1, HALF_UP);
+            BigDecimalContext b = BigDecimalContext.from(5, 1, DOWN);
+
+            assertThat(a)
+                    .isNotEqualTo(b);
+
+            assertThat(a.hashCode())
+                    .isNotEqualTo(b.hashCode());
+        }
+
     }
 }

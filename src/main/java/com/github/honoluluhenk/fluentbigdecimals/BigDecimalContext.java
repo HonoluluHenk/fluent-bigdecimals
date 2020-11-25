@@ -19,6 +19,7 @@ public class BigDecimalContext implements Serializable {
     private final int precision;
     private final RoundingMode roundingMode;
     private final int maxScale;
+    @EqualsAndHashCode.Exclude
     private final MathContext mathContext;
 
     BigDecimalContext(int precision, int maxScale, RoundingMode roundingMode) {
@@ -65,4 +66,5 @@ public class BigDecimalContext implements Serializable {
     public BigDecimalContext withRoundingMode(RoundingMode roundingMode) {
         return new BigDecimalContext(getPrecision(), getMaxScale(), roundingMode);
     }
+
 }
