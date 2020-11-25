@@ -112,7 +112,7 @@ class BigDecimalExtTest {
     @Nested
     class HashCodeEquals {
         @Test
-        void equals_for_same_params_and_value() {
+        void equals_for_same_context_and_value() {
             BigDecimalExt a = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
             BigDecimalExt b = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
 
@@ -124,7 +124,7 @@ class BigDecimalExtTest {
         }
 
         @Test
-        void differs_for_same_params_and_value_with_differing_precision() {
+        void differs_for_same_context_and_value_with_differing_precision() {
             BigDecimalExt a = ORIGINAL_CONTEXT.withValue(new BigDecimal("123"));
             BigDecimalExt b = ORIGINAL_CONTEXT.withValue(new BigDecimal("123.0"));
 
@@ -151,7 +151,7 @@ class BigDecimalExtTest {
     @Nested
     class EqualsComparingValue {
         @Test
-        void equals_for_same_params_and_value() {
+        void equals_for_same_context_and_value() {
             BigDecimalExt a = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
             BigDecimalExt b = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
 
@@ -163,7 +163,7 @@ class BigDecimalExtTest {
         }
 
         @Test
-        void equals_for_same_params_and_value_with_differing_precision() {
+        void equals_for_same_context_and_value_with_differing_precision() {
             BigDecimalExt a = ORIGINAL_CONTEXT.withValue(new BigDecimal("123"));
             BigDecimalExt b = ORIGINAL_CONTEXT.withValue(new BigDecimal("123.0"));
 
@@ -191,7 +191,7 @@ class BigDecimalExtTest {
     class RoundToTest {
 
         @Test
-        void does_nothing_for_same_params() {
+        void does_nothing_for_same_context() {
             BigDecimalExt actual = FIXTURE.roundTo(ORIGINAL_CONTEXT);
 
             assertThat(actual)
@@ -231,7 +231,7 @@ class BigDecimalExtTest {
                 .hasValue(expectedValue)
                 .hasValuePrecision(expectedPrecision)
                 .hasValueScale(expectedScale)
-                .hasSameParamsAs(sut)
+                .hasSameContextAs(sut)
             ;
         }
 
@@ -251,7 +251,7 @@ class BigDecimalExtTest {
                 .hasValue(expectedValue)
                 .hasValuePrecision(expectedPrecision)
                 .hasValueScale(expectedScale)
-                .hasSameParamsAs(sut)
+                .hasSameContextAs(sut)
             ;
         }
 
@@ -275,7 +275,7 @@ class BigDecimalExtTest {
                 .hasValue(expectedValue)
                 .hasValuePrecision(expectedPrecision)
                 .hasValueScale(expectedScale)
-                .hasSameParamsAs(sut)
+                .hasSameContextAs(sut)
             ;
         }
 
@@ -298,7 +298,7 @@ class BigDecimalExtTest {
                 .hasValue(expectedValue)
                 .hasValuePrecision(expectedPrecision)
                 .hasValueScale(expectedScale)
-                .hasSameParamsAs(sut)
+                .hasSameContextAs(sut)
             ;
         }
 
@@ -321,7 +321,7 @@ class BigDecimalExtTest {
                 .hasValue(expectedValue)
                 .hasValuePrecision(expectedPrecision)
                 .hasValueScale(expectedScale)
-                .hasSameParamsAs(sut)
+                .hasSameContextAs(sut)
             ;
         }
 

@@ -86,7 +86,7 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return this;
     }
 
-    public BigDecimalExtAssert hasSameParamsAs(BigDecimalExt other) {
+    public BigDecimalExtAssert hasSameContextAs(BigDecimalExt other) {
         isNotNull();
 
         hasPrecision(other.getContext().getPrecision());
