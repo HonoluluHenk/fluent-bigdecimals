@@ -28,7 +28,7 @@ public class BigDecimalContext implements Serializable {
         }
         if (maxScale >= precision) {
             throw new IllegalArgumentException(format("Scale must be < precision but was: %d < %d",
-                    maxScale, precision));
+                maxScale, precision));
         }
         this.precision = precision;
         this.maxScale = maxScale;

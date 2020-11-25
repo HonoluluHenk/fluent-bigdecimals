@@ -24,7 +24,7 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         int valuePrecision = actual.getValue().precision();
         if (valuePrecision != precision) {
             failWithActualExpectedAndMessage(
-                    valuePrecision, precision, "Expected %s to have precision:", actual);
+                valuePrecision, precision, "Expected %s to have precision:", actual);
         }
         return this;
     }

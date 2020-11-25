@@ -30,51 +30,51 @@ class BigDecimalContextTest {
             assertValues(ctx, 10, 7, HALF_UP);
 
             assertThat(ctx.getMathContext())
-                    .isEqualTo(new MathContext(10, HALF_UP));
+                .isEqualTo(new MathContext(10, HALF_UP));
         }
 
         @ParameterizedTest
         @CsvSource({
-                "0, but was: 0",
-                "-99, but was: -99",
+            "0, but was: 0",
+            "-99, but was: -99",
         })
         void throws_on_precision_lte_1(int precision, String expectedMessage) {
             IllegalArgumentException ex = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> BigDecimalContext.from(precision, 2, HALF_UP)
+                IllegalArgumentException.class,
+                () -> BigDecimalContext.from(precision, 2, HALF_UP)
             );
 
             assertThat(ex)
-                    .hasMessageContaining(expectedMessage);
+                .hasMessageContaining(expectedMessage);
         }
 
         @ParameterizedTest
         @CsvSource({
-                "1, 1, but was: 1 < 1",
-                "1, 2, but was: 2 < 1",
-                "99, 99, but was: 99 < 99",
-                "99, 100, but was: 100 < 99",
+            "1, 1, but was: 1 < 1",
+            "1, 2, but was: 2 < 1",
+            "99, 99, but was: 99 < 99",
+            "99, 100, but was: 100 < 99",
         })
         void throws_on_precision_lte_scale(int precision, int maxScale, String expectedMessage) {
             IllegalArgumentException ex = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> BigDecimalContext.from(precision, maxScale, HALF_UP)
+                IllegalArgumentException.class,
+                () -> BigDecimalContext.from(precision, maxScale, HALF_UP)
             );
 
             assertThat(ex)
-                    .hasMessageContaining("Scale")
-                    .hasMessageContaining(expectedMessage);
+                .hasMessageContaining("Scale")
+                .hasMessageContaining(expectedMessage);
         }
 
         @Test
         void throws_on_null_RoundingMode() {
             NullPointerException ex = assertThrows(
-                    NullPointerException.class,
-                    () -> BigDecimalContext.from(3, 2, null)
+                NullPointerException.class,
+                () -> BigDecimalContext.from(3, 2, null)
             );
 
             assertThat(ex)
-                    .hasMessage("RoundingMode required");
+                .hasMessage("RoundingMode required");
         }
     }
 
@@ -85,7 +85,7 @@ class BigDecimalContextTest {
             BigDecimalContext actual = BigDecimalContext.from(12, 3);
 
             assertThat(actual.getRoundingMode())
-                    .isEqualTo(HALF_UP);
+                .isEqualTo(HALF_UP);
         }
     }
 
@@ -116,7 +116,7 @@ class BigDecimalContextTest {
         @Test
         void creates_new_instance() {
             assertThat(actual)
-                    .isNotSameAs(ctx);
+                .isNotSameAs(ctx);
         }
     }
 
@@ -138,7 +138,7 @@ class BigDecimalContextTest {
         @Test
         void creates_new_instance() {
             assertThat(actual)
-                    .isNotSameAs(ctx);
+                .isNotSameAs(ctx);
         }
     }
 
@@ -160,7 +160,7 @@ class BigDecimalContextTest {
         @Test
         void creates_new_instance() {
             assertThat(actual)
-                    .isNotSameAs(ctx);
+                .isNotSameAs(ctx);
         }
     }
 
@@ -173,19 +173,19 @@ class BigDecimalContextTest {
             BigDecimalExt actual = ctx.withValue(BigDecimal.ONE);
 
             assertThat(actual.getContext())
-                    .isSameAs(ctx);
+                .isSameAs(ctx);
         }
     }
 
     static void assertValues(BigDecimalContext ctx, int precision, int maxScale, RoundingMode roundingMode) {
         assertThat(ctx.getPrecision())
-                .isEqualTo(precision);
+            .isEqualTo(precision);
 
         assertThat(ctx.getMaxScale())
-                .isEqualTo(maxScale);
+            .isEqualTo(maxScale);
 
         assertThat(ctx.getRoundingMode())
-                .isEqualTo(roundingMode);
+            .isEqualTo(roundingMode);
     }
 
     @Nested
@@ -197,10 +197,10 @@ class BigDecimalContextTest {
             BigDecimalContext b = BigDecimalContext.from(5, 1, HALF_UP);
 
             assertThat(a)
-                    .isEqualTo(b);
+                .isEqualTo(b);
 
             assertThat(a.hashCode())
-                    .isEqualTo(b.hashCode());
+                .isEqualTo(b.hashCode());
         }
 
         @Test
@@ -209,10 +209,10 @@ class BigDecimalContextTest {
             BigDecimalContext b = BigDecimalContext.from(9, 1, HALF_UP);
 
             assertThat(a)
-                    .isNotEqualTo(b);
+                .isNotEqualTo(b);
 
             assertThat(a.hashCode())
-                    .isNotEqualTo(b.hashCode());
+                .isNotEqualTo(b.hashCode());
         }
 
         @Test
@@ -221,10 +221,10 @@ class BigDecimalContextTest {
             BigDecimalContext b = BigDecimalContext.from(5, 2, HALF_UP);
 
             assertThat(a)
-                    .isNotEqualTo(b);
+                .isNotEqualTo(b);
 
             assertThat(a.hashCode())
-                    .isNotEqualTo(b.hashCode());
+                .isNotEqualTo(b.hashCode());
         }
 
         @Test
@@ -233,10 +233,10 @@ class BigDecimalContextTest {
             BigDecimalContext b = BigDecimalContext.from(5, 1, DOWN);
 
             assertThat(a)
-                    .isNotEqualTo(b);
+                .isNotEqualTo(b);
 
             assertThat(a.hashCode())
-                    .isNotEqualTo(b.hashCode());
+                .isNotEqualTo(b.hashCode());
         }
 
     }
