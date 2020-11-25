@@ -85,6 +85,11 @@ public class BigDecimalExt implements Serializable {
         return context;
     }
 
+    @Override
+    public String toString() {
+        return String.format("BigDecimalExt[%s, context=%s]", value.toPlainString(), context);
+    }
+
     private BigDecimal addImpl(BigDecimal value, BigDecimal augment) {
         BigDecimal result = value
             .add(augment, context.getMathContext())

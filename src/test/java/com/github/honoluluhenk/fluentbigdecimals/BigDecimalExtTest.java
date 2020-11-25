@@ -327,4 +327,16 @@ class BigDecimalExtTest {
 
     }
 
+    @Nested
+    class ToString {
+        @Test
+        void includes_all_parameters() {
+            //BigDecimalExt[%s, context=%s]
+            String actual = FIXTURE.toString();
+
+            Assertions.assertThat(actual)
+                .isEqualTo("BigDecimalExt[123.4567890, context=[10,7,HALF_UP]]");
+        }
+    }
+
 }
