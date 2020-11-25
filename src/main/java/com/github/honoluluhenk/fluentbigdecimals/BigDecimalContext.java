@@ -15,6 +15,7 @@ import static java.util.Objects.requireNonNull;
 @EqualsAndHashCode
 public class BigDecimalContext implements Serializable {
     private static final long serialVersionUID = -8755733728910066293L;
+    public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
     private final int precision;
     private final RoundingMode roundingMode;
@@ -32,7 +33,7 @@ public class BigDecimalContext implements Serializable {
         }
         this.precision = precision;
         this.maxScale = maxScale;
-        this.roundingMode = requireNonNull(roundingMode, "RoundingMode required");
+        this.roundingMode = requireNonNull(roundingMode, "roundingMode required");
         mathContext = new MathContext(precision, roundingMode);
     }
 
@@ -48,11 +49,22 @@ public class BigDecimalContext implements Serializable {
      * See {@link #from(int, int, RoundingMode)}, using {@link RoundingMode#HALF_UP} (used by most business applications).
      */
     public static BigDecimalContext from(int precision, int maxScale) {
-        return from(precision, maxScale, RoundingMode.HALF_UP);
+        return from(precision, maxScale, DEFAULT_ROUNDING_MODE);
     }
 
     public static BigDecimalContext from(BigDecimalContext other) {
         return new BigDecimalContext(other.getPrecision(), other.getMaxScale(), other.getRoundingMode());
+    }
+
+    public static BigDecimalContext from(BigDecimal srcValue, RoundingMode roundingMode) {
+        requireNonNull(srcValue, "srcValue required");
+        requireNonNull(roundingMode, "roundingMode required");
+
+        return new BigDecimalContext(srcValue.precision(), srcValue.scale(), roundingMode);
+    }
+
+    public static BigDecimalContext from(BigDecimal input) {
+        return from(input, RoundingMode.HALF_UP);
     }
 
     public BigDecimalContext withPrecision(int precision) {

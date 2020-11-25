@@ -11,8 +11,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-import static java.math.RoundingMode.DOWN;
-import static java.math.RoundingMode.HALF_UP;
+import static java.math.RoundingMode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -74,8 +73,48 @@ class BigDecimalContextTest {
             );
 
             assertThat(ex)
-                .hasMessage("RoundingMode required");
+                .hasMessage("roundingMode required");
         }
+    }
+
+    @Nested
+    class FromBigDecimal {
+        @Test
+        void throws_on_null_srcValue() {
+            NullPointerException ex = assertThrows(
+                NullPointerException.class,
+                () -> BigDecimalContext.from(null, RoundingMode.CEILING)
+            );
+
+            assertThat(ex)
+                .hasMessage("srcValue required");
+        }
+
+        @Test
+        void throws_on_null_RoundingMode() {
+            NullPointerException ex = assertThrows(
+                NullPointerException.class,
+                () -> BigDecimalContext.from(BigDecimal.ONE, null)
+            );
+
+            assertThat(ex)
+                .hasMessage("roundingMode required");
+        }
+
+        @Test
+        void passes_values_to_getters() {
+            var actual = BigDecimalContext.from(new BigDecimal("42.123"), RoundingMode.FLOOR);
+
+            assertThat(actual.getPrecision())
+                .isEqualTo(5);
+
+            assertThat(actual.getMaxScale())
+                .isEqualTo(3);
+
+            assertThat(actual.getRoundingMode())
+                .isEqualTo(FLOOR);
+        }
+
     }
 
     @Nested
