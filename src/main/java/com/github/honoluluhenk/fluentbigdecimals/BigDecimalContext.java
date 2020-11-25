@@ -67,4 +67,8 @@ public class BigDecimalContext implements Serializable {
         return new BigDecimalContext(getPrecision(), getMaxScale(), roundingMode);
     }
 
+    @Override
+    public String toString() {
+        return String.format("[%s,%d,%s]", precision, maxScale, roundingMode);
+    }
 }

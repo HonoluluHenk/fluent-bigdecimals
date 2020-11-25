@@ -238,6 +238,16 @@ class BigDecimalContextTest {
             assertThat(a.hashCode())
                 .isNotEqualTo(b.hashCode());
         }
+    }
 
+    @Nested
+    class ToString {
+        @Test
+        void includes_all_params() {
+            var actual = BigDecimalContext.from(5, 1, HALF_UP).toString();
+
+            assertThat(actual)
+                .isEqualTo("[5,1,HALF_UP]");
+        }
     }
 }
