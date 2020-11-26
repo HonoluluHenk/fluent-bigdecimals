@@ -28,6 +28,14 @@ public class BigDecimalExt implements Serializable {
         this.value = roundTo(value, context);
     }
 
+    public static BigDecimalExt of(BigDecimal value) {
+        return new BigDecimalExt(value, BigDecimalContext.from(value));
+    }
+
+    public static BigDecimalExt of(String bigDecimalValue) {
+        return of(new BigDecimal(bigDecimalValue));
+    }
+
     public BigDecimalExt withValue(BigDecimal value) {
         return new BigDecimalExt(value, context);
     }
@@ -90,21 +98,31 @@ public class BigDecimalExt implements Serializable {
         return String.format("BigDecimalExt[%s, context=%s]", value.toPlainString(), context);
     }
 
-    private BigDecimal addImpl(BigDecimal value, BigDecimal augment) {
-        BigDecimal result = value
-            .add(augment, context.getMathContext())
-            .setScale(context.getMaxScale(), context.getRoundingMode());
+    private BigDecimal addImpl(BigDecimal value, @Nullable BigDecimal augend) {
+        if (augend == null) {
+            return value;
+        }
+
+        BigDecimal unscaled = value
+            .add(augend);
+
+        boolean needsScaling = unscaled.scale() > context.getMaxScale();
+        BigDecimal result = needsScaling
+            ? unscaled.setScale(context.getMaxScale(), context.getRoundingMode())
+            : unscaled;
 
         return result;
     }
 
     public BigDecimalExt add(@Nullable BigDecimal augend) {
-        if (augend == null) {
-            return this;
-        }
-        BigDecimal result = addImpl(value, augend);
+        BigDecimal exact = addImpl(value, augend);
+        BigDecimalExt result = withValue(exact);
 
-        return withValue(result);
+        return result;
+    }
+
+    public BigDecimalExt add(@Nullable BigDecimalExt augend) {
+        return add(mapValue(augend));
     }
 
     /**
@@ -286,4 +304,12 @@ public class BigDecimalExt implements Serializable {
     //                            value.scale(), maxScale, value.toPlainString()));
     //        }
     //    }
+
+    private static @Nullable BigDecimal mapValue(@Nullable BigDecimalExt input) {
+        if (input == null) {
+            return null;
+        }
+
+        return input.getValue();
+    }
 }

@@ -41,6 +41,10 @@ public class BigDecimalContext implements Serializable {
         return new BigDecimalExt(value, this);
     }
 
+    public BigDecimalExt withValue(String bigDecimal) {
+        return new BigDecimalExt(new BigDecimal(bigDecimal), this);
+    }
+
     public static BigDecimalContext from(int precision, int maxScale, RoundingMode roundingMode) {
         return new BigDecimalContext(precision, maxScale, roundingMode);
     }

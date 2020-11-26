@@ -86,12 +86,22 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return this;
     }
 
+    public BigDecimalExtAssert hasSameContext(BigDecimalContext context) {
+        isNotNull();
+        Objects.requireNonNull(actual);
+
+        if (actual.getContext() != context) {
+            failWithActualExpectedAndMessage(actual.getContext(), context, "Context not the same:");
+        }
+
+        return this;
+    }
+
     public BigDecimalExtAssert hasSameContextAs(BigDecimalExt other) {
         isNotNull();
+        Objects.requireNonNull(actual);
 
-        hasPrecision(other.getContext().getPrecision());
-        hasMaxScale(other.getContext().getMaxScale());
-        hasRoundingMode(other.getContext().getRoundingMode());
+        hasSameContext(other.getContext());
 
         return this;
     }
@@ -114,6 +124,40 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         if (actual.equalsComparingValue(other)) {
             failWithActualExpectedAndMessage(actual.getValue(), other.getValue(), "Expected values not to be equal:");
         }
+
+        return this;
+    }
+
+    public BigDecimalExtAssert hasValueMatchingContext() {
+        isNotNull();
+        Objects.requireNonNull(actual);
+
+        if (actual.getValue().precision() > actual.getContext().getPrecision()) {
+            failWithActualExpectedAndMessage(
+                actual.getValue().precision(),
+                actual.getContext().getPrecision(),
+                "Value precision exceeds context precision:"
+            );
+        }
+
+        if (actual.getValue().scale() > actual.getContext().getMaxScale()) {
+            failWithActualExpectedAndMessage(
+                actual.getValue().scale(),
+                actual.getContext().getMaxScale(),
+                "Value scale exceeds context maxScale:"
+            );
+        }
+
+        return this;
+    }
+
+    public BigDecimalExtAssert hasValueMatchingContext(String value, BigDecimalContext context) {
+        isNotNull();
+        Objects.requireNonNull(actual);
+
+        hasValue(value);
+        hasSameContext(context);
+        hasValueMatchingContext();
 
         return this;
     }

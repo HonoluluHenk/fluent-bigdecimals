@@ -340,4 +340,77 @@ class BigDecimalExtTest {
         }
     }
 
+
+    @Nested
+    class Add {
+        @Test
+        void keeps_same_context_for_same_input_params() {
+            BigDecimalExt actual = FIXTURE.add(FIXTURE);
+
+            assertThat(actual)
+                .hasValueMatchingContext("246.90", FIXTURE_CONTEXT);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "9999.99, 10123",
+            "9.99999, 133.45",
+        })
+        void adds_and_keeps_context_when_adding_value_with_larger_precision(BigDecimal augend, String expectedValue) {
+            BigDecimalExt actual = FIXTURE.add(of(augend));
+
+            assertThat(actual)
+                .hasValueMatchingContext(expectedValue, FIXTURE_CONTEXT);
+        }
+
+        @Test
+        void adds_and_keeps_context_when_adding_value_with_larger_scale() {
+            BigDecimalExt actual = FIXTURE.add(of("99.999"));
+
+            assertThat(actual)
+                .hasValueMatchingContext("223.45", FIXTURE_CONTEXT);
+        }
+
+        @Test
+        void adds_and_keeps_context_when_adding_value_with_smaller_precision() {
+            BigDecimalExt actual = FIXTURE.add(of("12"));
+
+            assertThat(actual)
+                .hasValueMatchingContext("135.45", FIXTURE_CONTEXT);
+        }
+
+        @Test
+        void adds_and_keeps_context_when_adding_value_with_smaller_scale() {
+            BigDecimalExt actual = FIXTURE.add(of("99"));
+
+            assertThat(actual)
+                .hasValueMatchingContext("222.45", FIXTURE_CONTEXT);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            " 99, 2, 0, 1, 2, 0, 100, 2, 0",
+            "100, 2, 0, 1, 2, 0, 100, 2, 0",
+        })
+        void edge_cases(
+            String firstValue,
+            int firstPrecision,
+            int firstScale,
+            String secondValue,
+            int secondPrecision,
+            int secondScale,
+            String expectedValue,
+            int expectedPrecision,
+            int expectedScale
+        ) {
+            BigDecimalExt first = BigDecimalContext.from(firstPrecision, firstScale).withValue(firstValue);
+            BigDecimalExt second = BigDecimalContext.from(secondPrecision, secondScale).withValue(secondValue);
+            BigDecimalExt expected = BigDecimalContext.from(expectedPrecision, expectedScale).withValue(expectedValue);
+
+            BigDecimalExt actual = first.add(second);
+
+            assertThat(actual)
+                .isEqualTo(expected);
+        }
+    }
 }
