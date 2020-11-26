@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.of;
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExtAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -19,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SuppressWarnings({"nullable", "argument.type.incompatible"})
 class BigDecimalExtTest {
 
-    private static final BigDecimal ORIGINAL = new BigDecimal("123.45");
-    private static final BigDecimalContext ORIGINAL_CONTEXT = BigDecimalContext.from(5, 2);
-    private static final BigDecimalExt FIXTURE = ORIGINAL_CONTEXT.withValue(ORIGINAL);
+    private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
+    private static final BigDecimalContext FIXTURE_CONTEXT = BigDecimalContext.from(5, 2);
+    private static final BigDecimalExt FIXTURE = FIXTURE_CONTEXT.withValue(FIXTURE_VALUE);
 
     @Nested
     class TestSetup {
@@ -30,16 +31,16 @@ class BigDecimalExtTest {
          */
         @Test
         void is_as_expected() {
-            Assertions.assertThat(ORIGINAL.precision())
+            Assertions.assertThat(FIXTURE_VALUE.precision())
                 .isEqualTo(5);
 
-            Assertions.assertThat(ORIGINAL.scale())
+            Assertions.assertThat(FIXTURE_VALUE.scale())
                 .isEqualTo(2);
 
-            Assertions.assertThat(ORIGINAL.intValue())
+            Assertions.assertThat(FIXTURE_VALUE.intValue())
                 .isEqualTo(123);
 
-            BigDecimal remainder = ORIGINAL.remainder(BigDecimal.ONE);
+            BigDecimal remainder = FIXTURE_VALUE.remainder(BigDecimal.ONE);
             Assertions.assertThat(remainder.toPlainString())
                 .isEqualTo("0.45");
         }
@@ -50,28 +51,28 @@ class BigDecimalExtTest {
 
         @Test
         void calls_roundTo() {
-            var sut = new BigDecimalExtRecorder(BigDecimalExtTest.ORIGINAL, BigDecimalExtTest.ORIGINAL_CONTEXT);
+            var sut = new BigDecimalExtRecorder(BigDecimalExtTest.FIXTURE_VALUE, BigDecimalExtTest.FIXTURE_CONTEXT);
 
             Assertions.assertThat(sut.actualContext)
-                .isSameAs(ORIGINAL_CONTEXT);
+                .isSameAs(FIXTURE_CONTEXT);
 
             Assertions.assertThat(sut.actualValue)
-                .isSameAs(ORIGINAL);
+                .isSameAs(FIXTURE_VALUE);
         }
 
         @Test
         void sets_fields() {
             Assertions.assertThat(FIXTURE.getValue())
-                .isSameAs(ORIGINAL);
+                .isSameAs(FIXTURE_VALUE);
             Assertions.assertThat(FIXTURE.getContext())
-                .isSameAs(ORIGINAL_CONTEXT);
+                .isSameAs(FIXTURE_CONTEXT);
         }
 
         @Test
         void throws_for_null_value() {
             var ex = assertThrows(
                 NullPointerException.class,
-                () -> new BigDecimalExt(null, ORIGINAL_CONTEXT)
+                () -> new BigDecimalExt(null, FIXTURE_CONTEXT)
             );
 
             Assertions.assertThat(ex)
@@ -113,8 +114,8 @@ class BigDecimalExtTest {
     class HashCodeEquals {
         @Test
         void equals_for_same_context_and_value() {
-            BigDecimalExt a = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
-            BigDecimalExt b = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
+            BigDecimalExt a = FIXTURE_CONTEXT.withValue(BigDecimal.valueOf(123));
+            BigDecimalExt b = FIXTURE_CONTEXT.withValue(BigDecimal.valueOf(123));
 
             assertThat(a)
                 .isEqualTo(b);
@@ -125,8 +126,8 @@ class BigDecimalExtTest {
 
         @Test
         void differs_for_same_context_and_value_with_differing_precision() {
-            BigDecimalExt a = ORIGINAL_CONTEXT.withValue(new BigDecimal("123"));
-            BigDecimalExt b = ORIGINAL_CONTEXT.withValue(new BigDecimal("123.0"));
+            BigDecimalExt a = FIXTURE_CONTEXT.withValue(new BigDecimal("123"));
+            BigDecimalExt b = FIXTURE_CONTEXT.withValue(new BigDecimal("123.0"));
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -152,8 +153,8 @@ class BigDecimalExtTest {
     class EqualsComparingValue {
         @Test
         void equals_for_same_context_and_value() {
-            BigDecimalExt a = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
-            BigDecimalExt b = ORIGINAL_CONTEXT.withValue(BigDecimal.valueOf(123));
+            BigDecimalExt a = FIXTURE_CONTEXT.withValue(BigDecimal.valueOf(123));
+            BigDecimalExt b = FIXTURE_CONTEXT.withValue(BigDecimal.valueOf(123));
 
             assertThat(a)
                 .isEqualComparingValue(b);
@@ -164,8 +165,8 @@ class BigDecimalExtTest {
 
         @Test
         void equals_for_same_context_and_value_with_differing_precision() {
-            BigDecimalExt a = ORIGINAL_CONTEXT.withValue(new BigDecimal("123"));
-            BigDecimalExt b = ORIGINAL_CONTEXT.withValue(new BigDecimal("123.0"));
+            BigDecimalExt a = FIXTURE_CONTEXT.withValue(new BigDecimal("123"));
+            BigDecimalExt b = FIXTURE_CONTEXT.withValue(new BigDecimal("123.0"));
 
             assertThat(a)
                 .isEqualComparingValue(b);
@@ -192,7 +193,7 @@ class BigDecimalExtTest {
 
         @Test
         void does_nothing_for_same_context() {
-            BigDecimalExt actual = FIXTURE.roundTo(ORIGINAL_CONTEXT);
+            BigDecimalExt actual = FIXTURE.roundTo(FIXTURE_CONTEXT);
 
             assertThat(actual)
                 .isEqualTo(FIXTURE);
@@ -200,13 +201,13 @@ class BigDecimalExtTest {
 
         @Test
         void rounds_to_smaller_scale() {
-            BigDecimalContext smallScale = ORIGINAL_CONTEXT.withMaxScale(1);
+            BigDecimalContext smallScale = FIXTURE_CONTEXT.withMaxScale(1);
 
             BigDecimalExt actual = FIXTURE.roundTo(smallScale);
 
             assertThat(actual)
-                .hasPrecision(ORIGINAL_CONTEXT.getPrecision())
-                .hasRoundingMode(ORIGINAL_CONTEXT.getRoundingMode())
+                .hasPrecision(FIXTURE_CONTEXT.getPrecision())
+                .hasRoundingMode(FIXTURE_CONTEXT.getRoundingMode())
                 .hasValue("123.5");
         }
 
