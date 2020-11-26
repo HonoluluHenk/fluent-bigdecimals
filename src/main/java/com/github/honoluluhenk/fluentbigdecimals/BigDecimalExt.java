@@ -1,7 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
 import lombok.EqualsAndHashCode;
-import org.checkerframework.checker.initialization.qual.UnderInitialization;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
@@ -10,6 +9,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -20,103 +20,77 @@ public class BigDecimalExt implements Serializable {
     public static final BigDecimal HUNDRED = BigDecimal.valueOf(100, 0);
 
     private final BigDecimal value;
-    private final BigDecimalContext context;
+    private final Adjuster adjuster;
 
-    public BigDecimalExt(BigDecimal value, BigDecimalContext context) {
-        this.context = requireNonNull(context, "context required");
+    BigDecimalExt(BigDecimal value, Adjuster adjuster) {
+        this.adjuster = requireNonNull(adjuster, "adjuster required");
         requireNonNull(value, "value required");
-        this.value = roundTo(value, context);
+        this.value = adjust(value, adjuster);
     }
 
-    public static BigDecimalExt of(BigDecimal value) {
-        return new BigDecimalExt(value, BigDecimalContext.from(value));
+    private static BigDecimal adjust(BigDecimal value, Adjuster adjuster) {
+        if (!adjuster.needsAdjusting(value)) {
+            return value;
+        }
+
+        return adjuster.adjust(value);
     }
 
-    public static BigDecimalExt of(String bigDecimalValue) {
-        return of(new BigDecimal(bigDecimalValue));
+    private BigDecimal adjust(BigDecimal value) {
+        return adjust(value, getAdjuster());
+    }
+
+    public static BigDecimalExt of(BigDecimal value, Adjuster adjuster) {
+        return new BigDecimalExt(value, adjuster);
     }
 
     public BigDecimalExt withValue(BigDecimal value) {
-        return new BigDecimalExt(value, context);
+        return new BigDecimalExt(value, adjuster);
     }
 
-    // FIXME: make public
+    // FIXME: make public?
     private BigDecimalExt apply(Function<BigDecimal, BigDecimal> function) {
-        BigDecimal result = function.apply(getValue());
-        requireNonNull(result);
+        BigDecimal temp = function.apply(getValue());
+        requireNonNull(temp);
 
-        return withValue(result);
-    }
-
-    // FIXME: make public
-    private BigDecimalExt apply(BiFunction<BigDecimal, BigDecimal, BigDecimal> function, BigDecimal argument) {
-        requireNonNull(argument);
-
-        BigDecimal result = function.apply(getValue(), argument);
-        requireNonNull(result);
-
-        return withValue(result);
-    }
-
-    // FIXME: make public
-    private BigDecimalExt apply(BiFunction<BigDecimal, Integer, BigDecimal> function, int argument) {
-        BigDecimal result = function.apply(getValue(), argument);
-        requireNonNull(result);
-
-        return withValue(result);
-    }
-
-    BigDecimal roundTo(
-        @UnderInitialization BigDecimalExt this,
-        BigDecimal value,
-        BigDecimalContext context
-    ) {
-        BigDecimal result = value
-            .round(context.getMathContext());
-
-        if (result.scale() > context.getMaxScale()) {
-            result = result.setScale(context.getMaxScale(), context.getRoundingMode());
-        }
+        var result = withValue(temp);
 
         return result;
     }
 
-    public BigDecimalExt roundTo(BigDecimalContext context) {
-        return new BigDecimalExt(getValue(), context);
+    // FIXME: make public?
+    private BigDecimalExt apply(BiFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
+        if (argument == null) {
+            return this;
+        }
+
+        BigDecimal temp = function.apply(getValue(), argument);
+        requireNonNull(temp);
+
+        var result = withValue(temp);
+
+        return result;
+    }
+
+    public BigDecimalExt roundTo(Adjuster adjuster) {
+        return new BigDecimalExt(getValue(), adjuster);
     }
 
     public BigDecimal getValue() {
         return value;
     }
 
-    public BigDecimalContext getContext() {
-        return context;
+    public Adjuster getAdjuster() {
+        return adjuster;
     }
 
     @Override
     public String toString() {
-        return String.format("BigDecimalExt[%s, context=%s]", value.toPlainString(), context);
-    }
-
-    private BigDecimal addImpl(BigDecimal value, @Nullable BigDecimal augend) {
-        if (augend == null) {
-            return value;
-        }
-
-        BigDecimal unscaled = value
-            .add(augend);
-
-        boolean needsScaling = unscaled.scale() > context.getMaxScale();
-        BigDecimal result = needsScaling
-            ? unscaled.setScale(context.getMaxScale(), context.getRoundingMode())
-            : unscaled;
-
-        return result;
+        return String.format("BigDecimalExt[%s, %s]", value.toPlainString(), adjuster);
     }
 
     public BigDecimalExt add(@Nullable BigDecimal augend) {
-        BigDecimal exact = addImpl(value, augend);
-        BigDecimalExt result = withValue(exact);
+        var result = apply(BigDecimal::add, augend);
 
         return result;
     }
@@ -125,148 +99,83 @@ public class BigDecimalExt implements Serializable {
         return add(mapValue(augend));
     }
 
+    public BigDecimalExt add(@Nullable String bigDecimal) {
+        if (bigDecimal == null) {
+            return this;
+        }
+
+        return add(new BigDecimal(bigDecimal));
+    }
+
+    private BigDecimalExt addAll(Stream<BigDecimalExt> augend) {
+        var result = augend.reduce(
+            this,
+            BigDecimalExt::add
+        );
+
+        return result;
+    }
+
     /**
-     * adds augement parameters to value, null values are treated as zero
-     *
-     * @throws IllegalArgumentException if the resulting value exceeds the defined precision
+     * adds augement parameters to value, null values are ignored.
      */
     public BigDecimalExt addAll(@Nullable BigDecimal... augend) {
-
-        BigDecimal result = value;
-        for (BigDecimal valueToAdd : augend) {
-            if (valueToAdd == null) {
-                continue;
-            }
-
-            result = result
-                .add(valueToAdd, context.getMathContext())
-                .setScale(context.getMaxScale(), context.getRoundingMode());
-        }
-
-        return withValue(result);
-    }
-
-    private BigDecimal subtractImpl(BigDecimal value, BigDecimal subtrahend) {
-        BigDecimal result = value
-            .subtract(subtrahend, context.getMathContext())
-            .setScale(context.getMaxScale(), context.getRoundingMode());
-
-        return result;
-    }
-
-    /**
-     * @throws IllegalArgumentException if the resulting value exceeds the defined precision
-     */
-    public BigDecimalExt subtract(@Nullable BigDecimal subtrahend) {
-        if (subtrahend == null) {
-            return this;
-        }
-        BigDecimal result = subtractImpl(value, subtrahend);
-
-        return withValue(result);
-    }
-
-    public BigDecimalExt subtractAll(@Nullable BigDecimal... subtrahends) {
-        BigDecimal result = value;
-        for (BigDecimal subtrahend : subtrahends) {
-            if (subtrahend == null) {
-                continue;
-            }
-
-            result = subtractImpl(result, subtrahend);
-        }
-
-        return withValue(result);
-    }
-
-    private BigDecimal multiplyImpl(BigDecimal value, BigDecimal multiplicand) {
-        BigDecimal result = value
-            .multiply(multiplicand, context.getMathContext())
-            .setScale(context.getMaxScale(), context.getRoundingMode());
-
-        return result;
-    }
-
-    /**
-     * @throws IllegalArgumentException if the resulting value exceeds the defined precision
-     */
-    public BigDecimalExt multiply(@Nullable BigDecimal multiplicand) {
-        if (multiplicand == null) {
-            return this;
-        }
-
-        BigDecimal result = multiplyImpl(value, multiplicand);
-
-        return withValue(result);
-    }
-
-    /**
-     * @throws IllegalArgumentException if the resulting values exceeds the defined precision
-     */
-    public BigDecimalExt multiplyAll(@Nullable BigDecimal... values) {
-        BigDecimal result = Arrays.stream(values)
+        var stream = Arrays.stream(augend)
             .filter(Objects::nonNull)
             .map(Helpers::castNonNull)
-            .reduce(BigDecimal.ONE, this::multiplyImpl);
+            .map(a -> BigDecimalExt.of(a, getAdjuster()));
 
-        requireNonNull(result);
-
-        return withValue(result);
-    }
-
-    private BigDecimal divideImpl(BigDecimal dividend, BigDecimal divisor) {
-        if (0 == BigDecimal.ZERO.compareTo(divisor)) {
-            throw new IllegalArgumentException("Divide by zero: " + dividend + '/' + divisor);
-        }
-        BigDecimal result = dividend.divide(
-            divisor,
-            context.getMaxScale(),
-            context.getRoundingMode());
+        var result = addAll(stream);
 
         return result;
     }
 
-    /**
-     * @throws IllegalArgumentException if the resulting value exceeds the defined precision
-     */
+    public BigDecimalExt addAll(@Nullable BigDecimalExt... augend) {
+        Stream<BigDecimalExt> stream = Arrays.stream(augend)
+            .filter(Objects::nonNull)
+            .map(Helpers::castNonNull);
+
+        var result = addAll(stream);
+
+        return result;
+    }
+
+    public BigDecimalExt subtract(@Nullable BigDecimal subtrahend) {
+        BigDecimalExt result = apply(BigDecimal::subtract, subtrahend);
+
+        return result;
+    }
+
+    public BigDecimalExt multiply(@Nullable BigDecimal multiplicand) {
+        BigDecimalExt result = apply(BigDecimal::multiply, multiplicand);
+
+        return result;
+    }
+
     public BigDecimalExt divide(@Nullable BigDecimal divisor) {
         if (divisor == null) {
             return this;
         }
 
-        BigDecimal result = divideImpl(value, divisor);
+        if (0 == BigDecimal.ZERO.compareTo(divisor)) {
+            throw new IllegalArgumentException("Divide by zero: " + getValue() + '/' + divisor);
+        }
 
-        return withValue(result);
+        var result = apply(BigDecimal::divide, divisor);
+
+        return result;
     }
 
-    /**
-     * @throws IllegalArgumentException if the resulting values exceeds the defined precision
-     */
-    public BigDecimalExt divideAll(@Nullable BigDecimal... values) {
-        BigDecimal result = Arrays.stream(values)
-            .filter(Objects::nonNull)
-            .map(Helpers::castNonNull)
-            .reduce(BigDecimal.ONE, this::divideImpl);
-
-        return withValue(result);
-    }
-
-    /**
-     * Konvertiert eine Prozentzahl (z.B. 34%) in eine Bruchzahl (z.B. 0.34), i.E.: dividiert durch 100
-     */
     public BigDecimalExt pctToFraction() {
-        BigDecimal result = divideImpl(value, HUNDRED);
+        BigDecimalExt result = divide(HUNDRED);
 
-        return withValue(result);
+        return result;
     }
 
-    /**
-     * Konvertiert eine Bruchzahl (z.B. 0.34) in eine Prozentzahl (z.B. 34%), i.E.: multipliziert mit 100
-     */
     public BigDecimalExt fractionToPct() {
-        BigDecimal result = multiplyImpl(value, HUNDRED);
+        BigDecimalExt result = multiply(HUNDRED);
 
-        return withValue(result);
+        return result;
     }
 
     public boolean equalsComparingValue(@Nullable Object o) {
@@ -285,9 +194,9 @@ public class BigDecimalExt implements Serializable {
         if (this$value == null ? other$value != null : this$value.compareTo(other$value) != 0) {
             return false;
         }
-        BigDecimalContext this$context = getContext();
-        BigDecimalContext other$context = other.getContext();
-        boolean result = Objects.equals(this$context, other$context);
+        Adjuster this$adjuster = getAdjuster();
+        Adjuster other$adjuster = other.getAdjuster();
+        boolean result = Objects.equals(this$adjuster, other$adjuster);
 
         return result;
     }

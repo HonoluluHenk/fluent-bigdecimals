@@ -18,13 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 // we want to test runtime null-checks:
 @SuppressWarnings("argument.type.incompatible")
-class BigDecimalContextTest {
+class FixedPrecisionAdjusterTest {
 
     @Nested
     class From {
         @Test
         void passes_values_to_getters() {
-            BigDecimalContext ctx = BigDecimalContext.from(10, 7, HALF_UP);
+            FixedPrecisionAdjuster ctx = FixedPrecisionAdjuster.from(10, 7, HALF_UP);
 
             assertValues(ctx, 10, 7, HALF_UP);
 
@@ -40,7 +40,7 @@ class BigDecimalContextTest {
         void throws_on_precision_lte_1(int precision, String expectedMessage) {
             IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> BigDecimalContext.from(precision, 2, HALF_UP)
+                () -> FixedPrecisionAdjuster.from(precision, 2, HALF_UP)
             );
 
             assertThat(ex)
@@ -49,27 +49,26 @@ class BigDecimalContextTest {
 
         @ParameterizedTest
         @CsvSource({
-            "1, 1, but was: 1 < 1",
-            "1, 2, but was: 2 < 1",
-            "99, 99, but was: 99 < 99",
-            "99, 100, but was: 100 < 99",
+            "1, 1, 2",
+            "1, 2, 3",
+            "99, 99, 198",
+            "99, 100, 199",
         })
-        void throws_on_precision_lte_scale(int precision, int maxScale, String expectedMessage) {
-            IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> BigDecimalContext.from(precision, maxScale, HALF_UP)
-            );
+        void computes_precision_if_scale_gt_precision(int precision, int maxScale, int expectedPrecision) {
+            FixedPrecisionAdjuster actual = FixedPrecisionAdjuster.from(precision, maxScale, HALF_UP);
 
-            assertThat(ex)
-                .hasMessageContaining("Scale")
-                .hasMessageContaining(expectedMessage);
+            assertThat(actual.getPrecision())
+                .isEqualTo(expectedPrecision);
+
+            assertThat(actual.getMaxScale())
+                .isEqualTo(maxScale);
         }
 
         @Test
         void throws_on_null_RoundingMode() {
             NullPointerException ex = assertThrows(
                 NullPointerException.class,
-                () -> BigDecimalContext.from(3, 2, null)
+                () -> FixedPrecisionAdjuster.from(3, 2, null)
             );
 
             assertThat(ex)
@@ -83,7 +82,7 @@ class BigDecimalContextTest {
         void throws_on_null_srcValue() {
             NullPointerException ex = assertThrows(
                 NullPointerException.class,
-                () -> BigDecimalContext.from(null, RoundingMode.CEILING)
+                () -> FixedPrecisionAdjuster.from(null, RoundingMode.CEILING)
             );
 
             assertThat(ex)
@@ -94,7 +93,7 @@ class BigDecimalContextTest {
         void throws_on_null_RoundingMode() {
             NullPointerException ex = assertThrows(
                 NullPointerException.class,
-                () -> BigDecimalContext.from(BigDecimal.ONE, null)
+                () -> FixedPrecisionAdjuster.from(BigDecimal.ONE, null)
             );
 
             assertThat(ex)
@@ -103,7 +102,7 @@ class BigDecimalContextTest {
 
         @Test
         void passes_values_to_getters() {
-            var actual = BigDecimalContext.from(new BigDecimal("42.123"), RoundingMode.FLOOR);
+            var actual = FixedPrecisionAdjuster.from(new BigDecimal("42.123"), RoundingMode.FLOOR);
 
             assertThat(actual.getPrecision())
                 .isEqualTo(5);
@@ -121,7 +120,7 @@ class BigDecimalContextTest {
     class FromWithDefault {
         @Test
         void sets_HALF_UP() {
-            BigDecimalContext actual = BigDecimalContext.from(12, 3);
+            FixedPrecisionAdjuster actual = FixedPrecisionAdjuster.from(12, 3);
 
             assertThat(actual.getRoundingMode())
                 .isEqualTo(HALF_UP);
@@ -130,17 +129,17 @@ class BigDecimalContextTest {
 
     @Test
     void copy_factory_produces_same_properties() {
-        BigDecimalContext ctx = BigDecimalContext.from(5, 2, DOWN);
+        FixedPrecisionAdjuster ctx = FixedPrecisionAdjuster.from(5, 2, DOWN);
 
-        BigDecimalContext actual = BigDecimalContext.from(ctx);
+        FixedPrecisionAdjuster actual = FixedPrecisionAdjuster.from(ctx);
         assertValues(actual, 5, 2, DOWN);
     }
 
 
     @Nested
     class WithPrecision {
-        private final BigDecimalContext ctx = BigDecimalContext.from(5, 2, DOWN);
-        private final BigDecimalContext actual = ctx.withPrecision(8);
+        private final FixedPrecisionAdjuster ctx = FixedPrecisionAdjuster.from(5, 2, DOWN);
+        private final FixedPrecisionAdjuster actual = ctx.withPrecision(8);
 
         @Test
         void updates_only_precision() {
@@ -161,8 +160,8 @@ class BigDecimalContextTest {
 
     @Nested
     class WithMaxScale {
-        private final BigDecimalContext ctx = BigDecimalContext.from(5, 2, DOWN);
-        private final BigDecimalContext actual = ctx.withMaxScale(3);
+        private final FixedPrecisionAdjuster ctx = FixedPrecisionAdjuster.from(5, 2, DOWN);
+        private final FixedPrecisionAdjuster actual = ctx.withMaxScale(3);
 
         @Test
         void updates_only_maxScale() {
@@ -183,8 +182,8 @@ class BigDecimalContextTest {
 
     @Nested
     class WitRoundingMode {
-        private final BigDecimalContext ctx = BigDecimalContext.from(5, 2, DOWN);
-        private final BigDecimalContext actual = ctx.withRoundingMode(HALF_UP);
+        private final FixedPrecisionAdjuster ctx = FixedPrecisionAdjuster.from(5, 2, DOWN);
+        private final FixedPrecisionAdjuster actual = ctx.withRoundingMode(HALF_UP);
 
         @Test
         void updates_only_maxScale() {
@@ -207,16 +206,16 @@ class BigDecimalContextTest {
     class WithValue {
         @Test
         void passes_Context_to_Ext_instance() {
-            BigDecimalContext ctx = BigDecimalContext.from(10, 7, HALF_UP);
+            FixedPrecisionAdjuster ctx = FixedPrecisionAdjuster.from(10, 7, HALF_UP);
 
             BigDecimalExt actual = ctx.withValue(BigDecimal.ONE);
 
-            assertThat(actual.getContext())
+            assertThat(actual.getAdjuster())
                 .isSameAs(ctx);
         }
     }
 
-    static void assertValues(BigDecimalContext ctx, int precision, int maxScale, RoundingMode roundingMode) {
+    static void assertValues(FixedPrecisionAdjuster ctx, int precision, int maxScale, RoundingMode roundingMode) {
         assertThat(ctx.getPrecision())
             .isEqualTo(precision);
 
@@ -232,8 +231,8 @@ class BigDecimalContextTest {
 
         @Test
         void equals_for_same_values() {
-            BigDecimalContext a = BigDecimalContext.from(5, 1, HALF_UP);
-            BigDecimalContext b = BigDecimalContext.from(5, 1, HALF_UP);
+            FixedPrecisionAdjuster a = FixedPrecisionAdjuster.from(5, 1, HALF_UP);
+            FixedPrecisionAdjuster b = FixedPrecisionAdjuster.from(5, 1, HALF_UP);
 
             assertThat(a)
                 .isEqualTo(b);
@@ -244,8 +243,8 @@ class BigDecimalContextTest {
 
         @Test
         void differs_on_different_precision() {
-            BigDecimalContext a = BigDecimalContext.from(5, 1, HALF_UP);
-            BigDecimalContext b = BigDecimalContext.from(9, 1, HALF_UP);
+            FixedPrecisionAdjuster a = FixedPrecisionAdjuster.from(5, 1, HALF_UP);
+            FixedPrecisionAdjuster b = FixedPrecisionAdjuster.from(9, 1, HALF_UP);
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -256,8 +255,8 @@ class BigDecimalContextTest {
 
         @Test
         void differs_on_different_scale() {
-            BigDecimalContext a = BigDecimalContext.from(5, 1, HALF_UP);
-            BigDecimalContext b = BigDecimalContext.from(5, 2, HALF_UP);
+            FixedPrecisionAdjuster a = FixedPrecisionAdjuster.from(5, 1, HALF_UP);
+            FixedPrecisionAdjuster b = FixedPrecisionAdjuster.from(5, 2, HALF_UP);
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -268,8 +267,8 @@ class BigDecimalContextTest {
 
         @Test
         void differs_on_different_rounding() {
-            BigDecimalContext a = BigDecimalContext.from(5, 1, HALF_UP);
-            BigDecimalContext b = BigDecimalContext.from(5, 1, DOWN);
+            FixedPrecisionAdjuster a = FixedPrecisionAdjuster.from(5, 1, HALF_UP);
+            FixedPrecisionAdjuster b = FixedPrecisionAdjuster.from(5, 1, DOWN);
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -283,10 +282,10 @@ class BigDecimalContextTest {
     class ToString {
         @Test
         void includes_all_params() {
-            var actual = BigDecimalContext.from(5, 1, HALF_UP).toString();
+            var actual = FixedPrecisionAdjuster.from(5, 1, HALF_UP).toString();
 
             assertThat(actual)
-                .isEqualTo("[5,1,HALF_UP]");
+                .isEqualTo("FixedPrecisionAdjuster[5,1,HALF_UP]");
         }
     }
 }

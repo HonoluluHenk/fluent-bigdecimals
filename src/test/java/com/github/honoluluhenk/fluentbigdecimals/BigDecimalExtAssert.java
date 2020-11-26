@@ -3,7 +3,6 @@ package com.github.honoluluhenk.fluentbigdecimals;
 import org.assertj.core.api.AbstractAssert;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.math.RoundingMode;
 import java.util.Objects;
 
 @SuppressWarnings({"nullable", "argument.type.incompatible", "UnusedReturnValue"})
@@ -51,57 +50,22 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return this;
     }
 
-    public BigDecimalExtAssert hasPrecision(int maxPrecision) {
+    public BigDecimalExtAssert hasSameAdjuster(Adjuster adjuster) {
         isNotNull();
         Objects.requireNonNull(actual);
 
-        int actualPrecision = actual.getContext().getPrecision();
-        if (actualPrecision != maxPrecision) {
-            failWithActualExpectedAndMessage(actualPrecision, maxPrecision, "Expected %s to have max precision:", actual);
+        if (actual.getAdjuster() != adjuster) {
+            failWithActualExpectedAndMessage(actual.getAdjuster(), adjuster, "Adjuster not the same:");
         }
 
         return this;
     }
 
-    public BigDecimalExtAssert hasMaxScale(int maxScale) {
+    public BigDecimalExtAssert hasSameAdjusterAs(BigDecimalExt other) {
         isNotNull();
         Objects.requireNonNull(actual);
 
-        int actualMaxScale = actual.getContext().getMaxScale();
-        if (actualMaxScale != maxScale) {
-            failWithActualExpectedAndMessage(actualMaxScale, maxScale, "Expected %s to have max scale:", actual);
-        }
-
-        return this;
-    }
-
-    public BigDecimalExtAssert hasRoundingMode(RoundingMode roundingMode) {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        RoundingMode actualRoundingMode = actual.getContext().getRoundingMode();
-        if (actualRoundingMode != roundingMode) {
-            failWithActualExpectedAndMessage(actualRoundingMode, roundingMode, "Expected %s to have RoundingMode:", actual);
-        }
-        return this;
-    }
-
-    public BigDecimalExtAssert hasSameContext(BigDecimalContext context) {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        if (actual.getContext() != context) {
-            failWithActualExpectedAndMessage(actual.getContext(), context, "Context not the same:");
-        }
-
-        return this;
-    }
-
-    public BigDecimalExtAssert hasSameContextAs(BigDecimalExt other) {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        hasSameContext(other.getContext());
+        hasSameAdjuster(other.getAdjuster());
 
         return this;
     }
@@ -128,37 +92,37 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return this;
     }
 
-    public BigDecimalExtAssert hasValueMatchingContext() {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        if (actual.getValue().precision() > actual.getContext().getPrecision()) {
-            failWithActualExpectedAndMessage(
-                actual.getValue().precision(),
-                actual.getContext().getPrecision(),
-                "Value precision exceeds context precision:"
-            );
-        }
-
-        if (actual.getValue().scale() > actual.getContext().getMaxScale()) {
-            failWithActualExpectedAndMessage(
-                actual.getValue().scale(),
-                actual.getContext().getMaxScale(),
-                "Value scale exceeds context maxScale:"
-            );
-        }
-
-        return this;
-    }
-
-    public BigDecimalExtAssert hasValueMatchingContext(String value, BigDecimalContext context) {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        hasValue(value);
-        hasSameContext(context);
-        hasValueMatchingContext();
-
-        return this;
-    }
+//    public BigDecimalExtAssert hasValueMatchingAdjuster() {
+//        isNotNull();
+//        Objects.requireNonNull(actual);
+//
+//        if (actual.getValue().precision() > actual.getAdjuster().getPrecision()) {
+//            failWithActualExpectedAndMessage(
+//                actual.getValue().precision(),
+//                actual.getAdjuster().getPrecision(),
+//                "Value precision exceeds adjuster precision:"
+//            );
+//        }
+//
+//        if (actual.getValue().scale() > actual.getAdjuster().getMaxScale()) {
+//            failWithActualExpectedAndMessage(
+//                actual.getValue().scale(),
+//                actual.getAdjuster().getMaxScale(),
+//                "Value scale exceeds adjuster maxScale:"
+//            );
+//        }
+//
+//        return this;
+//    }
+//
+//    public BigDecimalExtAssert hasValueMatchingAdjuster(String value, Adjuster adjuster) {
+//        isNotNull();
+//        Objects.requireNonNull(actual);
+//
+//        hasValue(value);
+//        hasSameAdjuster(adjuster);
+//        hasValueMatchingAdjuster();
+//
+//        return this;
+//    }
 }

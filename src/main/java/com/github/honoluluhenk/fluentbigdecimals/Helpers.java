@@ -9,9 +9,9 @@ import java.util.Objects;
 @UtilityClass
 class Helpers {
 
-    static <R> @NonNull R castNonNull(@Nullable R bigDecimal) {
+    static <R> @NonNull R castNonNull(@Nullable R value) {
         @SuppressWarnings({"assignment.type.incompatible", "ConstantConditions"})
-        @NonNull R result = bigDecimal;
+        @NonNull R result = value;
 
         return Objects.requireNonNull(result);
     }
