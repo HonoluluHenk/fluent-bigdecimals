@@ -1,250 +1,256 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-    <!-- Release checklist                                              -->
-    <!--                                                                -->
-    <!-- set version in pom.xml                                         -->
-    <!-- ./mvnw clean package                                           -->
-    <!-- set git tag using release version                              -->
-    <!-- push master + tag                                              -->
-    <!-- force jitpack build: see maven profile "build-jitpack"         -->
-    <!-- update pom.xml to next SNAPSHOT                                -->
-    <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+  <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+  <!-- Release checklist                                              -->
+  <!--                                                                -->
+  <!-- set version in pom.xml                                         -->
+  <!-- ./mvnw clean package                                           -->
+  <!-- set git tag using release version                              -->
+  <!-- push master + tag                                              -->
+  <!-- force jitpack build: see maven profile "build-jitpack"         -->
+  <!-- update pom.xml to next SNAPSHOT                                -->
+  <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 
-    <groupId>com.github.HonoluluHenk</groupId>
-    <artifactId>fluent-bigdecimals</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+  <groupId>com.github.HonoluluHenk</groupId>
+  <artifactId>fluent-bigdecimals</artifactId>
+  <version>1.0.1-SNAPSHOT</version>
 
-    <name>fluent-bigdecimals</name>
-    <packaging>jar</packaging>
+  <name>fluent-bigdecimals</name>
+  <packaging>jar</packaging>
 
-    <url>https://github.com/HonoluluHenk/fluent-bigdecimals</url>
+  <url>https://github.com/HonoluluHenk/fluent-bigdecimals</url>
 
-    <ciManagement>
-        <system>jitpack</system>
-        <url>https://jitpack.io</url>
-    </ciManagement>
+  <ciManagement>
+    <system>jitpack</system>
+    <url>https://jitpack.io</url>
+  </ciManagement>
 
-    <developers>
-        <developer>
-            <id>HonoluluHenk</id>
-            <name>Christoph Linder</name>
-            <url>https://github.com/HonoluluHenk</url>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <id>HonoluluHenk</id>
+      <name>Christoph Linder</name>
+      <url>https://github.com/HonoluluHenk</url>
+    </developer>
+  </developers>
 
-    <licenses>
-        <license>
-            <name>LGPL-3.0</name>
-            <url>https://www.gnu.org/licenses/lgpl-3.0-standalone.html</url>
-        </license>
-    </licenses>
+  <licenses>
+    <license>
+      <name>LGPL-3.0</name>
+      <url>https://www.gnu.org/licenses/lgpl-3.0-standalone.html</url>
+    </license>
+  </licenses>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.release>11</maven.compiler.release>
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>11</maven.compiler.release>
 
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <lombok.version>1.18.16</lombok.version>
-        <checkerframework.version>3.7.1</checkerframework.version>
-    </properties>
+    <lombok.version>1.18.16</lombok.version>
+    <checkerframework.version>3.7.1</checkerframework.version>
+    <mockito.version>3.6.28</mockito.version>
+  </properties>
 
-    <profiles>
-    </profiles>
+  <profiles>
+  </profiles>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>5.7.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+  <dependencyManagement>
     <dependencies>
-        <!-- Annotations from the Checker Framework: nullness, interning, locking, ... -->
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <version>${checkerframework.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs-annotations</artifactId>
-            <version>4.0.6</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.18.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>3.6.0</version>
-            <scope>test</scope>
-        </dependency>
-
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>5.7.0</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
+  </dependencyManagement>
 
-    <build>
-        <pluginManagement>
-            <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-            <plugins>
-                <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                    <executions>
-                        <execution>
-                            <id>default-compile</id>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <!-- required by checkerframework -->
-                        <fork>true</fork>
-                        <compilerArguments>
-                            <Xmaxerrs>10000</Xmaxerrs>
-                            <Xmaxwarns>10000</Xmaxwarns>
-                        </compilerArguments>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                                <version>${lombok.version}</version>
-                            </path>
-                            <path>
-                                <groupId>org.checkerframework</groupId>
-                                <artifactId>checker</artifactId>
-                                <version>${checkerframework.version}</version>
-                            </path>
-                        </annotationProcessorPaths>
-                        <annotationProcessors>
-                            <!-- Add all the checkers you want to enable here -->
-                            <annotationProcessor>
-                                org.checkerframework.checker.nullness.NullnessChecker
-                            </annotationProcessor>
-                            <annotationProcessor>
-                                lombok.launch.AnnotationProcessorHider$AnnotationProcessor
-                            </annotationProcessor>
-                            <annotationProcessor>
-                                lombok.launch.AnnotationProcessorHider$ClaimingProcessor
-                            </annotationProcessor>
-                        </annotationProcessors>
-                        <compilerArgs>
-                            <arg>-parameters</arg>
-                            <!-- <arg>-Awarns</arg> --> <!-- -Awarns turns type-checking errors into warnings. -->
-                        </compilerArgs>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.checkerframework</groupId>
-                            <artifactId>checker</artifactId>
-                            <version>${checkerframework.version}</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.pitest</groupId>
-                <artifactId>pitest-maven</artifactId>
-                <version>1.5.2</version>
-                <configuration>
-                    <mutators>
-                        <mutator>ALL</mutator>
-                    </mutators>
-                    <avoidCallsTo>
-                        <avoidCallsTo>java.util.logging</avoidCallsTo>
-                        <avoidCallsTo>org.apache.log4j</avoidCallsTo>
-                        <avoidCallsTo>org.slf4j</avoidCallsTo>
-                        <avoidCallsTo>org.apache.commons.logging</avoidCallsTo>
-                        <avoidCallsTo>java.util.Objects</avoidCallsTo>
-                    </avoidCallsTo>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.pitest</groupId>
-                        <artifactId>pitest-junit5-plugin</artifactId>
-                        <version>0.12</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-        </plugins>
-    </build>
+  <dependencies>
+    <!-- Annotations from the Checker Framework: nullness, interning, locking, ... -->
+    <dependency>
+      <groupId>org.checkerframework</groupId>
+      <artifactId>checker-qual</artifactId>
+      <version>${checkerframework.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <version>4.0.6</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.18.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+      <plugins>
+        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.1</version>
+          <executions>
+            <execution>
+              <id>default-compile</id>
+            </execution>
+          </executions>
+          <configuration>
+            <!-- required by checkerframework -->
+            <fork>true</fork>
+            <compilerArguments>
+              <Xmaxerrs>10000</Xmaxerrs>
+              <Xmaxwarns>10000</Xmaxwarns>
+            </compilerArguments>
+            <annotationProcessorPaths>
+              <path>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+              </path>
+              <path>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker</artifactId>
+                <version>${checkerframework.version}</version>
+              </path>
+            </annotationProcessorPaths>
+            <annotationProcessors>
+              <!-- Add all the checkers you want to enable here -->
+              <annotationProcessor>
+                org.checkerframework.checker.nullness.NullnessChecker
+              </annotationProcessor>
+              <annotationProcessor>
+                lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+              </annotationProcessor>
+              <annotationProcessor>
+                lombok.launch.AnnotationProcessorHider$ClaimingProcessor
+              </annotationProcessor>
+            </annotationProcessors>
+            <compilerArgs>
+              <arg>-parameters</arg>
+              <!-- <arg>-Awarns</arg> --> <!-- -Awarns turns type-checking errors into warnings. -->
+            </compilerArgs>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.checkerframework</groupId>
+              <artifactId>checker</artifactId>
+              <version>${checkerframework.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.5.2</version>
+        <configuration>
+          <mutators>
+            <mutator>ALL</mutator>
+          </mutators>
+          <avoidCallsTo>
+            <avoidCallsTo>java.util.logging</avoidCallsTo>
+            <avoidCallsTo>org.apache.log4j</avoidCallsTo>
+            <avoidCallsTo>org.slf4j</avoidCallsTo>
+            <avoidCallsTo>org.apache.commons.logging</avoidCallsTo>
+            <avoidCallsTo>java.util.Objects</avoidCallsTo>
+          </avoidCallsTo>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>0.12</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
 </project>

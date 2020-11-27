@@ -5,20 +5,21 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.function.BinaryOperator;
+import java.util.function.UnaryOperator;
 
 import static java.util.Objects.requireNonNull;
 
-@EqualsAndHashCode()
-public class BigDecimalExt implements Serializable {
+/**
+ * Regarding equals/hashcode/compareTo: see {@link BigDecimal};
+ */
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
     private static final long serialVersionUID = 1646116594300550112L;
 
     public static final BigDecimal HUNDRED = BigDecimal.valueOf(100, 0);
 
+    @EqualsAndHashCode.Include
     private final BigDecimal value;
     private final Adjuster adjuster;
 
@@ -36,20 +37,28 @@ public class BigDecimalExt implements Serializable {
         return adjuster.adjust(value);
     }
 
-    private BigDecimal adjust(BigDecimal value) {
-        return adjust(value, getAdjuster());
-    }
-
     public static BigDecimalExt of(BigDecimal value, Adjuster adjuster) {
         return new BigDecimalExt(value, adjuster);
+    }
+
+    public static BigDecimalExt of(String bigDecimal, Adjuster adjuster) {
+        return new BigDecimalExt(new BigDecimal(bigDecimal), adjuster);
     }
 
     public BigDecimalExt withValue(BigDecimal value) {
         return new BigDecimalExt(value, adjuster);
     }
 
+    /**
+     * Compares {@link #getValue()} and delegates to {@link BigDecimal#compareTo(BigDecimal)}.
+     */
+    @Override
+    public int compareTo(BigDecimalExt o) {
+        return getValue().compareTo(o.getValue());
+    }
+
     // FIXME: make public?
-    private BigDecimalExt apply(Function<BigDecimal, BigDecimal> function) {
+    private BigDecimalExt apply(UnaryOperator<BigDecimal> function) {
         BigDecimal temp = function.apply(getValue());
         requireNonNull(temp);
 
@@ -58,8 +67,9 @@ public class BigDecimalExt implements Serializable {
         return result;
     }
 
+
     // FIXME: make public?
-    private BigDecimalExt apply(BiFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
+    private BigDecimalExt apply(BinaryOperator<BigDecimal> function, @Nullable BigDecimal argument) {
         if (argument == null) {
             return this;
         }
@@ -72,7 +82,7 @@ public class BigDecimalExt implements Serializable {
         return result;
     }
 
-    public BigDecimalExt roundTo(Adjuster adjuster) {
+    public BigDecimalExt using(Adjuster adjuster) {
         return new BigDecimalExt(getValue(), adjuster);
     }
 
@@ -89,55 +99,18 @@ public class BigDecimalExt implements Serializable {
         return String.format("BigDecimalExt[%s, %s]", value.toPlainString(), adjuster);
     }
 
-    public BigDecimalExt add(@Nullable BigDecimal augend) {
-        var result = apply(BigDecimal::add, augend);
+    public BigDecimalExt add(@Nullable BigDecimal addend) {
+        var result = apply(BigDecimal::add, addend);
 
         return result;
     }
 
-    public BigDecimalExt add(@Nullable BigDecimalExt augend) {
-        return add(mapValue(augend));
+    public BigDecimalExt add(@Nullable BigDecimalExt addend) {
+        return add(mapValue(addend));
     }
 
     public BigDecimalExt add(@Nullable String bigDecimal) {
-        if (bigDecimal == null) {
-            return this;
-        }
-
-        return add(new BigDecimal(bigDecimal));
-    }
-
-    private BigDecimalExt addAll(Stream<BigDecimalExt> augend) {
-        var result = augend.reduce(
-            this,
-            BigDecimalExt::add
-        );
-
-        return result;
-    }
-
-    /**
-     * adds augement parameters to value, null values are ignored.
-     */
-    public BigDecimalExt addAll(@Nullable BigDecimal... augend) {
-        var stream = Arrays.stream(augend)
-            .filter(Objects::nonNull)
-            .map(Helpers::castNonNull)
-            .map(a -> BigDecimalExt.of(a, getAdjuster()));
-
-        var result = addAll(stream);
-
-        return result;
-    }
-
-    public BigDecimalExt addAll(@Nullable BigDecimalExt... augend) {
-        Stream<BigDecimalExt> stream = Arrays.stream(augend)
-            .filter(Objects::nonNull)
-            .map(Helpers::castNonNull);
-
-        var result = addAll(stream);
-
-        return result;
+        return add(mapValue(bigDecimal));
     }
 
     public BigDecimalExt subtract(@Nullable BigDecimal subtrahend) {
@@ -178,47 +151,19 @@ public class BigDecimalExt implements Serializable {
         return result;
     }
 
-    public boolean equalsComparingValue(@Nullable Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof BigDecimalExt)) {
-            return false;
-        }
-        BigDecimalExt other = (BigDecimalExt) o;
-        if (!other.canEqual(this)) {
-            return false;
-        }
-        BigDecimal this$value = getValue();
-        BigDecimal other$value = other.getValue();
-        if (this$value == null ? other$value != null : this$value.compareTo(other$value) != 0) {
-            return false;
-        }
-        Adjuster this$adjuster = getAdjuster();
-        Adjuster other$adjuster = other.getAdjuster();
-        boolean result = Objects.equals(this$adjuster, other$adjuster);
-
-        return result;
-    }
-
-    //    private void validatePrecision(BigDecimal value) {
-    //        if (value.precision() > mathContext.getPrecision()) {
-    //            throw new IllegalArgumentException(
-    //                    String.format("precision does not match with expected precision: %d>%d, value=%s",
-    //                            value.precision(), mathContext.getPrecision(), value.toPlainString()));
-    //        }
-    //        if (value.scale() > maxScale) {
-    //            throw new IllegalArgumentException(
-    //                    String.format("scale does not match with expected scale: %d>%d, value=%s",
-    //                            value.scale(), maxScale, value.toPlainString()));
-    //        }
-    //    }
-
     private static @Nullable BigDecimal mapValue(@Nullable BigDecimalExt input) {
         if (input == null) {
             return null;
         }
 
         return input.getValue();
+    }
+
+    private static @Nullable BigDecimal mapValue(@Nullable String bigDecimal) {
+        if (bigDecimal == null) {
+            return null;
+        }
+
+        return new BigDecimal(bigDecimal);
     }
 }

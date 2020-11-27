@@ -16,7 +16,7 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return new BigDecimalExtAssert(actual);
     }
 
-    public BigDecimalExtAssert hasValuePrecision(int precision) {
+    public BigDecimalExtAssert hasPrecision(int precision) {
         isNotNull();
         Objects.requireNonNull(actual);
 
@@ -28,7 +28,7 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return this;
     }
 
-    public BigDecimalExtAssert hasValueScale(int scale) {
+    public BigDecimalExtAssert hasScale(int scale) {
         isNotNull();
         Objects.requireNonNull(actual);
 
@@ -66,28 +66,6 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         Objects.requireNonNull(actual);
 
         hasSameAdjuster(other.getAdjuster());
-
-        return this;
-    }
-
-    public BigDecimalExtAssert isEqualComparingValue(BigDecimalExt other) {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        if (!actual.equalsComparingValue(other)) {
-            failWithActualExpectedAndMessage(actual.getValue(), other.getValue(), "Expected values to be equal:");
-        }
-
-        return this;
-    }
-
-    public BigDecimalExtAssert isNotEqualComparingValue(BigDecimalExt other) {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        if (actual.equalsComparingValue(other)) {
-            failWithActualExpectedAndMessage(actual.getValue(), other.getValue(), "Expected values not to be equal:");
-        }
 
         return this;
     }

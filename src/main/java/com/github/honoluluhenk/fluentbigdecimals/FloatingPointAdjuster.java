@@ -10,9 +10,12 @@ import java.math.RoundingMode;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * First rounds to precision and then scales decimals to the given maxScale.
+ */
 @Getter
 @EqualsAndHashCode
-public class FixedPrecisionAdjuster implements Adjuster {
+public class FloatingPointAdjuster implements Adjuster {
     private static final long serialVersionUID = -8755733728910066293L;
     public static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_UP;
 
@@ -22,7 +25,7 @@ public class FixedPrecisionAdjuster implements Adjuster {
     @EqualsAndHashCode.Exclude
     private final MathContext mathContext;
 
-    public FixedPrecisionAdjuster(int precision, int maxScale, RoundingMode roundingMode) {
+    public FloatingPointAdjuster(int precision, int maxScale, RoundingMode roundingMode) {
         if (precision < 1) {
             throw new IllegalArgumentException(format("Precision must be > 0 but was: %d", precision));
         }
@@ -50,6 +53,17 @@ public class FixedPrecisionAdjuster implements Adjuster {
         return result;
     }
 
+    @Override
+    public boolean needsAdjusting(BigDecimal value) {
+        boolean isPrecisionOk = value.precision() <= getPrecision();
+        if (!isPrecisionOk) {
+            return false;
+        }
+
+        boolean isScaleOk = value.scale() <= getMaxScale();
+        return isScaleOk;
+    }
+
     public BigDecimalExt withValue(BigDecimal value) {
         return new BigDecimalExt(value, this);
     }
@@ -58,27 +72,27 @@ public class FixedPrecisionAdjuster implements Adjuster {
         return new BigDecimalExt(new BigDecimal(bigDecimal), this);
     }
 
-    public static FixedPrecisionAdjuster from(int precision, int maxScale, RoundingMode roundingMode) {
-        return new FixedPrecisionAdjuster(precision, maxScale, roundingMode);
+    public static FloatingPointAdjuster from(int precision, int maxScale, RoundingMode roundingMode) {
+        return new FloatingPointAdjuster(precision, maxScale, roundingMode);
     }
 
     /**
      * See {@link #from(int, int, RoundingMode)}, using {@link RoundingMode#HALF_UP} (used by most business applications).
      */
     //FIXME: re-introduce lateron. This might introduce errors while developing if I forget to pass the RoundingMode
-    public static FixedPrecisionAdjuster from(int precision, int maxScale) {
+    public static FloatingPointAdjuster from(int precision, int maxScale) {
         return from(precision, maxScale, DEFAULT_ROUNDING_MODE);
     }
 
-    public static FixedPrecisionAdjuster from(FixedPrecisionAdjuster other) {
-        return new FixedPrecisionAdjuster(other.getPrecision(), other.getMaxScale(), other.getRoundingMode());
+    public static FloatingPointAdjuster from(FloatingPointAdjuster other) {
+        return new FloatingPointAdjuster(other.getPrecision(), other.getMaxScale(), other.getRoundingMode());
     }
 
-    public static FixedPrecisionAdjuster from(BigDecimal srcValue, RoundingMode roundingMode) {
+    public static FloatingPointAdjuster from(BigDecimal srcValue, RoundingMode roundingMode) {
         requireNonNull(srcValue, "srcValue required");
         requireNonNull(roundingMode, "roundingMode required");
 
-        return new FixedPrecisionAdjuster(srcValue.precision(), srcValue.scale(), roundingMode);
+        return new FloatingPointAdjuster(srcValue.precision(), srcValue.scale(), roundingMode);
     }
 
     //FIXME: re-introduce lateron. This might introduce errors while developing if I forget to pass the RoundingMode
@@ -86,16 +100,16 @@ public class FixedPrecisionAdjuster implements Adjuster {
 //        return from(input, RoundingMode.HALF_UP);
 //    }
 
-    public FixedPrecisionAdjuster withPrecision(int precision) {
-        return new FixedPrecisionAdjuster(precision, getMaxScale(), getRoundingMode());
+    public FloatingPointAdjuster withPrecision(int precision) {
+        return new FloatingPointAdjuster(precision, getMaxScale(), getRoundingMode());
     }
 
-    public FixedPrecisionAdjuster withMaxScale(int maxScale) {
-        return new FixedPrecisionAdjuster(getPrecision(), maxScale, getRoundingMode());
+    public FloatingPointAdjuster withMaxScale(int maxScale) {
+        return new FloatingPointAdjuster(getPrecision(), maxScale, getRoundingMode());
     }
 
-    public FixedPrecisionAdjuster withRoundingMode(RoundingMode roundingMode) {
-        return new FixedPrecisionAdjuster(getPrecision(), getMaxScale(), roundingMode);
+    public FloatingPointAdjuster withRoundingMode(RoundingMode roundingMode) {
+        return new FloatingPointAdjuster(getPrecision(), getMaxScale(), roundingMode);
     }
 
     @Override

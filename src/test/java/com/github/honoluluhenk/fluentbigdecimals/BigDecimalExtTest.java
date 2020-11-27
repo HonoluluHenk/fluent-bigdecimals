@@ -2,30 +2,39 @@ package com.github.honoluluhenk.fluentbigdecimals;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.of;
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExtAssert.assertThat;
 import static java.math.RoundingMode.HALF_UP;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
 @IndicativeSentencesGeneration(generator = DisplayNameGenerator.ReplaceUnderscores.class)
 // FIXME: create checker annotations for AssertJ
-@SuppressWarnings({"nullable", "argument.type.incompatible"})
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings({"nullable", "argument.type.incompatible", "initialization.fields.uninitialized"})
 class BigDecimalExtTest {
 
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
-    private static final FixedPrecisionAdjuster FIXTURE_CONTEXT = FixedPrecisionAdjuster.from(5, 2, HALF_UP);
-    private static final BigDecimalExt FIXTURE = FIXTURE_CONTEXT.withValue(FIXTURE_VALUE);
+    private static final Adjuster FIXTURE_ADJUSTER = new IdentityAdjuster();
+    private static final BigDecimalExt FIXTURE = new BigDecimalExt(FIXTURE_VALUE, FIXTURE_ADJUSTER);
 
     static BigDecimalExt bde(String bigDecimal) {
         BigDecimal bd = new BigDecimal(bigDecimal);
-        return FixedPrecisionAdjuster.from(bd, HALF_UP)
+        return FloatingPointAdjuster.from(bd, HALF_UP)
             .withValue(bigDecimal);
     }
 
@@ -55,7 +64,7 @@ class BigDecimalExtTest {
     class Constructor {
 
         @Test
-        void calls_roundTo() {
+        void calls_adjuster() {
             AtomicReference<BigDecimal> ref = new AtomicReference<>();
 
             class Recorder implements Adjuster {
@@ -80,14 +89,14 @@ class BigDecimalExtTest {
             Assertions.assertThat(FIXTURE.getValue())
                 .isSameAs(FIXTURE_VALUE);
             Assertions.assertThat(FIXTURE.getAdjuster())
-                .isSameAs(FIXTURE_CONTEXT);
+                .isSameAs(FIXTURE_ADJUSTER);
         }
 
         @Test
         void throws_for_null_value() {
             var ex = assertThrows(
                 NullPointerException.class,
-                () -> new BigDecimalExt(null, FIXTURE_CONTEXT)
+                () -> new BigDecimalExt(null, FIXTURE_ADJUSTER)
             );
 
             Assertions.assertThat(ex)
@@ -109,9 +118,9 @@ class BigDecimalExtTest {
     @Nested
     class HashCodeEquals {
         @Test
-        void equals_for_same_adjuster_and_value() {
-            BigDecimalExt a = FIXTURE_CONTEXT.withValue(BigDecimal.valueOf(123));
-            BigDecimalExt b = FIXTURE_CONTEXT.withValue(BigDecimal.valueOf(123));
+        void equals_for_equal_value_and_any_adjuster() {
+            BigDecimalExt a = of("123", new IdentityAdjuster());
+            BigDecimalExt b = of("123", new IdentityAdjuster());
 
             assertThat(a)
                 .isEqualTo(b);
@@ -121,9 +130,9 @@ class BigDecimalExtTest {
         }
 
         @Test
-        void differs_for_same_adjuster_and_value_with_differing_precision() {
-            BigDecimalExt a = FIXTURE_CONTEXT.withValue(new BigDecimal("123"));
-            BigDecimalExt b = FIXTURE_CONTEXT.withValue(new BigDecimal("123.0"));
+        void differs_for_value_with_differing_precision() {
+            BigDecimalExt a = of("123", new IdentityAdjuster());
+            BigDecimalExt b = of("123.0", new IdentityAdjuster());
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -133,193 +142,15 @@ class BigDecimalExtTest {
         }
 
         @Test
-        void differs_for_different_adjusters() {
-            BigDecimalExt a = FixedPrecisionAdjuster.from(10, 7).withValue(BigDecimal.valueOf(123));
-            BigDecimalExt b = FixedPrecisionAdjuster.from(10, 5).withValue(BigDecimal.valueOf(123));
+        void differs_for_different_values() {
+            BigDecimalExt a = of("123", new IdentityAdjuster());
+            BigDecimalExt b = of("456", new IdentityAdjuster());
 
             assertThat(a)
                 .isNotEqualTo(b);
 
             Assertions.assertThat(a.hashCode())
                 .isNotEqualTo(b.hashCode());
-        }
-    }
-
-    @Nested
-    class EqualsComparingValue {
-        @Test
-        void equals_for_same_adjuster_and_value() {
-            BigDecimalExt a = FIXTURE_CONTEXT.withValue(BigDecimal.valueOf(123));
-            BigDecimalExt b = FIXTURE_CONTEXT.withValue(BigDecimal.valueOf(123));
-
-            assertThat(a)
-                .isEqualComparingValue(b);
-
-            Assertions.assertThat(a.hashCode())
-                .isEqualTo(b.hashCode());
-        }
-
-        @Test
-        void equals_for_same_adjuster_and_value_with_differing_precision() {
-            BigDecimalExt a = FIXTURE_CONTEXT.withValue(new BigDecimal("123"));
-            BigDecimalExt b = FIXTURE_CONTEXT.withValue(new BigDecimal("123.0"));
-
-            assertThat(a)
-                .isEqualComparingValue(b);
-
-            Assertions.assertThat(a.hashCode())
-                .isNotEqualTo(b.hashCode());
-        }
-
-        @Test
-        void differs_for_different_adjusters() {
-            BigDecimalExt a = FixedPrecisionAdjuster.from(10, 7).withValue(BigDecimal.valueOf(123));
-            BigDecimalExt b = FixedPrecisionAdjuster.from(10, 5).withValue(BigDecimal.valueOf(123));
-
-            assertThat(a)
-                .isNotEqualComparingValue(b);
-
-            Assertions.assertThat(a.hashCode())
-                .isNotEqualTo(b.hashCode());
-        }
-    }
-
-    @Nested
-    class RoundToTest {
-
-        @Test
-        void does_nothing_for_same_adjuster() {
-            BigDecimalExt actual = FIXTURE.roundTo(FIXTURE_CONTEXT);
-
-            assertThat(actual)
-                .isEqualTo(FIXTURE);
-        }
-
-        @Test
-        void rounds_to_smaller_scale() {
-            FixedPrecisionAdjuster smallScale = FIXTURE_CONTEXT.withMaxScale(1);
-
-            BigDecimalExt actual = FIXTURE.roundTo(smallScale);
-
-            assertThat(actual)
-//                .hasPrecision(FIXTURE_CONTEXT.getPrecision())
-//                .hasRoundingMode(FIXTURE_CONTEXT.getRoundingMode())
-                .hasValue("123.5");
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-            "3, 0, HALF_UP, 123, 3, 0",
-            "3, 1, HALF_UP, 123, 3, 0",
-            "2, 1, HALF_UP, 120, 2, -1",
-            "1, 0, HALF_UP, 100, 1, -2",
-        })
-        void truncating_precision_chops_off_digits(
-            int precision,
-            int scale,
-            RoundingMode roundingMode,
-            String expectedValue,
-            int expectedPrecision,
-            int expectedScale
-        ) {
-            BigDecimalExt sut = FIXTURE.roundTo(new FixedPrecisionAdjuster(precision, scale, roundingMode));
-
-            assertThat(sut)
-                .hasValue(expectedValue)
-                .hasValuePrecision(expectedPrecision)
-                .hasValueScale(expectedScale)
-                .hasSameAdjusterAs(sut)
-            ;
-        }
-
-        @ParameterizedTest
-        @CsvSource("5, 2, HALF_UP, 123.45, 5, 2")
-        void truncating_to_same_values_keeps_same_data(
-            int precision,
-            int scale,
-            RoundingMode roundingMode,
-            String expectedValue,
-            int expectedPrecision,
-            int expectedScale
-        ) {
-            BigDecimalExt sut = FIXTURE.roundTo(new FixedPrecisionAdjuster(precision, scale, roundingMode));
-
-            assertThat(sut)
-                .hasValue(expectedValue)
-                .hasValuePrecision(expectedPrecision)
-                .hasValueScale(expectedScale)
-                .hasSameAdjusterAs(sut)
-            ;
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-            "11, 7, HALF_UP, 123.45, 5, 2",
-            "10, 8, HALF_UP, 123.45, 5, 2",
-            "11, 8, HALF_UP, 123.45, 5, 2",
-        })
-        void expanding_scale_and_precision_is_limited_by_actual_value(
-            int precision,
-            int scale,
-            RoundingMode roundingMode,
-            String expectedValue,
-            int expectedPrecision,
-            int expectedScale
-        ) {
-            BigDecimalExt sut = FIXTURE.roundTo(new FixedPrecisionAdjuster(precision, scale, roundingMode));
-
-            assertThat(sut)
-                .hasValue(expectedValue)
-                .hasValuePrecision(expectedPrecision)
-                .hasValueScale(expectedScale)
-                .hasSameAdjusterAs(sut)
-            ;
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-            "5, 1, HALF_UP, 123.5, 4, 1",
-            "5, 1, DOWN, 123.4, 4, 1",
-        })
-        void truncating_scale_rounds_according_to_parameter(
-            int precision,
-            int scale,
-            RoundingMode roundingMode,
-            String expectedValue,
-            int expectedPrecision,
-            int expectedScale
-        ) {
-            BigDecimalExt sut = FIXTURE.roundTo(new FixedPrecisionAdjuster(precision, scale, roundingMode));
-
-            assertThat(sut)
-                .hasValue(expectedValue)
-                .hasValuePrecision(expectedPrecision)
-                .hasValueScale(expectedScale)
-                .hasSameAdjusterAs(sut)
-            ;
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-            "4, 1, HALF_UP, 123.5, 4, 1",
-            "4, 1, DOWN, 123.4, 4, 1",
-        })
-        void truncating_both_scale_and_precision_rounds_according_to_RoundingMode(
-            int precision,
-            int scale,
-            RoundingMode roundingMode,
-            String expectedValue,
-            int expectedPrecision,
-            int expectedScale
-        ) {
-            BigDecimalExt sut = FIXTURE.roundTo(new FixedPrecisionAdjuster(precision, scale, roundingMode));
-
-            assertThat(sut)
-                .hasValue(expectedValue)
-                .hasValuePrecision(expectedPrecision)
-                .hasValueScale(expectedScale)
-                .hasSameAdjusterAs(sut)
-            ;
         }
 
     }
@@ -331,57 +162,57 @@ class BigDecimalExtTest {
             String actual = FIXTURE.toString();
 
             Assertions.assertThat(actual)
-                .isEqualTo("BigDecimalExt[123.45, FixedPrecisionAdjuster[5,2,HALF_UP]]");
+                .isEqualTo("BigDecimalExt[123.45, IdentityAdjuster]");
         }
     }
 
+    @Nested
+    class Add {
+        @Mock
+        IdentityAdjuster mockAdjuster;
 
-//    @Nested
-//    class Add {
-//        @Test
-//        void keeps_same_adjuster_for_same_input_params() {
-//            BigDecimalExt actual = FIXTURE.add(FIXTURE);
-//
-//            assertThat(actual)
-//                .hasValueMatchingAdjuster("246.90", FIXTURE_CONTEXT);
-//        }
-//
-//        @ParameterizedTest
-//        @CsvSource({
-//            "9999.99, 10123",
-//            "9.99999, 133.45",
-//        })
-//        void adds_and_keeps_adjuster_when_adding_value_with_larger_precision(BigDecimal augend, String expectedValue) {
-//            BigDecimalExt actual = FIXTURE.add(augend);
-//
-//            assertThat(actual)
-//                .hasValueMatchingAdjuster(expectedValue, FIXTURE_CONTEXT);
-//        }
-//
-//        @Test
-//        void adds_and_keeps_adjuster_when_adding_value_with_larger_scale() {
-//            BigDecimalExt actual = FIXTURE.add("99.999");
-//
-//            assertThat(actual)
-//                .hasValueMatchingAdjuster("223.45", FIXTURE_CONTEXT);
-//        }
-//
-//        @Test
-//        void adds_and_keeps_adjuster_when_adding_value_with_smaller_precision() {
-//            BigDecimalExt actual = FIXTURE.add("12");
-//
-//            assertThat(actual)
-//                .hasValueMatchingAdjuster("135.45", FIXTURE_CONTEXT);
-//        }
-//
-//        @Test
-//        void adds_and_keeps_adjuster_when_adding_value_with_smaller_scale() {
-//            BigDecimalExt actual = FIXTURE.add("99");
-//
-//            assertThat(actual)
-//                .hasValueMatchingAdjuster("222.45", FIXTURE_CONTEXT);
-//        }
-//
+
+        @Test
+        void keeps_same_adjuster() {
+            BigDecimalExt actual = FIXTURE.add(FIXTURE);
+
+            assertThat(actual)
+                .hasSameAdjusterAs(FIXTURE)
+                .hasValue("246.90");
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0, 0, 0",
+            "0, 1, 1",
+            "0, -1, -1",
+            "123.45, 9999.99, 10123.44",
+            "123.45, 9999.99999, 10123.44999", // no rounding, expand precision/scale
+        })
+        void adds_and_calls_adjuster(BigDecimal augend, BigDecimal addend, String expectedValue) {
+            given(mockAdjuster.needsAdjusting(any()))
+                .willReturn(true);
+            given(mockAdjuster.adjust(any()))
+                .willAnswer(Answers.CALLS_REAL_METHODS);
+
+            BigDecimalExt sut = of(augend, mockAdjuster);
+
+            var actual = sut.add(addend);
+
+            assertThat(actual)
+                .hasValue(expectedValue);
+            verify(mockAdjuster, times(2))
+                .adjust(any(BigDecimal.class));
+        }
+
+        @Test
+        void keeps_adjuster() {
+            BigDecimalExt actual = FIXTURE.add("99.999");
+
+            assertThat(actual)
+                .hasSameAdjuster(FIXTURE_ADJUSTER);
+        }
+
 //        @ParameterizedTest
 //        @CsvSource({
 //            " 99, 2, 0, 1, 2, 0, 100, 2, 0",
@@ -398,7 +229,7 @@ class BigDecimalExtTest {
 //            int expectedPrecision,
 //            int expectedScale
 //        ) {
-//            BigDecimalExt first = FixedPrecisionAdjuster.from(firstPrecision, firstScale).withValue(firstValue);
+//            BigDecimalExt first = BigDecimalExt.from(firstPrecision, firstScale).withValue(firstValue);
 //            BigDecimalExt second = FixedPrecisionAdjuster.from(secondPrecision, secondScale).withValue(secondValue);
 //            BigDecimalExt expected = FixedPrecisionAdjuster.from(expectedPrecision, expectedScale).withValue(expectedValue);
 //
@@ -407,7 +238,7 @@ class BigDecimalExtTest {
 //            assertThat(actual)
 //                .isEqualTo(expected);
 //        }
-//    }
+    }
 
 //    @Nested
 //    class AddAll {
