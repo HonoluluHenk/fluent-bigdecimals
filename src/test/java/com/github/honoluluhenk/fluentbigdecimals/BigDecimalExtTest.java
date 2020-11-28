@@ -201,6 +201,33 @@ class BigDecimalExtTest {
         }
     }
 
+
+    @Nested
+    class Multiply {
+
+        @Test
+        void keeps_same_adjuster() {
+            keeps_same_adjuster_impl(BigDecimalExt::multiply);
+        }
+
+        @Test
+        void treats_null_as_neutral_value() {
+            adds_null_as_neutral_value_impl(BigDecimalExt::multiply);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0, 0, 0",
+            "0, 1, 0",
+            "0, -1, 0",
+            "123.45, 9999.99, 1234498.7655",
+            "123.45, 9999.99999, 1234499.9987655",
+        })
+        void multiplys_and_calls_adjuster(BigDecimal augend, BigDecimal addend, BigDecimal expectedValue) {
+            executes_and_calls_adjuster_impl(BigDecimalExt::multiply, augend, addend, expectedValue);
+        }
+    }
+
     void keeps_same_adjuster_impl(BinaryOperator<BigDecimalExt> fnc) {
         BigDecimalExt actual = fnc.apply(FIXTURE, FIXTURE);
 

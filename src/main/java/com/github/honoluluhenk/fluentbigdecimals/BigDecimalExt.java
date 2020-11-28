@@ -147,6 +147,13 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
         return result;
     }
 
+    public BigDecimalExt multiply(@Nullable BigDecimalExt multiplicand) {
+        BigDecimalExt result = add(mapValue(multiplicand));
+
+        return result;
+    }
+
+
     public BigDecimalExt divide(@Nullable BigDecimal divisor) {
         if (divisor == null) {
             return this;
