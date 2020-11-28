@@ -10,9 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.valueOf;
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExtAssert.assertThat;
+import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +36,15 @@ class BigDecimalExtTest {
 
     @Mock
     Adjuster mockAdjuster;
+
+    private static class DummyAdjuster implements Adjuster {
+        private static final long serialVersionUID = 7707531701229950642L;
+
+        @Override
+        public BigDecimal adjust(BigDecimal value) {
+            throw new IllegalStateException("Should not be needed!");
+        }
+    }
 
     @Nested
     class TestSetup {
@@ -255,8 +267,58 @@ class BigDecimalExtTest {
         }
     }
 
+    @Nested
+    class PctToFraction {
+
+        @Test
+        void keeps_same_adjuster() {
+            keeps_same_adjuster_impl(BigDecimalExt::pctToFraction);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0, 0",
+            "100, 1",
+            "50, 0.5",
+            "1, 0.01",
+            "0.001, 0.00001",
+        })
+        void calculates_and_calls_adjuster(BigDecimal multiplicand, BigDecimal expectedValue) {
+            executes_and_calls_adjuster_impl(BigDecimalExt::pctToFraction, multiplicand, expectedValue);
+        }
+    }
+
+    @Nested
+    class FractionToPct {
+
+        @Test
+        void keeps_same_adjuster() {
+            keeps_same_adjuster_impl(BigDecimalExt::fractionToPct);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0, 0",
+            "1, 100",
+            "0.5, 50.0",
+            "0.01, 1.00",
+            "0.00001, 0.00100",
+        })
+        void calculates_and_calls_adjuster(BigDecimal multiplicand, BigDecimal expectedValue) {
+            executes_and_calls_adjuster_impl(BigDecimalExt::fractionToPct, multiplicand, expectedValue);
+        }
+    }
+
+
     void keeps_same_adjuster_impl(BinaryOperator<BigDecimalExt> fnc) {
         BigDecimalExt actual = fnc.apply(FIXTURE, FIXTURE);
+
+        assertThat(actual)
+            .hasSameAdjusterAs(FIXTURE);
+    }
+
+    void keeps_same_adjuster_impl(UnaryOperator<BigDecimalExt> fnc) {
+        BigDecimalExt actual = fnc.apply(FIXTURE);
 
         assertThat(actual)
             .hasSameAdjusterAs(FIXTURE);
@@ -276,13 +338,23 @@ class BigDecimalExtTest {
         BigDecimal other,
         BigDecimal expectedValue
     ) {
+        BigDecimalExt otherExt = BigDecimalExt.valueOf(other, new DummyAdjuster());
+        Function<BigDecimalExt, BigDecimalExt> curried = curryReverse(operation, otherExt);
+
+        executes_and_calls_adjuster_impl(curried, start, expectedValue);
+    }
+
+    void executes_and_calls_adjuster_impl(
+        Function<BigDecimalExt, BigDecimalExt> operation,
+        BigDecimal start,
+        BigDecimal expectedValue
+    ) {
         // second call after the operation (i.e.: with result of
         given(mockAdjuster.adjust(expectedValue))
             .willReturn(expectedValue);
         BigDecimalExt sut = BigDecimalExt.valueOf(start, mockAdjuster);
-        BigDecimalExt otherExt = BigDecimalExt.valueOf(other, new IdentityAdjuster());
 
-        var actual = operation.apply(sut, otherExt);
+        var actual = operation.apply(sut);
 
         assertThat(actual.getValue())
             .isEqualTo(expectedValue);

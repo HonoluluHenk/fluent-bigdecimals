@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -96,7 +97,7 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
             return this;
         }
 
-        Function<BigDecimal, BigDecimal> operation = curry(function, argument);
+        Function<BigDecimal, BigDecimal> operation = curryReverse(function, argument);
         var result = apply(operation);
 
         return result;
@@ -185,15 +186,4 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
         return input.getValue();
     }
 
-    private static @Nullable BigDecimal mapValue(@Nullable String bigDecimal) {
-        if (bigDecimal == null) {
-            return null;
-        }
-
-        return new BigDecimal(bigDecimal);
-    }
-
-    private static <X, Y, R> Function<X, R> curry(BiFunction<X, Y, R> function, Y argument) {
-        return x -> function.apply(x, argument);
-    }
 }
