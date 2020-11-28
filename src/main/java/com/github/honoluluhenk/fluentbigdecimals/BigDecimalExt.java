@@ -26,15 +26,7 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
     BigDecimalExt(BigDecimal value, Adjuster adjuster) {
         this.adjuster = requireNonNull(adjuster, "adjuster required");
         requireNonNull(value, "value required");
-        this.value = adjust(value, adjuster);
-    }
-
-    private static BigDecimal adjust(BigDecimal value, Adjuster adjuster) {
-        if (!adjuster.needsAdjusting(value)) {
-            return value;
-        }
-
-        return adjuster.adjust(value);
+        this.value = adjuster.adjust(value);
     }
 
     public static BigDecimalExt of(BigDecimal value, Adjuster adjuster) {

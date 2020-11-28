@@ -16,11 +16,6 @@ public class IdentityAdjuster implements Adjuster {
     }
 
     @Override
-    public boolean needsAdjusting(BigDecimal value) {
-        return false;
-    }
-
-    @Override
     public String toString() {
         return IdentityAdjuster.class.getSimpleName();
     }

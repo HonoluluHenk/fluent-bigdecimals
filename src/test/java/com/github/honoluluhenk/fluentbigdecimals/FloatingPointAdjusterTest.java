@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+import static com.github.honoluluhenk.fluentbigdecimals.FloatingPointAdjuster.from;
 import static java.math.RoundingMode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,7 +25,7 @@ class FloatingPointAdjusterTest {
     class From {
         @Test
         void passes_values_to_getters() {
-            FloatingPointAdjuster ctx = FloatingPointAdjuster.from(10, 7, HALF_UP);
+            FloatingPointAdjuster ctx = from(10, 7, HALF_UP);
 
             assertValues(ctx, 10, 7, HALF_UP);
 
@@ -40,7 +41,7 @@ class FloatingPointAdjusterTest {
         void throws_on_precision_lte_1(int precision, String expectedMessage) {
             IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> FloatingPointAdjuster.from(precision, 2, HALF_UP)
+                () -> from(precision, 2, HALF_UP)
             );
 
             assertThat(ex)
@@ -55,7 +56,7 @@ class FloatingPointAdjusterTest {
             "99, 100, 199",
         })
         void computes_precision_if_scale_gt_precision(int precision, int maxScale, int expectedPrecision) {
-            FloatingPointAdjuster actual = FloatingPointAdjuster.from(precision, maxScale, HALF_UP);
+            FloatingPointAdjuster actual = from(precision, maxScale, HALF_UP);
 
             assertThat(actual.getPrecision())
                 .isEqualTo(expectedPrecision);
@@ -68,7 +69,7 @@ class FloatingPointAdjusterTest {
         void throws_on_null_RoundingMode() {
             NullPointerException ex = assertThrows(
                 NullPointerException.class,
-                () -> FloatingPointAdjuster.from(3, 2, null)
+                () -> from(3, 2, null)
             );
 
             assertThat(ex)
@@ -82,7 +83,7 @@ class FloatingPointAdjusterTest {
         void throws_on_null_srcValue() {
             NullPointerException ex = assertThrows(
                 NullPointerException.class,
-                () -> FloatingPointAdjuster.from(null, RoundingMode.CEILING)
+                () -> from(null, RoundingMode.CEILING)
             );
 
             assertThat(ex)
@@ -93,7 +94,7 @@ class FloatingPointAdjusterTest {
         void throws_on_null_RoundingMode() {
             NullPointerException ex = assertThrows(
                 NullPointerException.class,
-                () -> FloatingPointAdjuster.from(BigDecimal.ONE, null)
+                () -> from(BigDecimal.ONE, null)
             );
 
             assertThat(ex)
@@ -102,7 +103,7 @@ class FloatingPointAdjusterTest {
 
         @Test
         void passes_values_to_getters() {
-            var actual = FloatingPointAdjuster.from(new BigDecimal("42.123"), RoundingMode.FLOOR);
+            var actual = from(new BigDecimal("42.123"), FLOOR);
 
             assertThat(actual.getPrecision())
                 .isEqualTo(5);
@@ -116,29 +117,29 @@ class FloatingPointAdjusterTest {
 
     }
 
-    @Nested
-    class FromWithDefault {
-        @Test
-        void sets_HALF_UP() {
-            FloatingPointAdjuster actual = FloatingPointAdjuster.from(12, 3);
-
-            assertThat(actual.getRoundingMode())
-                .isEqualTo(HALF_UP);
-        }
-    }
+//    @Nested
+//    class FromWithDefault {
+//        @Test
+//        void sets_HALF_UP() {
+//            FloatingPointAdjuster actual = FloatingPointAdjuster.from(12, 3, HALF_UP);
+//
+//            assertThat(actual.getRoundingMode())
+//                .isEqualTo(HALF_UP);
+//        }
+//    }
 
     @Test
     void copy_factory_produces_same_properties() {
-        FloatingPointAdjuster ctx = FloatingPointAdjuster.from(5, 2, DOWN);
+        FloatingPointAdjuster ctx = from(5, 2, DOWN);
 
-        FloatingPointAdjuster actual = FloatingPointAdjuster.from(ctx);
+        FloatingPointAdjuster actual = from(ctx);
         assertValues(actual, 5, 2, DOWN);
     }
 
 
     @Nested
     class WithPrecision {
-        private final FloatingPointAdjuster ctx = FloatingPointAdjuster.from(5, 2, DOWN);
+        private final FloatingPointAdjuster ctx = from(5, 2, DOWN);
         private final FloatingPointAdjuster actual = ctx.withPrecision(8);
 
         @Test
@@ -160,7 +161,7 @@ class FloatingPointAdjusterTest {
 
     @Nested
     class WithMaxScale {
-        private final FloatingPointAdjuster ctx = FloatingPointAdjuster.from(5, 2, DOWN);
+        private final FloatingPointAdjuster ctx = from(5, 2, DOWN);
         private final FloatingPointAdjuster actual = ctx.withMaxScale(3);
 
         @Test
@@ -182,7 +183,7 @@ class FloatingPointAdjusterTest {
 
     @Nested
     class WitRoundingMode {
-        private final FloatingPointAdjuster ctx = FloatingPointAdjuster.from(5, 2, DOWN);
+        private final FloatingPointAdjuster ctx = from(5, 2, DOWN);
         private final FloatingPointAdjuster actual = ctx.withRoundingMode(HALF_UP);
 
         @Test
@@ -206,7 +207,7 @@ class FloatingPointAdjusterTest {
     class WithValue {
         @Test
         void passes_Context_to_Ext_instance() {
-            FloatingPointAdjuster ctx = FloatingPointAdjuster.from(10, 7, HALF_UP);
+            FloatingPointAdjuster ctx = from(10, 7, HALF_UP);
 
             BigDecimalExt actual = ctx.withValue(BigDecimal.ONE);
 
@@ -231,8 +232,8 @@ class FloatingPointAdjusterTest {
 
         @Test
         void equals_for_same_values() {
-            FloatingPointAdjuster a = FloatingPointAdjuster.from(5, 1, HALF_UP);
-            FloatingPointAdjuster b = FloatingPointAdjuster.from(5, 1, HALF_UP);
+            FloatingPointAdjuster a = from(5, 1, HALF_UP);
+            FloatingPointAdjuster b = from(5, 1, HALF_UP);
 
             assertThat(a)
                 .isEqualTo(b);
@@ -243,8 +244,8 @@ class FloatingPointAdjusterTest {
 
         @Test
         void differs_on_different_precision() {
-            FloatingPointAdjuster a = FloatingPointAdjuster.from(5, 1, HALF_UP);
-            FloatingPointAdjuster b = FloatingPointAdjuster.from(9, 1, HALF_UP);
+            FloatingPointAdjuster a = from(5, 1, HALF_UP);
+            FloatingPointAdjuster b = from(9, 1, HALF_UP);
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -255,8 +256,8 @@ class FloatingPointAdjusterTest {
 
         @Test
         void differs_on_different_scale() {
-            FloatingPointAdjuster a = FloatingPointAdjuster.from(5, 1, HALF_UP);
-            FloatingPointAdjuster b = FloatingPointAdjuster.from(5, 2, HALF_UP);
+            FloatingPointAdjuster a = from(5, 1, HALF_UP);
+            FloatingPointAdjuster b = from(5, 2, HALF_UP);
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -267,8 +268,8 @@ class FloatingPointAdjusterTest {
 
         @Test
         void differs_on_different_rounding() {
-            FloatingPointAdjuster a = FloatingPointAdjuster.from(5, 1, HALF_UP);
-            FloatingPointAdjuster b = FloatingPointAdjuster.from(5, 1, DOWN);
+            FloatingPointAdjuster a = from(5, 1, HALF_UP);
+            FloatingPointAdjuster b = from(5, 1, DOWN);
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -282,24 +283,53 @@ class FloatingPointAdjusterTest {
     class ToString {
         @Test
         void includes_all_params() {
-            var actual = FloatingPointAdjuster.from(5, 1, HALF_UP).toString();
+            var actual = from(5, 1, HALF_UP).toString();
 
             assertThat(actual)
                 .isEqualTo(FloatingPointAdjuster.class.getSimpleName() + "[5,1,HALF_UP]");
         }
     }
 
-    //    @Nested
-//    class RoundToTest {
-//
-//        @Test
-//        void does_nothing_for_same_adjuster() {
-//            BigDecimalExt actual = FIXTURE.roundTo(FIXTURE_ADJUSTER);
-//
-//            assertThat(actual)
-//                .isEqualTo(FIXTURE);
-//        }
-//
+    @Nested
+    class AdjustInto {
+
+        @ParameterizedTest
+        @CsvSource({
+            "0",
+            "0.00",
+            "123.45",
+            "-123.45",
+            "999.99",
+            "-999.99",
+            "99999",
+            "-99999",
+            "0.99",
+            "-0.99",
+        })
+        void keeps_value_unchanged_if_within_bounds(BigDecimal input) {
+            FloatingPointAdjuster adjuster = from(5, 2, HALF_UP);
+            BigDecimal outcome = adjuster.adjust(input);
+
+            assertThat(outcome)
+                .isEqualTo(input);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "12.345, 12.35",
+            "0.0000, 0.00",
+            "0.99999, 1.00",
+            "999999, 1.0000E+6",
+        })
+        void adjust_value_if_out_of_bounds(BigDecimal input, BigDecimal expected) {
+            FloatingPointAdjuster adjuster = from(5, 2, HALF_UP);
+            BigDecimal outcome = adjuster.adjust(input);
+
+            assertThat(outcome)
+                .isEqualTo(expected);
+        }
+
+
 //        @Test
 //        void rounds_to_smaller_scale() {
 //            FloatingPointAdjuster smallScale = FIXTURE_ADJUSTER.withMaxScale(1);
@@ -311,7 +341,7 @@ class FloatingPointAdjusterTest {
 ////                .hasRoundingMode(FIXTURE_CONTEXT.getRoundingMode())
 //                .hasValue("123.5");
 //        }
-//
+
 //        @ParameterizedTest
 //        @CsvSource({
 //            "3, 0, HALF_UP, 123, 3, 0",
@@ -426,6 +456,6 @@ class FloatingPointAdjusterTest {
 //                .hasSameAdjusterAs(sut)
 //            ;
 //        }
-//
-//    }
+
+    }
 }

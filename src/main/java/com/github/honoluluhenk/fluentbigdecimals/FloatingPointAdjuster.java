@@ -43,6 +43,10 @@ public class FloatingPointAdjuster implements Adjuster {
 
     @Override
     public BigDecimal adjust(BigDecimal value) {
+        if (!needsAdjusting(value)) {
+            return value;
+        }
+
         BigDecimal result = value
             .round(getMathContext());
 
@@ -53,15 +57,14 @@ public class FloatingPointAdjuster implements Adjuster {
         return result;
     }
 
-    @Override
-    public boolean needsAdjusting(BigDecimal value) {
+    private boolean needsAdjusting(BigDecimal value) {
         boolean isPrecisionOk = value.precision() <= getPrecision();
         if (!isPrecisionOk) {
-            return false;
+            return true;
         }
 
         boolean isScaleOk = value.scale() <= getMaxScale();
-        return isScaleOk;
+        return !isScaleOk;
     }
 
     public BigDecimalExt withValue(BigDecimal value) {
@@ -80,10 +83,9 @@ public class FloatingPointAdjuster implements Adjuster {
      * See {@link #from(int, int, RoundingMode)}, using {@link RoundingMode#HALF_UP} (used by most business applications).
      */
     //FIXME: re-introduce lateron. This might introduce errors while developing if I forget to pass the RoundingMode
-    public static FloatingPointAdjuster from(int precision, int maxScale) {
-        return from(precision, maxScale, DEFAULT_ROUNDING_MODE);
-    }
-
+//    static FloatingPointAdjuster from(int precision, int maxScale) {
+//        return from(precision, maxScale, DEFAULT_ROUNDING_MODE);
+//    }
     public static FloatingPointAdjuster from(FloatingPointAdjuster other) {
         return new FloatingPointAdjuster(other.getPrecision(), other.getMaxScale(), other.getRoundingMode());
     }
@@ -94,11 +96,6 @@ public class FloatingPointAdjuster implements Adjuster {
 
         return new FloatingPointAdjuster(srcValue.precision(), srcValue.scale(), roundingMode);
     }
-
-    //FIXME: re-introduce lateron. This might introduce errors while developing if I forget to pass the RoundingMode
-//    public static BigDecimalContext from(BigDecimal input) {
-//        return from(input, RoundingMode.HALF_UP);
-//    }
 
     public FloatingPointAdjuster withPrecision(int precision) {
         return new FloatingPointAdjuster(precision, getMaxScale(), getRoundingMode());

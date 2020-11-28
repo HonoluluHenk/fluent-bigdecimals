@@ -1,6 +1,5 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.of;
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExtAssert.assertThat;
 import static java.math.RoundingMode.HALF_UP;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -45,17 +45,17 @@ class BigDecimalExtTest {
          */
         @Test
         void is_as_expected() {
-            Assertions.assertThat(FIXTURE_VALUE.precision())
+            assertThat(FIXTURE_VALUE.precision())
                 .isEqualTo(5);
 
-            Assertions.assertThat(FIXTURE_VALUE.scale())
+            assertThat(FIXTURE_VALUE.scale())
                 .isEqualTo(2);
 
-            Assertions.assertThat(FIXTURE_VALUE.intValue())
+            assertThat(FIXTURE_VALUE.intValue())
                 .isEqualTo(123);
 
             BigDecimal remainder = FIXTURE_VALUE.remainder(BigDecimal.ONE);
-            Assertions.assertThat(remainder.toPlainString())
+            assertThat(remainder.toPlainString())
                 .isEqualTo("0.45");
         }
     }
@@ -79,16 +79,16 @@ class BigDecimalExtTest {
 
             new BigDecimalExt(FIXTURE_VALUE, new Recorder());
 
-            Assertions.assertThat(ref.get())
+            assertThat(ref.get())
                 .isSameAs(FIXTURE_VALUE);
 
         }
 
         @Test
         void sets_fields() {
-            Assertions.assertThat(FIXTURE.getValue())
+            assertThat(FIXTURE.getValue())
                 .isSameAs(FIXTURE_VALUE);
-            Assertions.assertThat(FIXTURE.getAdjuster())
+            assertThat(FIXTURE.getAdjuster())
                 .isSameAs(FIXTURE_ADJUSTER);
         }
 
@@ -99,7 +99,7 @@ class BigDecimalExtTest {
                 () -> new BigDecimalExt(null, FIXTURE_ADJUSTER)
             );
 
-            Assertions.assertThat(ex)
+            assertThat(ex)
                 .hasMessageContaining("value");
         }
 
@@ -110,7 +110,7 @@ class BigDecimalExtTest {
                 () -> new BigDecimalExt(BigDecimal.ONE, null)
             );
 
-            Assertions.assertThat(ex)
+            assertThat(ex)
                 .hasMessageContaining("adjuster");
         }
     }
@@ -125,7 +125,7 @@ class BigDecimalExtTest {
             assertThat(a)
                 .isEqualTo(b);
 
-            Assertions.assertThat(a.hashCode())
+            assertThat(a.hashCode())
                 .isEqualTo(b.hashCode());
         }
 
@@ -137,7 +137,7 @@ class BigDecimalExtTest {
             assertThat(a)
                 .isNotEqualTo(b);
 
-            Assertions.assertThat(a.hashCode())
+            assertThat(a.hashCode())
                 .isNotEqualTo(b.hashCode());
         }
 
@@ -149,7 +149,7 @@ class BigDecimalExtTest {
             assertThat(a)
                 .isNotEqualTo(b);
 
-            Assertions.assertThat(a.hashCode())
+            assertThat(a.hashCode())
                 .isNotEqualTo(b.hashCode());
         }
 
@@ -161,7 +161,7 @@ class BigDecimalExtTest {
         void includes_all_parameters() {
             String actual = FIXTURE.toString();
 
-            Assertions.assertThat(actual)
+            assertThat(actual)
                 .isEqualTo("BigDecimalExt[123.45, IdentityAdjuster]");
         }
     }
@@ -190,8 +190,6 @@ class BigDecimalExtTest {
             "123.45, 9999.99999, 10123.44999", // no rounding, expand precision/scale
         })
         void adds_and_calls_adjuster(BigDecimal augend, BigDecimal addend, String expectedValue) {
-            given(mockAdjuster.needsAdjusting(any()))
-                .willReturn(true);
             given(mockAdjuster.adjust(any()))
                 .willAnswer(Answers.CALLS_REAL_METHODS);
 
@@ -212,58 +210,6 @@ class BigDecimalExtTest {
             assertThat(actual)
                 .hasSameAdjuster(FIXTURE_ADJUSTER);
         }
-
-//        @ParameterizedTest
-//        @CsvSource({
-//            " 99, 2, 0, 1, 2, 0, 100, 2, 0",
-//            "100, 2, 0, 1, 2, 0, 100, 2, 0",
-//        })
-//        void edge_cases(
-//            String firstValue,
-//            int firstPrecision,
-//            int firstScale,
-//            String secondValue,
-//            int secondPrecision,
-//            int secondScale,
-//            String expectedValue,
-//            int expectedPrecision,
-//            int expectedScale
-//        ) {
-//            BigDecimalExt first = BigDecimalExt.from(firstPrecision, firstScale).withValue(firstValue);
-//            BigDecimalExt second = FixedPrecisionAdjuster.from(secondPrecision, secondScale).withValue(secondValue);
-//            BigDecimalExt expected = FixedPrecisionAdjuster.from(expectedPrecision, expectedScale).withValue(expectedValue);
-//
-//            BigDecimalExt actual = first.add(second);
-//
-//            assertThat(actual)
-//                .isEqualTo(expected);
-//        }
     }
 
-//    @Nested
-//    class AddAll {
-//        @Test
-//        void adds_all() {
-//            BigDecimalExt actual = FIXTURE.addAll(
-//                bde("123.45"),
-//                null,
-//                bde("54.321")
-//            );
-//
-//            assertThat(actual)
-//                .hasValueMatchingAdjuster("301.22", FIXTURE_CONTEXT);
-//        }
-//
-//        @Test
-//        void rounds_to_original_adjuster_after_each_step() {
-//            BigDecimalExt actual = FIXTURE
-//                .addAll(
-//                    bde("0.006"),  // = 123.456 => rounded: 123.46
-//                    bde("50000") // = 50123.46 => rounded: 50123
-//                );
-//
-//            assertThat(actual)
-//                .hasValueMatchingAdjuster("50123", FIXTURE_CONTEXT);
-//        }
-//    }
 }
