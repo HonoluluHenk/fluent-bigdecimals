@@ -240,12 +240,11 @@ class BigDecimalExtTest {
 
         assertThat(actual.getValue())
             .isEqualTo(FIXTURE.getValue());
-
     }
 
 
     void executes_and_calls_adjuster_impl(
-        BiFunction<BigDecimalExt, BigDecimal, BigDecimalExt> operation,
+        BiFunction<BigDecimalExt, BigDecimalExt, BigDecimalExt> operation,
         BigDecimal start,
         BigDecimal other,
         BigDecimal expectedValue
@@ -254,8 +253,9 @@ class BigDecimalExtTest {
         given(mockAdjuster.adjust(expectedValue))
             .willReturn(expectedValue);
         BigDecimalExt sut = BigDecimalExt.valueOf(start, mockAdjuster);
+        BigDecimalExt otherExt = BigDecimalExt.valueOf(other, new IdentityAdjuster());
 
-        var actual = operation.apply(sut, other);
+        var actual = operation.apply(sut, otherExt);
 
         assertThat(actual.getValue())
             .isEqualTo(expectedValue);
