@@ -154,15 +154,13 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
     }
 
     public BigDecimalExt divide(@Nullable BigDecimal divisor) {
-        if (divisor == null) {
-            return this;
-        }
+        BigDecimalExt result = apply(BigDecimal::divide, divisor);
 
-        if (0 == BigDecimal.ZERO.compareTo(divisor)) {
-            throw new IllegalArgumentException("Divide by zero: " + getValue() + '/' + divisor);
-        }
+        return result;
+    }
 
-        var result = apply(BigDecimal::divide, divisor);
+    public BigDecimalExt divide(@Nullable BigDecimalExt divisor) {
+        BigDecimalExt result = divide(mapValue(divisor));
 
         return result;
     }

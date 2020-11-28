@@ -223,8 +223,35 @@ class BigDecimalExtTest {
             "123.45, 9999.99, 1234498.7655",
             "123.45, 9999.99999, 1234499.9987655",
         })
-        void multiplys_and_calls_adjuster(BigDecimal augend, BigDecimal addend, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(BigDecimalExt::multiply, augend, addend, expectedValue);
+        void multiplys_and_calls_adjuster(BigDecimal multiplicand, BigDecimal multiplicator, BigDecimal expectedValue) {
+            executes_and_calls_adjuster_impl(BigDecimalExt::multiply, multiplicand, multiplicator, expectedValue);
+        }
+    }
+
+    @Nested
+    class Divide {
+
+        @Test
+        void keeps_same_adjuster() {
+            keeps_same_adjuster_impl(BigDecimalExt::divide);
+        }
+
+        @Test
+        void treats_null_as_neutral_value() {
+            adds_null_as_neutral_value_impl(BigDecimalExt::divide);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0, 1, 0",
+            "0, -1, 0",
+            "1, 2, 0.5",
+        })
+            // please note: using the IdentityAdjuster requires input parameters that to a terminating division
+            // or else an ArithmethcException is thrown.
+            // Example for invalid input: 1/3
+        void divides_and_calls_adjuster(BigDecimal dividend, BigDecimal divisor, BigDecimal expectedValue) {
+            executes_and_calls_adjuster_impl(BigDecimalExt::divide, dividend, divisor, expectedValue);
         }
     }
 
