@@ -4,21 +4,20 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 
-import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.of;
+import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.valueOf;
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExtAssert.assertThat;
-import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
@@ -32,11 +31,8 @@ class BigDecimalExtTest {
     private static final Adjuster FIXTURE_ADJUSTER = new IdentityAdjuster();
     private static final BigDecimalExt FIXTURE = new BigDecimalExt(FIXTURE_VALUE, FIXTURE_ADJUSTER);
 
-    static BigDecimalExt bde(String bigDecimal) {
-        BigDecimal bd = new BigDecimal(bigDecimal);
-        return FloatingPointAdjuster.from(bd, HALF_UP)
-            .withValue(bigDecimal);
-    }
+    @Mock
+    Adjuster mockAdjuster;
 
     @Nested
     class TestSetup {
@@ -64,24 +60,11 @@ class BigDecimalExtTest {
     class Constructor {
 
         @Test
-        void calls_adjuster() {
-            AtomicReference<BigDecimal> ref = new AtomicReference<>();
+        void does_not_call_adjuster() {
+            new BigDecimalExt(FIXTURE_VALUE, mockAdjuster);
 
-            class Recorder implements Adjuster {
-                private static final long serialVersionUID = -1999257916541686047L;
-
-                @Override
-                public BigDecimal adjust(BigDecimal value) {
-                    ref.set(value);
-                    return value;
-                }
-            }
-
-            new BigDecimalExt(FIXTURE_VALUE, new Recorder());
-
-            assertThat(ref.get())
-                .isSameAs(FIXTURE_VALUE);
-
+            verify(mockAdjuster, never())
+                .adjust(any());
         }
 
         @Test
@@ -119,8 +102,8 @@ class BigDecimalExtTest {
     class HashCodeEquals {
         @Test
         void equals_for_equal_value_and_any_adjuster() {
-            BigDecimalExt a = of("123", new IdentityAdjuster());
-            BigDecimalExt b = of("123", new IdentityAdjuster());
+            BigDecimalExt a = valueOf("123", new IdentityAdjuster());
+            BigDecimalExt b = valueOf("123", new IdentityAdjuster());
 
             assertThat(a)
                 .isEqualTo(b);
@@ -131,8 +114,8 @@ class BigDecimalExtTest {
 
         @Test
         void differs_for_value_with_differing_precision() {
-            BigDecimalExt a = of("123", new IdentityAdjuster());
-            BigDecimalExt b = of("123.0", new IdentityAdjuster());
+            BigDecimalExt a = valueOf("123", new IdentityAdjuster());
+            BigDecimalExt b = valueOf("123.0", new IdentityAdjuster());
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -143,8 +126,8 @@ class BigDecimalExtTest {
 
         @Test
         void differs_for_different_values() {
-            BigDecimalExt a = of("123", new IdentityAdjuster());
-            BigDecimalExt b = of("456", new IdentityAdjuster());
+            BigDecimalExt a = valueOf("123", new IdentityAdjuster());
+            BigDecimalExt b = valueOf("456", new IdentityAdjuster());
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -168,17 +151,15 @@ class BigDecimalExtTest {
 
     @Nested
     class Add {
-        @Mock
-        IdentityAdjuster mockAdjuster;
-
 
         @Test
         void keeps_same_adjuster() {
-            BigDecimalExt actual = FIXTURE.add(FIXTURE);
+            keeps_same_adjuster_impl(BigDecimalExt::add);
+        }
 
-            assertThat(actual)
-                .hasSameAdjusterAs(FIXTURE)
-                .hasValue("246.90");
+        @Test
+        void treats_null_as_neutral_value() {
+            adds_null_as_neutral_value_impl(BigDecimalExt::add);
         }
 
         @ParameterizedTest
@@ -187,29 +168,72 @@ class BigDecimalExtTest {
             "0, 1, 1",
             "0, -1, -1",
             "123.45, 9999.99, 10123.44",
-            "123.45, 9999.99999, 10123.44999", // no rounding, expand precision/scale
+            "123.45, 9999.99999, 10123.44999",
         })
-        void adds_and_calls_adjuster(BigDecimal augend, BigDecimal addend, String expectedValue) {
-            given(mockAdjuster.adjust(any()))
-                .willAnswer(Answers.CALLS_REAL_METHODS);
+        void adds_and_calls_adjuster(BigDecimal augend, BigDecimal addend, BigDecimal expectedValue) {
+            executes_and_calls_adjuster_impl(BigDecimalExt::add, augend, addend, expectedValue);
+        }
+    }
 
-            BigDecimalExt sut = of(augend, mockAdjuster);
+    @Nested
+    class Subtract {
 
-            var actual = sut.add(addend);
-
-            assertThat(actual)
-                .hasValue(expectedValue);
-            verify(mockAdjuster, times(2))
-                .adjust(any(BigDecimal.class));
+        @Test
+        void keeps_same_adjuster() {
+            keeps_same_adjuster_impl(BigDecimalExt::subtract);
         }
 
         @Test
-        void keeps_adjuster() {
-            BigDecimalExt actual = FIXTURE.add("99.999");
-
-            assertThat(actual)
-                .hasSameAdjuster(FIXTURE_ADJUSTER);
+        void treats_null_as_neutral_value() {
+            adds_null_as_neutral_value_impl(BigDecimalExt::subtract);
         }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0, 0, 0",
+            "0, 1, -1",
+            "0, -1, 1",
+            "10123.44, 9999.99, 123.45",
+            "10123.44999, 9999.99999, 123.45000",
+        })
+        void subtracts_and_calls_adjuster(BigDecimal minuend, BigDecimal subtrahend, BigDecimal expectedValue) {
+            executes_and_calls_adjuster_impl(BigDecimalExt::subtract, minuend, subtrahend, expectedValue);
+        }
+    }
+
+    void keeps_same_adjuster_impl(BinaryOperator<BigDecimalExt> fnc) {
+        BigDecimalExt actual = fnc.apply(FIXTURE, FIXTURE);
+
+        assertThat(actual)
+            .hasSameAdjusterAs(FIXTURE);
+    }
+
+    void adds_null_as_neutral_value_impl(BinaryOperator<BigDecimalExt> fnc) {
+        BigDecimalExt actual = fnc.apply(FIXTURE, null);
+
+        assertThat(actual.getValue())
+            .isEqualTo(FIXTURE.getValue());
+
+    }
+
+
+    void executes_and_calls_adjuster_impl(
+        BiFunction<BigDecimalExt, BigDecimal, BigDecimalExt> operation,
+        BigDecimal start,
+        BigDecimal other,
+        BigDecimal expectedValue
+    ) {
+        // second call after the operation (i.e.: with result of
+        given(mockAdjuster.adjust(expectedValue))
+            .willReturn(expectedValue);
+        BigDecimalExt sut = BigDecimalExt.valueOf(start, mockAdjuster);
+
+        var actual = operation.apply(sut, other);
+
+        assertThat(actual.getValue())
+            .isEqualTo(expectedValue);
+        verify(mockAdjuster)
+            .adjust(expectedValue);
     }
 
 }

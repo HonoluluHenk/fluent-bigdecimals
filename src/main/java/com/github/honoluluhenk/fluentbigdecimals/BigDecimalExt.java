@@ -5,8 +5,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
+import java.math.BigInteger;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,23 +23,54 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
     @EqualsAndHashCode.Include
     private final BigDecimal value;
     private final Adjuster adjuster;
+    private final BiFunction<BigDecimal, Adjuster, ? extends BigDecimalExt> instantiator;
 
     BigDecimalExt(BigDecimal value, Adjuster adjuster) {
-        this.adjuster = requireNonNull(adjuster, "adjuster required");
-        requireNonNull(value, "value required");
-        this.value = adjuster.adjust(value);
+        this(value, adjuster, BigDecimalExt::new);
     }
 
-    public static BigDecimalExt of(BigDecimal value, Adjuster adjuster) {
+    protected BigDecimalExt(
+        BigDecimal value,
+        Adjuster adjuster,
+        BiFunction<BigDecimal, Adjuster, ? extends BigDecimalExt> instantiator
+    ) {
+        this.adjuster = requireNonNull(adjuster, "adjuster required");
+        this.value = requireNonNull(value, "value required");
+        this.instantiator = instantiator;
+    }
+
+    public static BigDecimalExt valueOf(BigDecimal value, Adjuster adjuster) {
         return new BigDecimalExt(value, adjuster);
     }
 
-    public static BigDecimalExt of(String bigDecimal, Adjuster adjuster) {
-        return new BigDecimalExt(new BigDecimal(bigDecimal), adjuster);
+    public static BigDecimalExt valueOf(String bigDecimal, Adjuster adjuster) {
+        return valueOf(new BigDecimal(bigDecimal), adjuster);
+    }
+
+    public static BigDecimalExt valueOf(long value, Adjuster adjuster) {
+        return valueOf(BigDecimal.valueOf(value), adjuster);
+    }
+
+    public static BigDecimalExt valueOf(double value, Adjuster adjuster) {
+        return valueOf(BigDecimal.valueOf(value), adjuster);
+    }
+
+    public static BigDecimalExt valueOf(BigInteger value, Adjuster adjuster) {
+        return valueOf(new BigDecimal(value), adjuster);
     }
 
     public BigDecimalExt withValue(BigDecimal value) {
-        return new BigDecimalExt(value, adjuster);
+        return instantiator.apply(value, adjuster);
+    }
+
+    public BigDecimalExt adjust() {
+        return adjusted(getValue());
+    }
+
+    private BigDecimalExt adjusted(BigDecimal value) {
+        var adjusted = adjuster.adjust(value);
+
+        return withValue(adjusted);
     }
 
     /**
@@ -49,33 +81,29 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
         return getValue().compareTo(o.getValue());
     }
 
-    // FIXME: make public?
-    private BigDecimalExt apply(UnaryOperator<BigDecimal> function) {
+    public BigDecimalExt apply(Function<BigDecimal, BigDecimal> function) {
         BigDecimal temp = function.apply(getValue());
         requireNonNull(temp);
 
-        var result = withValue(temp);
+        var result = adjusted(temp);
 
         return result;
     }
 
 
-    // FIXME: make public?
-    private BigDecimalExt apply(BinaryOperator<BigDecimal> function, @Nullable BigDecimal argument) {
+    public BigDecimalExt apply(BiFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
         if (argument == null) {
             return this;
         }
 
-        BigDecimal temp = function.apply(getValue(), argument);
-        requireNonNull(temp);
-
-        var result = withValue(temp);
+        Function<BigDecimal, BigDecimal> operation = curry(function, argument);
+        var result = apply(operation);
 
         return result;
     }
 
     public BigDecimalExt using(Adjuster adjuster) {
-        return new BigDecimalExt(getValue(), adjuster);
+        return instantiator.apply(getValue(), adjuster);
     }
 
     public BigDecimal getValue() {
@@ -101,12 +129,14 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
         return add(mapValue(addend));
     }
 
-    public BigDecimalExt add(@Nullable String bigDecimal) {
-        return add(mapValue(bigDecimal));
-    }
-
     public BigDecimalExt subtract(@Nullable BigDecimal subtrahend) {
         BigDecimalExt result = apply(BigDecimal::subtract, subtrahend);
+
+        return result;
+    }
+
+    public BigDecimalExt subtract(@Nullable BigDecimalExt subtrahend) {
+        BigDecimalExt result = add(mapValue(subtrahend));
 
         return result;
     }
@@ -157,5 +187,9 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
         }
 
         return new BigDecimal(bigDecimal);
+    }
+
+    private static <X, Y, R> Function<X, R> curry(BiFunction<X, Y, R> function, Y argument) {
+        return x -> function.apply(x, argument);
     }
 }

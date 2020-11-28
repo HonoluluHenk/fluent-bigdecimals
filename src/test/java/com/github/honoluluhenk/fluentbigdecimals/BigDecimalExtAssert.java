@@ -103,4 +103,22 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
 //
 //        return this;
 //    }
+
+
+//    public static <T extends Comparable<T>> @Nullable T comparesTo(T value) {
+//        reportMatcher(new CompareEqual<>(value));
+//
+//        if (value == null) {
+//            return null;
+//        } else {
+//            Object defaultValue = Primitives.defaultValue((Class<?>) value.getClass());
+//
+//            //noinspection unchecked
+//            return (T) defaultValue;
+//        }
+//    }
+//
+//    private static void reportMatcher(ArgumentMatcher<?> matcher) {
+//        ThreadSafeMockingProgress.mockingProgress().getArgumentMatcherStorage().reportMatcher(matcher);
+//    }
 }
