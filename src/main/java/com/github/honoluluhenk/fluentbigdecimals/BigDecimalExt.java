@@ -10,7 +10,6 @@ import java.math.BigInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -20,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
     private static final long serialVersionUID = 1646116594300550112L;
 
-    public static final BigDecimal HUNDRED = BigDecimal.valueOf(100, 0);
+    public static final BigDecimal HUNDRED = new BigDecimal("100");
 
     @EqualsAndHashCode.Include
     private final BigDecimal value;
@@ -75,6 +74,20 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
         return withValue(adjusted);
     }
 
+    /**
+     * Switch adjuster while keeeping the value unchanged.
+     * <p>
+     * Related: {@link #adjustInto(Adjuster)}.
+     */
+    public BigDecimalExt withAdjuster(Adjuster adjuster) {
+        return instantiator.apply(getValue(), adjuster);
+    }
+
+    /**
+     * Switch to new adjuster and adjust value accordingly.
+     * <p>
+     * Related: {@link #withAdjuster(Adjuster)}.
+     */
     public BigDecimalExt adjustInto(Adjuster adjuster) {
         var result = valueOf(getValue(), adjuster)
             .adjust();
@@ -100,19 +113,18 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
     }
 
 
-    public BigDecimalExt apply(BiFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
+    public BigDecimalExt apply(ProjectionFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
         if (argument == null) {
             return this;
         }
 
-        Function<BigDecimal, BigDecimal> operation = curryReverse(function, argument);
-        var result = apply(operation);
+        BigDecimal temp = function.apply(getValue(), argument, adjuster.getMathContext());
+        requireNonNull(temp);
+
+        var result = adjusted(temp);
+
 
         return result;
-    }
-
-    public BigDecimalExt using(Adjuster adjuster) {
-        return instantiator.apply(getValue(), adjuster);
     }
 
     public BigDecimal getValue() {

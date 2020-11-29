@@ -195,12 +195,15 @@ class FloatingPointAdjusterTest {
 
     static void assertValues(FloatingPointAdjuster ctx, int precision, int maxScale, RoundingMode roundingMode) {
         assertThat(ctx.getPrecision())
+            .describedAs("precision")
             .isEqualTo(precision);
 
         assertThat(ctx.getMaxScale())
+            .describedAs("maxScale")
             .isEqualTo(maxScale);
 
         assertThat(ctx.getRoundingMode())
+            .describedAs("roundingMode")
             .isEqualTo(roundingMode);
     }
 
@@ -283,12 +286,12 @@ class FloatingPointAdjusterTest {
             "0.99",
             "-0.99",
         })
-        void keeps_value_unchanged_if_within_bounds(BigDecimal input) {
+        void returns_same_instance_if_input_is_within_bounds(BigDecimal input) {
             FloatingPointAdjuster adjuster = from(5, 2, HALF_UP);
             BigDecimal outcome = adjuster.adjust(input);
 
             assertThat(outcome)
-                .isEqualTo(input);
+                .isSameAs(input);
         }
 
         @ParameterizedTest
@@ -298,7 +301,7 @@ class FloatingPointAdjusterTest {
             "0.99999, 1.00",
             "999999, 1.0000E+6",
         })
-        void adjust_value_if_out_of_bounds(BigDecimal input, BigDecimal expected) {
+        void reduces_scale_if_needed_using_rounding(BigDecimal input, BigDecimal expected) {
             FloatingPointAdjuster adjuster = from(5, 2, HALF_UP);
             BigDecimal outcome = adjuster.adjust(input);
 
