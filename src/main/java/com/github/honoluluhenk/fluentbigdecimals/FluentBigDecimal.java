@@ -16,7 +16,7 @@ import static java.util.Objects.requireNonNull;
  * Regarding equals/hashcode/compareTo: see {@link BigDecimal};
  */
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
+public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecimal> {
     private static final long serialVersionUID = 1646116594300550112L;
 
     public static final BigDecimal HUNDRED = new BigDecimal("100");
@@ -24,51 +24,51 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
     @EqualsAndHashCode.Include
     private final BigDecimal value;
     private final Adjuster adjuster;
-    private final BiFunction<BigDecimal, Adjuster, ? extends BigDecimalExt> instantiator;
+    private final BiFunction<BigDecimal, Adjuster, ? extends FluentBigDecimal> instantiator;
 
-    BigDecimalExt(BigDecimal value, Adjuster adjuster) {
-        this(value, adjuster, BigDecimalExt::new);
+    FluentBigDecimal(BigDecimal value, Adjuster adjuster) {
+        this(value, adjuster, FluentBigDecimal::new);
     }
 
-    protected BigDecimalExt(
+    protected FluentBigDecimal(
         BigDecimal value,
         Adjuster adjuster,
-        BiFunction<BigDecimal, Adjuster, ? extends BigDecimalExt> instantiator
+        BiFunction<BigDecimal, Adjuster, ? extends FluentBigDecimal> instantiator
     ) {
         this.adjuster = requireNonNull(adjuster, "adjuster required");
         this.value = requireNonNull(value, "value required");
         this.instantiator = instantiator;
     }
 
-    public static BigDecimalExt valueOf(BigDecimal value, Adjuster adjuster) {
-        return new BigDecimalExt(value, adjuster);
+    public static FluentBigDecimal valueOf(BigDecimal value, Adjuster adjuster) {
+        return new FluentBigDecimal(value, adjuster);
     }
 
-    public static BigDecimalExt valueOf(String bigDecimal, Adjuster adjuster) {
+    public static FluentBigDecimal valueOf(String bigDecimal, Adjuster adjuster) {
         return valueOf(new BigDecimal(bigDecimal), adjuster);
     }
 
-    public static BigDecimalExt valueOf(long value, Adjuster adjuster) {
+    public static FluentBigDecimal valueOf(long value, Adjuster adjuster) {
         return valueOf(BigDecimal.valueOf(value), adjuster);
     }
 
-    public static BigDecimalExt valueOf(double value, Adjuster adjuster) {
+    public static FluentBigDecimal valueOf(double value, Adjuster adjuster) {
         return valueOf(BigDecimal.valueOf(value), adjuster);
     }
 
-    public static BigDecimalExt valueOf(BigInteger value, Adjuster adjuster) {
+    public static FluentBigDecimal valueOf(BigInteger value, Adjuster adjuster) {
         return valueOf(new BigDecimal(value), adjuster);
     }
 
-    public BigDecimalExt withValue(BigDecimal value) {
+    public FluentBigDecimal withValue(BigDecimal value) {
         return instantiator.apply(value, adjuster);
     }
 
-    public BigDecimalExt adjust() {
+    public FluentBigDecimal adjust() {
         return adjusted(getValue());
     }
 
-    private BigDecimalExt adjusted(BigDecimal value) {
+    private FluentBigDecimal adjusted(BigDecimal value) {
         var adjusted = adjuster.adjust(value);
 
         return withValue(adjusted);
@@ -79,7 +79,7 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
      * <p>
      * Related: {@link #adjustInto(Adjuster)}.
      */
-    public BigDecimalExt withAdjuster(Adjuster adjuster) {
+    public FluentBigDecimal withAdjuster(Adjuster adjuster) {
         return instantiator.apply(getValue(), adjuster);
     }
 
@@ -88,7 +88,7 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
      * <p>
      * Related: {@link #withAdjuster(Adjuster)}.
      */
-    public BigDecimalExt adjustInto(Adjuster adjuster) {
+    public FluentBigDecimal adjustInto(Adjuster adjuster) {
         var result = valueOf(getValue(), adjuster)
             .adjust();
 
@@ -99,11 +99,11 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
      * Compares {@link #getValue()} and delegates to {@link BigDecimal#compareTo(BigDecimal)}.
      */
     @Override
-    public int compareTo(BigDecimalExt o) {
+    public int compareTo(FluentBigDecimal o) {
         return getValue().compareTo(o.getValue());
     }
 
-    public BigDecimalExt apply(Function<BigDecimal, BigDecimal> function) {
+    public FluentBigDecimal apply(Function<BigDecimal, BigDecimal> function) {
         BigDecimal temp = function.apply(getValue());
         requireNonNull(temp);
 
@@ -113,7 +113,7 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
     }
 
 
-    public BigDecimalExt apply(ProjectionFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
+    public FluentBigDecimal apply(ProjectionFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
         if (argument == null) {
             return this;
         }
@@ -140,65 +140,65 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
         return String.format("BigDecimalExt[%s, %s]", value.toPlainString(), adjuster);
     }
 
-    public BigDecimalExt add(@Nullable BigDecimal addend) {
+    public FluentBigDecimal add(@Nullable BigDecimal addend) {
         var result = apply(BigDecimal::add, addend);
 
         return result;
     }
 
-    public BigDecimalExt add(@Nullable BigDecimalExt addend) {
+    public FluentBigDecimal add(@Nullable FluentBigDecimal addend) {
         return add(mapValue(addend));
     }
 
-    public BigDecimalExt subtract(@Nullable BigDecimal subtrahend) {
-        BigDecimalExt result = apply(BigDecimal::subtract, subtrahend);
+    public FluentBigDecimal subtract(@Nullable BigDecimal subtrahend) {
+        FluentBigDecimal result = apply(BigDecimal::subtract, subtrahend);
 
         return result;
     }
 
-    public BigDecimalExt subtract(@Nullable BigDecimalExt subtrahend) {
-        BigDecimalExt result = subtract(mapValue(subtrahend));
+    public FluentBigDecimal subtract(@Nullable FluentBigDecimal subtrahend) {
+        FluentBigDecimal result = subtract(mapValue(subtrahend));
 
         return result;
     }
 
-    public BigDecimalExt multiply(@Nullable BigDecimal multiplicand) {
-        BigDecimalExt result = apply(BigDecimal::multiply, multiplicand);
+    public FluentBigDecimal multiply(@Nullable BigDecimal multiplicand) {
+        FluentBigDecimal result = apply(BigDecimal::multiply, multiplicand);
 
         return result;
     }
 
-    public BigDecimalExt multiply(@Nullable BigDecimalExt multiplicand) {
-        BigDecimalExt result = multiply(mapValue(multiplicand));
+    public FluentBigDecimal multiply(@Nullable FluentBigDecimal multiplicand) {
+        FluentBigDecimal result = multiply(mapValue(multiplicand));
 
         return result;
     }
 
-    public BigDecimalExt divide(@Nullable BigDecimal divisor) {
-        BigDecimalExt result = apply(BigDecimal::divide, divisor);
+    public FluentBigDecimal divide(@Nullable BigDecimal divisor) {
+        FluentBigDecimal result = apply(BigDecimal::divide, divisor);
 
         return result;
     }
 
-    public BigDecimalExt divide(@Nullable BigDecimalExt divisor) {
-        BigDecimalExt result = divide(mapValue(divisor));
+    public FluentBigDecimal divide(@Nullable FluentBigDecimal divisor) {
+        FluentBigDecimal result = divide(mapValue(divisor));
 
         return result;
     }
 
-    public BigDecimalExt pctToFraction() {
-        BigDecimalExt result = divide(HUNDRED);
+    public FluentBigDecimal pctToFraction() {
+        FluentBigDecimal result = divide(HUNDRED);
 
         return result;
     }
 
-    public BigDecimalExt fractionToPct() {
-        BigDecimalExt result = multiply(HUNDRED);
+    public FluentBigDecimal fractionToPct() {
+        FluentBigDecimal result = multiply(HUNDRED);
 
         return result;
     }
 
-    private static @Nullable BigDecimal mapValue(@Nullable BigDecimalExt input) {
+    private static @Nullable BigDecimal mapValue(@Nullable FluentBigDecimal input) {
         if (input == null) {
             return null;
         }

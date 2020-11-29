@@ -15,7 +15,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.valueOf;
+import static com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal.valueOf;
 import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.*;
 // FIXME: create checker annotations for AssertJ
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings({"nullable", "argument.type.incompatible", "initialization.fields.uninitialized"})
-class BigDecimalExtTest {
+class FluentBigDecimalTest {
 
     private static class DummyAdjuster implements Adjuster {
         private static final long serialVersionUID = 7707531701229950642L;
@@ -66,7 +66,7 @@ class BigDecimalExtTest {
 
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
     private static final Adjuster FIXTURE_ADJUSTER = new FakeAdjuster();
-    private static final BigDecimalExt FIXTURE = new BigDecimalExt(FIXTURE_VALUE, FIXTURE_ADJUSTER);
+    private static final FluentBigDecimal FIXTURE = new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_ADJUSTER);
 
 
     @Nested
@@ -97,7 +97,7 @@ class BigDecimalExtTest {
         @Test
         void does_not_call_adjuster() {
             var adjusterSpy = spy(new DummyAdjuster());
-            new BigDecimalExt(FIXTURE_VALUE, adjusterSpy);
+            new FluentBigDecimal(FIXTURE_VALUE, adjusterSpy);
 
             verify(adjusterSpy, never())
                 .adjust(any());
@@ -115,7 +115,7 @@ class BigDecimalExtTest {
         void throws_for_null_value() {
             var ex = assertThrows(
                 NullPointerException.class,
-                () -> new BigDecimalExt(null, FIXTURE_ADJUSTER)
+                () -> new FluentBigDecimal(null, FIXTURE_ADJUSTER)
             );
 
             assertThat(ex)
@@ -126,7 +126,7 @@ class BigDecimalExtTest {
         void throws_for_null_adjuster() {
             var ex = assertThrows(
                 NullPointerException.class,
-                () -> new BigDecimalExt(BigDecimal.ONE, null)
+                () -> new FluentBigDecimal(BigDecimal.ONE, null)
             );
 
             assertThat(ex)
@@ -138,8 +138,8 @@ class BigDecimalExtTest {
     class HashCodeEquals {
         @Test
         void equals_for_equal_value_and_any_adjuster() {
-            BigDecimalExt a = valueOf("123", new FakeAdjuster());
-            BigDecimalExt b = valueOf("123", new FakeAdjuster());
+            FluentBigDecimal a = valueOf("123", new FakeAdjuster());
+            FluentBigDecimal b = valueOf("123", new FakeAdjuster());
 
             assertThat(a)
                 .isEqualTo(b);
@@ -150,8 +150,8 @@ class BigDecimalExtTest {
 
         @Test
         void differs_for_value_with_differing_precision() {
-            BigDecimalExt a = valueOf("123", new FakeAdjuster());
-            BigDecimalExt b = valueOf("123.0", new FakeAdjuster());
+            FluentBigDecimal a = valueOf("123", new FakeAdjuster());
+            FluentBigDecimal b = valueOf("123.0", new FakeAdjuster());
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -162,8 +162,8 @@ class BigDecimalExtTest {
 
         @Test
         void differs_for_different_values() {
-            BigDecimalExt a = valueOf("123", new FakeAdjuster());
-            BigDecimalExt b = valueOf("456", new FakeAdjuster());
+            FluentBigDecimal a = valueOf("123", new FakeAdjuster());
+            FluentBigDecimal b = valueOf("456", new FakeAdjuster());
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -190,12 +190,12 @@ class BigDecimalExtTest {
 
         @Test
         void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(BigDecimalExt::add);
+            keeps_same_adjuster_impl(FluentBigDecimal::add);
         }
 
         @Test
         void treats_null_as_neutral_value() {
-            adds_null_as_neutral_value_impl(BigDecimalExt::add);
+            adds_null_as_neutral_value_impl(FluentBigDecimal::add);
         }
 
         @ParameterizedTest
@@ -207,7 +207,7 @@ class BigDecimalExtTest {
 //            "123.45, 9999.99999, 10123.44999",
         })
         void adds_and_calls_adjuster(BigDecimal augend, BigDecimal addend, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(BigDecimalExt::add, augend, addend, expectedValue);
+            executes_and_calls_adjuster_impl(FluentBigDecimal::add, augend, addend, expectedValue);
         }
     }
 
@@ -216,12 +216,12 @@ class BigDecimalExtTest {
 
         @Test
         void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(BigDecimalExt::subtract);
+            keeps_same_adjuster_impl(FluentBigDecimal::subtract);
         }
 
         @Test
         void treats_null_as_neutral_value() {
-            adds_null_as_neutral_value_impl(BigDecimalExt::subtract);
+            adds_null_as_neutral_value_impl(FluentBigDecimal::subtract);
         }
 
         @ParameterizedTest
@@ -233,7 +233,7 @@ class BigDecimalExtTest {
             "10123.44999, 9999.99999, 123.45000",
         })
         void subtracts_and_calls_adjuster(BigDecimal minuend, BigDecimal subtrahend, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(BigDecimalExt::subtract, minuend, subtrahend, expectedValue);
+            executes_and_calls_adjuster_impl(FluentBigDecimal::subtract, minuend, subtrahend, expectedValue);
         }
     }
 
@@ -243,12 +243,12 @@ class BigDecimalExtTest {
 
         @Test
         void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(BigDecimalExt::multiply);
+            keeps_same_adjuster_impl(FluentBigDecimal::multiply);
         }
 
         @Test
         void treats_null_as_neutral_value() {
-            adds_null_as_neutral_value_impl(BigDecimalExt::multiply);
+            adds_null_as_neutral_value_impl(FluentBigDecimal::multiply);
         }
 
         @ParameterizedTest
@@ -260,7 +260,7 @@ class BigDecimalExtTest {
             "123.45, 9999.99999, 1234499.999",
         })
         void multiplys_and_calls_adjuster(BigDecimal multiplicand, BigDecimal multiplicator, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(BigDecimalExt::multiply, multiplicand, multiplicator, expectedValue);
+            executes_and_calls_adjuster_impl(FluentBigDecimal::multiply, multiplicand, multiplicator, expectedValue);
         }
     }
 
@@ -269,12 +269,12 @@ class BigDecimalExtTest {
 
         @Test
         void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(BigDecimalExt::divide);
+            keeps_same_adjuster_impl(FluentBigDecimal::divide);
         }
 
         @Test
         void treats_null_as_neutral_value() {
-            adds_null_as_neutral_value_impl(BigDecimalExt::divide);
+            adds_null_as_neutral_value_impl(FluentBigDecimal::divide);
         }
 
         @ParameterizedTest
@@ -287,7 +287,7 @@ class BigDecimalExtTest {
             // or else an ArithmethcException is thrown.
             // Example for invalid input: 1/3
         void divides_and_calls_adjuster(BigDecimal dividend, BigDecimal divisor, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(BigDecimalExt::divide, dividend, divisor, expectedValue);
+            executes_and_calls_adjuster_impl(FluentBigDecimal::divide, dividend, divisor, expectedValue);
         }
     }
 
@@ -296,7 +296,7 @@ class BigDecimalExtTest {
 
         @Test
         void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(BigDecimalExt::pctToFraction);
+            keeps_same_adjuster_impl(FluentBigDecimal::pctToFraction);
         }
 
         @ParameterizedTest
@@ -308,7 +308,7 @@ class BigDecimalExtTest {
             "0.001, 0.00001",
         })
         void calculates_and_calls_adjuster(BigDecimal multiplicand, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(BigDecimalExt::pctToFraction, multiplicand, expectedValue);
+            executes_and_calls_adjuster_impl(FluentBigDecimal::pctToFraction, multiplicand, expectedValue);
         }
     }
 
@@ -317,7 +317,7 @@ class BigDecimalExtTest {
 
         @Test
         void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(BigDecimalExt::fractionToPct);
+            keeps_same_adjuster_impl(FluentBigDecimal::fractionToPct);
         }
 
         @ParameterizedTest
@@ -329,7 +329,7 @@ class BigDecimalExtTest {
             "0.00001, 0.00100",
         })
         void calculates_and_calls_adjuster(BigDecimal multiplicand, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(BigDecimalExt::fractionToPct, multiplicand, expectedValue);
+            executes_and_calls_adjuster_impl(FluentBigDecimal::fractionToPct, multiplicand, expectedValue);
         }
     }
 
@@ -340,7 +340,7 @@ class BigDecimalExtTest {
         void creates_adjusted_value_using_other_adjuster() {
             String initialValue = "123.456";
             BigDecimal adjustedValue = new BigDecimal("42");
-            BigDecimalExt sut = valueOf(initialValue, FIXTURE_ADJUSTER);
+            FluentBigDecimal sut = valueOf(initialValue, FIXTURE_ADJUSTER);
             Adjuster otherAdjuster = new Adjuster() {
                 private static final long serialVersionUID = 5460135929536529147L;
 
@@ -355,7 +355,7 @@ class BigDecimalExtTest {
                 }
             };
 
-            BigDecimalExt result = sut
+            FluentBigDecimal result = sut
                 .adjustInto(otherAdjuster);
 
             assertThat(result.getAdjuster())
@@ -366,22 +366,22 @@ class BigDecimalExtTest {
     }
 
 
-    void keeps_same_adjuster_impl(BinaryOperator<BigDecimalExt> fnc) {
-        BigDecimalExt actual = fnc.apply(FIXTURE, FIXTURE);
+    void keeps_same_adjuster_impl(BinaryOperator<FluentBigDecimal> fnc) {
+        FluentBigDecimal actual = fnc.apply(FIXTURE, FIXTURE);
 
         assertThat(actual.getAdjuster())
             .isEqualTo(FIXTURE.getAdjuster());
     }
 
-    void keeps_same_adjuster_impl(UnaryOperator<BigDecimalExt> fnc) {
-        BigDecimalExt actual = fnc.apply(FIXTURE);
+    void keeps_same_adjuster_impl(UnaryOperator<FluentBigDecimal> fnc) {
+        FluentBigDecimal actual = fnc.apply(FIXTURE);
 
         assertThat(actual.getAdjuster())
             .isEqualTo(FIXTURE.getAdjuster());
     }
 
-    void adds_null_as_neutral_value_impl(BinaryOperator<BigDecimalExt> fnc) {
-        BigDecimalExt actual = fnc.apply(FIXTURE, null);
+    void adds_null_as_neutral_value_impl(BinaryOperator<FluentBigDecimal> fnc) {
+        FluentBigDecimal actual = fnc.apply(FIXTURE, null);
 
         assertThat(actual.getValue())
             .isEqualTo(FIXTURE.getValue());
@@ -389,24 +389,24 @@ class BigDecimalExtTest {
 
 
     void executes_and_calls_adjuster_impl(
-        BiFunction<BigDecimalExt, BigDecimalExt, BigDecimalExt> operation,
+        BiFunction<FluentBigDecimal, FluentBigDecimal, FluentBigDecimal> operation,
         BigDecimal start,
         BigDecimal other,
         BigDecimal expectedValue
     ) {
-        BigDecimalExt otherExt = BigDecimalExt.valueOf(other, new DummyAdjuster());
-        Function<BigDecimalExt, BigDecimalExt> curried = curryReverse(operation, otherExt);
+        FluentBigDecimal otherExt = FluentBigDecimal.valueOf(other, new DummyAdjuster());
+        Function<FluentBigDecimal, FluentBigDecimal> curried = curryReverse(operation, otherExt);
 
         executes_and_calls_adjuster_impl(curried, start, expectedValue);
     }
 
     void executes_and_calls_adjuster_impl(
-        Function<BigDecimalExt, BigDecimalExt> operation,
+        Function<FluentBigDecimal, FluentBigDecimal> operation,
         BigDecimal start,
         BigDecimal expectedValue
     ) {
         var adjuster = spy(new FakeAdjuster());
-        BigDecimalExt sut = BigDecimalExt.valueOf(start, adjuster);
+        FluentBigDecimal sut = FluentBigDecimal.valueOf(start, adjuster);
 
         var actual = operation.apply(sut);
 
