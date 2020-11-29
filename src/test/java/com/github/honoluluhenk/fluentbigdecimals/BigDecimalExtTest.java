@@ -14,7 +14,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static com.github.honoluluhenk.fluentbigdecimals.AdjusterAssert.assertThat;
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.valueOf;
 import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
 import static org.assertj.core.api.Assertions.assertThat;

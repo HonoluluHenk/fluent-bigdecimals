@@ -118,17 +118,6 @@ class FloatingPointAdjusterTest {
 
     }
 
-//    @Nested
-//    class FromWithDefault {
-//        @Test
-//        void sets_HALF_UP() {
-//            FloatingPointAdjuster actual = FloatingPointAdjuster.from(12, 3, HALF_UP);
-//
-//            assertThat(actual.getRoundingMode())
-//                .isEqualTo(HALF_UP);
-//        }
-//    }
-
     @Test
     void copy_factory_produces_same_properties() {
         FloatingPointAdjuster ctx = from(5, 2, DOWN);
