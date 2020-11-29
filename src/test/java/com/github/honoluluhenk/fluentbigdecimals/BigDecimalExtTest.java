@@ -1,5 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import com.github.honoluluhenk.fluentbigdecimals.adjuster.Adjuster;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,8 +14,8 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import static com.github.honoluluhenk.fluentbigdecimals.AdjusterAssert.assertThat;
 import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExt.valueOf;
-import static com.github.honoluluhenk.fluentbigdecimals.BigDecimalExtAssert.assertThat;
 import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -313,15 +314,15 @@ class BigDecimalExtTest {
     void keeps_same_adjuster_impl(BinaryOperator<BigDecimalExt> fnc) {
         BigDecimalExt actual = fnc.apply(FIXTURE, FIXTURE);
 
-        assertThat(actual)
-            .hasSameAdjusterAs(FIXTURE);
+        assertThat(actual.getAdjuster())
+            .isEqualTo(FIXTURE.getAdjuster());
     }
 
     void keeps_same_adjuster_impl(UnaryOperator<BigDecimalExt> fnc) {
         BigDecimalExt actual = fnc.apply(FIXTURE);
 
-        assertThat(actual)
-            .hasSameAdjusterAs(FIXTURE);
+        assertThat(actual.getAdjuster())
+            .isEqualTo(FIXTURE.getAdjuster());
     }
 
     void adds_null_as_neutral_value_impl(BinaryOperator<BigDecimalExt> fnc) {

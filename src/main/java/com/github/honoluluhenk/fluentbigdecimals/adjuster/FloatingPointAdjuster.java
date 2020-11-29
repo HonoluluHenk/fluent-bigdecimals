@@ -1,4 +1,4 @@
-package com.github.honoluluhenk.fluentbigdecimals;
+package com.github.honoluluhenk.fluentbigdecimals.adjuster;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -65,14 +65,6 @@ public class FloatingPointAdjuster implements Adjuster {
 
         boolean isScaleOk = value.scale() <= getMaxScale();
         return !isScaleOk;
-    }
-
-    public BigDecimalExt withValue(BigDecimal value) {
-        return new BigDecimalExt(value, this);
-    }
-
-    public BigDecimalExt withValue(String bigDecimal) {
-        return new BigDecimalExt(new BigDecimal(bigDecimal), this);
     }
 
     public static FloatingPointAdjuster from(int precision, int maxScale, RoundingMode roundingMode) {

@@ -1,4 +1,4 @@
-package com.github.honoluluhenk.fluentbigdecimals;
+package com.github.honoluluhenk.fluentbigdecimals.adjuster;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

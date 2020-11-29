@@ -6,17 +6,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Objects;
 
 @SuppressWarnings({"nullable", "argument.type.incompatible", "UnusedReturnValue"})
-public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nullable BigDecimalExt> {
-    public BigDecimalExtAssert(@Nullable BigDecimalExt actual) {
+public class AdjusterAssert extends AbstractAssert<AdjusterAssert, @Nullable BigDecimalExt> {
+    public AdjusterAssert(@Nullable BigDecimalExt actual) {
 
-        super(actual, BigDecimalExtAssert.class);
+        super(actual, AdjusterAssert.class);
     }
 
-    public static BigDecimalExtAssert assertThat(BigDecimalExt actual) {
-        return new BigDecimalExtAssert(actual);
+    public static AdjusterAssert assertThat(BigDecimalExt actual) {
+        return new AdjusterAssert(actual);
     }
 
-    public BigDecimalExtAssert hasPrecision(int precision) {
+    public AdjusterAssert hasPrecision(int precision) {
         isNotNull();
         Objects.requireNonNull(actual);
 
@@ -28,7 +28,7 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return this;
     }
 
-    public BigDecimalExtAssert hasScale(int scale) {
+    public AdjusterAssert hasScale(int scale) {
         isNotNull();
         Objects.requireNonNull(actual);
 
@@ -39,7 +39,7 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return this;
     }
 
-    public BigDecimalExtAssert hasValue(String textRepresentation) {
+    public AdjusterAssert hasValue(String textRepresentation) {
         isNotNull();
         Objects.requireNonNull(actual);
 
@@ -50,25 +50,25 @@ public class BigDecimalExtAssert extends AbstractAssert<BigDecimalExtAssert, @Nu
         return this;
     }
 
-    public BigDecimalExtAssert hasSameAdjuster(Adjuster adjuster) {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        if (actual.getAdjuster() != adjuster) {
-            failWithActualExpectedAndMessage(actual.getAdjuster(), adjuster, "Adjuster not the same:");
-        }
-
-        return this;
-    }
-
-    public BigDecimalExtAssert hasSameAdjusterAs(BigDecimalExt other) {
-        isNotNull();
-        Objects.requireNonNull(actual);
-
-        hasSameAdjuster(other.getAdjuster());
-
-        return this;
-    }
+//    public BigDecimalExtAssert hasSameAdjuster(Adjuster adjuster) {
+//        isNotNull();
+//        Objects.requireNonNull(actual);
+//
+//        if (actual.getAdjuster() != adjuster) {
+//            failWithActualExpectedAndMessage(actual.getAdjuster(), adjuster, "Adjuster not the same:");
+//        }
+//
+//        return this;
+//    }
+//
+//    public BigDecimalExtAssert hasSameAdjusterAs(BigDecimalExt other) {
+//        isNotNull();
+//        Objects.requireNonNull(actual);
+//
+//        hasSameAdjuster(other.getAdjuster());
+//
+//        return this;
+//    }
 
 //    public BigDecimalExtAssert hasValueMatchingAdjuster() {
 //        isNotNull();

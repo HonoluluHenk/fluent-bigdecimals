@@ -1,5 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import com.github.honoluluhenk.fluentbigdecimals.adjuster.FloatingPointAdjuster;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
-import static com.github.honoluluhenk.fluentbigdecimals.FloatingPointAdjuster.from;
+import static com.github.honoluluhenk.fluentbigdecimals.adjuster.FloatingPointAdjuster.from;
 import static java.math.RoundingMode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -200,19 +201,6 @@ class FloatingPointAdjusterTest {
         void creates_new_instance() {
             assertThat(actual)
                 .isNotSameAs(ctx);
-        }
-    }
-
-    @Nested
-    class WithValue {
-        @Test
-        void passes_Context_to_Ext_instance() {
-            FloatingPointAdjuster ctx = from(10, 7, HALF_UP);
-
-            BigDecimalExt actual = ctx.withValue(BigDecimal.ONE);
-
-            assertThat(actual.getAdjuster())
-                .isSameAs(ctx);
         }
     }
 

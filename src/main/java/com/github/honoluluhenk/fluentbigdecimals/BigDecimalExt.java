@@ -1,5 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import com.github.honoluluhenk.fluentbigdecimals.adjuster.Adjuster;
 import lombok.EqualsAndHashCode;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

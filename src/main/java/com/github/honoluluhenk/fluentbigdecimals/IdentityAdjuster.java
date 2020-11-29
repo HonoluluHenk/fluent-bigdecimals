@@ -1,5 +1,7 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import com.github.honoluluhenk.fluentbigdecimals.adjuster.Adjuster;
+
 import java.math.BigDecimal;
 
 /**
