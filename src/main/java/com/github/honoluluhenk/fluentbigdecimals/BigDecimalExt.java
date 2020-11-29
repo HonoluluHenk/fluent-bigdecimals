@@ -75,6 +75,13 @@ public class BigDecimalExt implements Serializable, Comparable<BigDecimalExt> {
         return withValue(adjusted);
     }
 
+    public BigDecimalExt adjustInto(Adjuster adjuster) {
+        var result = valueOf(getValue(), adjuster)
+            .adjust();
+
+        return result;
+    }
+
     /**
      * Compares {@link #getValue()} and delegates to {@link BigDecimal#compareTo(BigDecimal)}.
      */

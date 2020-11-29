@@ -309,6 +309,26 @@ class BigDecimalExtTest {
         }
     }
 
+    @Nested
+    class AdjustInto {
+
+        @Test
+        void creates_adjusted_value_using_other_adjuster() {
+            String initialValue = "123.456";
+            BigDecimal adjustedValue = new BigDecimal("42");
+            BigDecimalExt sut = valueOf(initialValue, FIXTURE_ADJUSTER);
+            Adjuster otherAdjuster = (ignored) -> adjustedValue;
+
+            BigDecimalExt result = sut
+                .adjustInto(otherAdjuster);
+
+            assertThat(result.getAdjuster())
+                .isEqualTo(otherAdjuster);
+            assertThat(result.getValue())
+                .isEqualTo(adjustedValue);
+        }
+    }
+
 
     void keeps_same_adjuster_impl(BinaryOperator<BigDecimalExt> fnc) {
         BigDecimalExt actual = fnc.apply(FIXTURE, FIXTURE);
