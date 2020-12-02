@@ -1,10 +1,7 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.FixedPointScaler;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -16,9 +13,9 @@ import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
+@IndicativeSentencesGeneration(generator = DisplayNameGenerator.ReplaceUnderscores.class)
 // we want to test runtime null-checks:
-@SuppressWarnings("argument.type.incompatible")
 class FixedPointScalerTest {
 
     @Nested
@@ -38,7 +35,6 @@ class FixedPointScalerTest {
         FixedPointScaler actual = from(scaler);
         assertValues(actual, 2);
     }
-
 
     @Nested
     class WithMaxScale {
@@ -131,7 +127,6 @@ class FixedPointScalerTest {
             "0.99999, 1.00",
             "99999E-3, 100.00",
         })
-            // FIXME: really necessary?
         void reduces_scale_if_needed_using_rounding(BigDecimal input, BigDecimal expected) {
             FixedPointScaler adjuster = from(2);
             MathContext mathContext = new MathContext(5, HALF_UP);

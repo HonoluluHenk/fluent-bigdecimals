@@ -3,10 +3,8 @@ package com.github.honoluluhenk.fluentbigdecimals;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.IdentityScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -26,7 +24,6 @@ import static org.mockito.Mockito.*;
 @DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
 @IndicativeSentencesGeneration(generator = DisplayNameGenerator.ReplaceUnderscores.class)
 // FIXME: create checker annotations for AssertJ
-@ExtendWith(MockitoExtension.class)
 @SuppressWarnings({"nullable", "argument.type.incompatible", "initialization.fields.uninitialized"})
 class FluentBigDecimalTest {
 
