@@ -1,6 +1,7 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import com.github.honoluluhenk.fluentbigdecimals.adjuster.Adjuster;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.IdentityScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -17,6 +17,7 @@ import java.util.function.UnaryOperator;
 
 import static com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal.valueOf;
 import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
+import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,45 +30,19 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings({"nullable", "argument.type.incompatible", "initialization.fields.uninitialized"})
 class FluentBigDecimalTest {
 
-    private static class DummyAdjuster implements Adjuster {
+    private static class DummyScaler implements Scaler {
         private static final long serialVersionUID = 7707531701229950642L;
 
         @Override
-        public BigDecimal adjust(BigDecimal value) {
+        public BigDecimal scale(BigDecimal value, MathContext mathContext) {
             throw new IllegalStateException("Should not be needed!");
-        }
-
-        @Override
-        public MathContext getMathContext() {
-            throw new IllegalStateException("Not Needed");
-        }
-    }
-
-    private static class FakeAdjuster implements Adjuster {
-        private static final long serialVersionUID = 7707531701229950642L;
-        // FIXME: implement some test that actually probe the limit (e.g. by division)
-        public static final MathContext MATH_CONTEXT = new MathContext(10, RoundingMode.HALF_UP);
-
-        @Override
-        public BigDecimal adjust(BigDecimal value) {
-            return value.round(MATH_CONTEXT);
-        }
-
-        @Override
-        public MathContext getMathContext() {
-            return MATH_CONTEXT;
-        }
-
-        @Override
-        public String toString() {
-            return "FakeAdjuster";
         }
     }
 
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
-    private static final Adjuster FIXTURE_ADJUSTER = new FakeAdjuster();
-    private static final FluentBigDecimal FIXTURE = new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_ADJUSTER);
-
+    private static final Scaler FIXTURE_SCALER = new IdentityScaler();
+    private static final MathContext FIXTURE_MATH_CONTEXT = new MathContext(5, HALF_UP);
+    private static final FluentBigDecimal FIXTURE = new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
 
     @Nested
     class TestSetup {
@@ -95,27 +70,27 @@ class FluentBigDecimalTest {
     class Constructor {
 
         @Test
-        void does_not_call_adjuster() {
-            var adjusterSpy = spy(new DummyAdjuster());
-            new FluentBigDecimal(FIXTURE_VALUE, adjusterSpy);
+        void does_not_call_scaler() {
+            var scalerSpy = spy(new DummyScaler());
+            new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_MATH_CONTEXT, scalerSpy);
 
-            verify(adjusterSpy, never())
-                .adjust(any());
+            verify(scalerSpy, never())
+                .scale(any(BigDecimal.class), any(MathContext.class));
         }
 
         @Test
         void sets_fields() {
             assertThat(FIXTURE.getValue())
                 .isSameAs(FIXTURE_VALUE);
-            assertThat(FIXTURE.getAdjuster())
-                .isSameAs(FIXTURE_ADJUSTER);
+            assertThat(FIXTURE.getScaler())
+                .isSameAs(FIXTURE_SCALER);
         }
 
         @Test
         void throws_for_null_value() {
             var ex = assertThrows(
                 NullPointerException.class,
-                () -> new FluentBigDecimal(null, FIXTURE_ADJUSTER)
+                () -> new FluentBigDecimal(null, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER)
             );
 
             assertThat(ex)
@@ -123,23 +98,23 @@ class FluentBigDecimalTest {
         }
 
         @Test
-        void throws_for_null_adjuster() {
+        void throws_for_null_scaler() {
             var ex = assertThrows(
                 NullPointerException.class,
-                () -> new FluentBigDecimal(BigDecimal.ONE, null)
+                () -> new FluentBigDecimal(BigDecimal.ONE, FIXTURE_MATH_CONTEXT, null)
             );
 
             assertThat(ex)
-                .hasMessageContaining("adjuster");
+                .hasMessageContaining("scaler");
         }
     }
 
     @Nested
     class HashCodeEquals {
         @Test
-        void equals_for_equal_value_and_any_adjuster() {
-            FluentBigDecimal a = valueOf("123", new FakeAdjuster());
-            FluentBigDecimal b = valueOf("123", new FakeAdjuster());
+        void equals_for_equal_value_and_any_scaler() {
+            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, new IdentityScaler());
+            FluentBigDecimal b = valueOf("123", FIXTURE_MATH_CONTEXT, new IdentityScaler());
 
             assertThat(a)
                 .isEqualTo(b);
@@ -150,8 +125,8 @@ class FluentBigDecimalTest {
 
         @Test
         void differs_for_value_with_differing_precision() {
-            FluentBigDecimal a = valueOf("123", new FakeAdjuster());
-            FluentBigDecimal b = valueOf("123.0", new FakeAdjuster());
+            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, new IdentityScaler());
+            FluentBigDecimal b = valueOf("123.0", FIXTURE_MATH_CONTEXT, new IdentityScaler());
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -162,8 +137,8 @@ class FluentBigDecimalTest {
 
         @Test
         void differs_for_different_values() {
-            FluentBigDecimal a = valueOf("123", new FakeAdjuster());
-            FluentBigDecimal b = valueOf("456", new FakeAdjuster());
+            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, new IdentityScaler());
+            FluentBigDecimal b = valueOf("456", FIXTURE_MATH_CONTEXT, new IdentityScaler());
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -181,7 +156,7 @@ class FluentBigDecimalTest {
             String actual = FIXTURE.toString();
 
             assertThat(actual)
-                .isEqualTo("BigDecimalExt[123.45, FakeAdjuster]");
+                .isEqualTo("BigDecimalExt[123.45, IdentityScaler]");
         }
     }
 
@@ -189,8 +164,8 @@ class FluentBigDecimalTest {
     class Add {
 
         @Test
-        void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(FluentBigDecimal::add);
+        void keeps_same_scaler() {
+            keeps_same_scaler_impl(FluentBigDecimal::add);
         }
 
         @Test
@@ -206,8 +181,8 @@ class FluentBigDecimalTest {
 //            "123.45, 9999.99, 10123.44",
 //            "123.45, 9999.99999, 10123.44999",
         })
-        void adds_and_calls_adjuster(BigDecimal augend, BigDecimal addend, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(FluentBigDecimal::add, augend, addend, expectedValue);
+        void adds_and_calls_scaler(BigDecimal augend, BigDecimal addend, BigDecimal expectedValue) {
+            executes_and_calls_scaler_impl(FluentBigDecimal::add, augend, addend, expectedValue);
         }
     }
 
@@ -215,8 +190,8 @@ class FluentBigDecimalTest {
     class Subtract {
 
         @Test
-        void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(FluentBigDecimal::subtract);
+        void keeps_same_scaler() {
+            keeps_same_scaler_impl(FluentBigDecimal::subtract);
         }
 
         @Test
@@ -230,10 +205,10 @@ class FluentBigDecimalTest {
             "0, 1, -1",
             "0, -1, 1",
             "10123.44, 9999.99, 123.45",
-            "10123.44999, 9999.99999, 123.45000",
+            "10123.44999, 9999.99999, 123.45",
         })
-        void subtracts_and_calls_adjuster(BigDecimal minuend, BigDecimal subtrahend, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(FluentBigDecimal::subtract, minuend, subtrahend, expectedValue);
+        void subtracts_and_calls_scaler(BigDecimal minuend, BigDecimal subtrahend, BigDecimal expectedValue) {
+            executes_and_calls_scaler_impl(FluentBigDecimal::subtract, minuend, subtrahend, expectedValue);
         }
     }
 
@@ -242,8 +217,8 @@ class FluentBigDecimalTest {
     class Multiply {
 
         @Test
-        void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(FluentBigDecimal::multiply);
+        void keeps_same_scaler() {
+            keeps_same_scaler_impl(FluentBigDecimal::multiply);
         }
 
         @Test
@@ -256,11 +231,11 @@ class FluentBigDecimalTest {
             "0, 0, 0",
             "0, 1, 0",
             "0, -1, 0",
-            "123.45, 9999.99, 1234498.766",
-            "123.45, 9999.99999, 1234499.999",
+            "123.45, 9999.99, 1.2345E+6", // remember: precision = 5
+            "123.45, 9999.99999, 1.2345E+6", // remember: precision = 5
         })
-        void multiplys_and_calls_adjuster(BigDecimal multiplicand, BigDecimal multiplicator, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(FluentBigDecimal::multiply, multiplicand, multiplicator, expectedValue);
+        void multiplys_and_calls_scaler(BigDecimal multiplicand, BigDecimal multiplicator, BigDecimal expectedValue) {
+            executes_and_calls_scaler_impl(FluentBigDecimal::multiply, multiplicand, multiplicator, expectedValue);
         }
     }
 
@@ -268,8 +243,8 @@ class FluentBigDecimalTest {
     class Divide {
 
         @Test
-        void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(FluentBigDecimal::divide);
+        void keeps_same_scaler() {
+            keeps_same_scaler_impl(FluentBigDecimal::divide);
         }
 
         @Test
@@ -283,11 +258,11 @@ class FluentBigDecimalTest {
             "0, -1, 0",
             "1, 2, 0.5",
         })
-            // please note: using the IdentityAdjuster requires input parameters that to a terminating division
+            // please note: using the IdentityScaler requires input parameters that to a terminating division
             // or else an ArithmethcException is thrown.
             // Example for invalid input: 1/3
-        void divides_and_calls_adjuster(BigDecimal dividend, BigDecimal divisor, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(FluentBigDecimal::divide, dividend, divisor, expectedValue);
+        void divides_and_calls_scaler(BigDecimal dividend, BigDecimal divisor, BigDecimal expectedValue) {
+            executes_and_calls_scaler_impl(FluentBigDecimal::divide, dividend, divisor, expectedValue);
         }
     }
 
@@ -295,8 +270,8 @@ class FluentBigDecimalTest {
     class PctToFraction {
 
         @Test
-        void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(FluentBigDecimal::pctToFraction);
+        void keeps_same_scaler() {
+            keeps_same_scaler_impl(FluentBigDecimal::pctToFraction);
         }
 
         @ParameterizedTest
@@ -307,8 +282,8 @@ class FluentBigDecimalTest {
             "1, 0.01",
             "0.001, 0.00001",
         })
-        void calculates_and_calls_adjuster(BigDecimal multiplicand, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(FluentBigDecimal::pctToFraction, multiplicand, expectedValue);
+        void calculates_and_calls_scaler(BigDecimal multiplicand, BigDecimal expectedValue) {
+            executes_and_calls_scaler_impl(FluentBigDecimal::pctToFraction, multiplicand, expectedValue);
         }
     }
 
@@ -316,8 +291,8 @@ class FluentBigDecimalTest {
     class FractionToPct {
 
         @Test
-        void keeps_same_adjuster() {
-            keeps_same_adjuster_impl(FluentBigDecimal::fractionToPct);
+        void keeps_same_scaler() {
+            keeps_same_scaler_impl(FluentBigDecimal::fractionToPct);
         }
 
         @ParameterizedTest
@@ -328,8 +303,8 @@ class FluentBigDecimalTest {
             "0.01, 1.00",
             "0.00001, 0.00100",
         })
-        void calculates_and_calls_adjuster(BigDecimal multiplicand, BigDecimal expectedValue) {
-            executes_and_calls_adjuster_impl(FluentBigDecimal::fractionToPct, multiplicand, expectedValue);
+        void calculates_and_calls_scaler(BigDecimal multiplicand, BigDecimal expectedValue) {
+            executes_and_calls_scaler_impl(FluentBigDecimal::fractionToPct, multiplicand, expectedValue);
         }
     }
 
@@ -337,47 +312,42 @@ class FluentBigDecimalTest {
     class AdjustInto {
 
         @Test
-        void creates_adjusted_value_using_other_adjuster() {
+        void creates_adjusted_value_using_other_scaler() {
             String initialValue = "123.456";
             BigDecimal adjustedValue = new BigDecimal("42");
-            FluentBigDecimal sut = valueOf(initialValue, FIXTURE_ADJUSTER);
-            Adjuster otherAdjuster = new Adjuster() {
+            FluentBigDecimal sut = valueOf(initialValue, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+            Scaler otherScaler = new Scaler() {
                 private static final long serialVersionUID = 5460135929536529147L;
 
                 @Override
-                public BigDecimal adjust(BigDecimal value) {
+                public BigDecimal scale(BigDecimal value, MathContext mathContext) {
                     return adjustedValue;
-                }
-
-                @Override
-                public MathContext getMathContext() {
-                    throw new IllegalStateException("not needed");
                 }
             };
 
             FluentBigDecimal result = sut
-                .adjustInto(otherAdjuster);
+                .adjustInto(otherScaler);
 
-            assertThat(result.getAdjuster())
-                .isEqualTo(otherAdjuster);
+            assertThat(result.getScaler())
+                .isEqualTo(otherScaler);
             assertThat(result.getValue())
                 .isEqualTo(adjustedValue);
         }
     }
 
 
-    void keeps_same_adjuster_impl(BinaryOperator<FluentBigDecimal> fnc) {
+    void keeps_same_scaler_impl(BinaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE, FIXTURE);
 
-        assertThat(actual.getAdjuster())
-            .isEqualTo(FIXTURE.getAdjuster());
+        assertThat(actual.getScaler())
+            .isEqualTo(FIXTURE.getScaler());
     }
 
-    void keeps_same_adjuster_impl(UnaryOperator<FluentBigDecimal> fnc) {
+    void keeps_same_scaler_impl(UnaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE);
 
-        assertThat(actual.getAdjuster())
-            .isEqualTo(FIXTURE.getAdjuster());
+        assertThat(actual.getScaler())
+            .isEqualTo(FIXTURE.getScaler());
     }
 
     void adds_null_as_neutral_value_impl(BinaryOperator<FluentBigDecimal> fnc) {
@@ -388,35 +358,32 @@ class FluentBigDecimalTest {
     }
 
 
-    void executes_and_calls_adjuster_impl(
+    void executes_and_calls_scaler_impl(
         BiFunction<FluentBigDecimal, FluentBigDecimal, FluentBigDecimal> operation,
         BigDecimal start,
         BigDecimal other,
         BigDecimal expectedValue
     ) {
-        FluentBigDecimal otherExt = FluentBigDecimal.valueOf(other, new DummyAdjuster());
+        FluentBigDecimal otherExt = valueOf(other, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
         Function<FluentBigDecimal, FluentBigDecimal> curried = curryReverse(operation, otherExt);
 
-        executes_and_calls_adjuster_impl(curried, start, expectedValue);
+        executes_and_calls_scaler_impl(curried, start, expectedValue);
     }
 
-    void executes_and_calls_adjuster_impl(
+    void executes_and_calls_scaler_impl(
         Function<FluentBigDecimal, FluentBigDecimal> operation,
         BigDecimal start,
         BigDecimal expectedValue
     ) {
-        var adjuster = spy(new FakeAdjuster());
-        FluentBigDecimal sut = FluentBigDecimal.valueOf(start, adjuster);
+        var scaler = spy(new IdentityScaler());
+        FluentBigDecimal sut = valueOf(start, FIXTURE_MATH_CONTEXT, scaler);
 
         var actual = operation.apply(sut);
 
         assertThat(actual.getValue())
             .isEqualTo(expectedValue);
-        verify(adjuster)
-            .adjust(expectedValue);
-        //noinspection ResultOfMethodCallIgnored
-        verify(adjuster)
-            .getMathContext();
+        verify(scaler)
+            .scale(expectedValue, FIXTURE_MATH_CONTEXT);
     }
 
 }

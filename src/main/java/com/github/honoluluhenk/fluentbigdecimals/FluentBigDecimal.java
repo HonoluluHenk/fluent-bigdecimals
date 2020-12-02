@@ -1,13 +1,15 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import com.github.honoluluhenk.fluentbigdecimals.adjuster.Adjuster;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.With;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.function.BiFunction;
+import java.math.MathContext;
 import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
@@ -15,6 +17,8 @@ import static java.util.Objects.requireNonNull;
 /**
  * Regarding equals/hashcode/compareTo: see {@link BigDecimal};
  */
+@Getter
+@With
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecimal> {
     private static final long serialVersionUID = 1646116594300550112L;
@@ -23,73 +27,59 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
 
     @EqualsAndHashCode.Include
     private final BigDecimal value;
-    private final Adjuster adjuster;
-    private final BiFunction<BigDecimal, Adjuster, ? extends FluentBigDecimal> instantiator;
-
-    FluentBigDecimal(BigDecimal value, Adjuster adjuster) {
-        this(value, adjuster, FluentBigDecimal::new);
-    }
+    private final MathContext mathContext;
+    private final Scaler scaler;
 
     protected FluentBigDecimal(
         BigDecimal value,
-        Adjuster adjuster,
-        BiFunction<BigDecimal, Adjuster, ? extends FluentBigDecimal> instantiator
+        MathContext mathContext,
+        Scaler scaler
     ) {
-        this.adjuster = requireNonNull(adjuster, "adjuster required");
         this.value = requireNonNull(value, "value required");
-        this.instantiator = instantiator;
+        this.mathContext = requireNonNull(mathContext, "mathContext required"); // FIXME: test rnn
+        this.scaler = requireNonNull(scaler, "scaler required");
     }
 
-    public static FluentBigDecimal valueOf(BigDecimal value, Adjuster adjuster) {
-        return new FluentBigDecimal(value, adjuster);
+    public static FluentBigDecimal valueOf(BigDecimal value, MathContext mathContext, Scaler scaler) {
+        return new FluentBigDecimal(value, mathContext, scaler);
     }
 
-    public static FluentBigDecimal valueOf(String bigDecimal, Adjuster adjuster) {
-        return valueOf(new BigDecimal(bigDecimal), adjuster);
+    public static FluentBigDecimal valueOf(String bigDecimal, MathContext mathContext, Scaler scaler) {
+        return valueOf(new BigDecimal(bigDecimal), mathContext, scaler);
     }
 
-    public static FluentBigDecimal valueOf(long value, Adjuster adjuster) {
-        return valueOf(BigDecimal.valueOf(value), adjuster);
+    public static FluentBigDecimal valueOf(long value, MathContext mathContext, Scaler scaler) {
+        return valueOf(BigDecimal.valueOf(value), mathContext, scaler);
     }
 
-    public static FluentBigDecimal valueOf(double value, Adjuster adjuster) {
-        return valueOf(BigDecimal.valueOf(value), adjuster);
+    public static FluentBigDecimal valueOf(double value, MathContext mathContext, Scaler scaler) {
+        return valueOf(BigDecimal.valueOf(value), mathContext, scaler);
     }
 
-    public static FluentBigDecimal valueOf(BigInteger value, Adjuster adjuster) {
-        return valueOf(new BigDecimal(value), adjuster);
-    }
-
-    public FluentBigDecimal withValue(BigDecimal value) {
-        return instantiator.apply(value, adjuster);
+    public static FluentBigDecimal valueOf(BigInteger value, MathContext mathContext, Scaler scaler) {
+        return valueOf(new BigDecimal(value), mathContext, scaler);
     }
 
     public FluentBigDecimal adjust() {
-        return adjusted(getValue());
+        FluentBigDecimal result = adjusted(getValue());
+
+        return result;
     }
 
     private FluentBigDecimal adjusted(BigDecimal value) {
-        var adjusted = adjuster.adjust(value);
+        var adjusted = scaler.scale(value, getMathContext());
+        FluentBigDecimal result = withValue(adjusted);
 
-        return withValue(adjusted);
+        return result;
     }
 
     /**
-     * Switch adjuster while keeeping the value unchanged.
+     * Switch to new scaler and adjust value accordingly.
      * <p>
-     * Related: {@link #adjustInto(Adjuster)}.
+     * Related: {@link #withScaler(Scaler)}.
      */
-    public FluentBigDecimal withAdjuster(Adjuster adjuster) {
-        return instantiator.apply(getValue(), adjuster);
-    }
-
-    /**
-     * Switch to new adjuster and adjust value accordingly.
-     * <p>
-     * Related: {@link #withAdjuster(Adjuster)}.
-     */
-    public FluentBigDecimal adjustInto(Adjuster adjuster) {
-        var result = valueOf(getValue(), adjuster)
+    public FluentBigDecimal adjustInto(Scaler scaler) {
+        var result = withScaler(scaler)
             .adjust();
 
         return result;
@@ -100,7 +90,9 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
      */
     @Override
     public int compareTo(FluentBigDecimal o) {
-        return getValue().compareTo(o.getValue());
+        int result = getValue().compareTo(o.getValue());
+
+        return result;
     }
 
     public FluentBigDecimal apply(Function<BigDecimal, BigDecimal> function) {
@@ -118,7 +110,7 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
             return this;
         }
 
-        BigDecimal temp = function.apply(getValue(), argument, adjuster.getMathContext());
+        BigDecimal temp = function.apply(getValue(), argument, getMathContext());
         requireNonNull(temp);
 
         var result = adjusted(temp);
@@ -127,17 +119,11 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         return result;
     }
 
-    public BigDecimal getValue() {
-        return value;
-    }
-
-    public Adjuster getAdjuster() {
-        return adjuster;
-    }
-
     @Override
     public String toString() {
-        return String.format("BigDecimalExt[%s, %s]", value.toPlainString(), adjuster);
+        String result = String.format("BigDecimalExt[%s, %s]", value.toPlainString(), scaler);
+
+        return result;
     }
 
     public FluentBigDecimal add(@Nullable BigDecimal addend) {
@@ -147,7 +133,9 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
     }
 
     public FluentBigDecimal add(@Nullable FluentBigDecimal addend) {
-        return add(mapValue(addend));
+        FluentBigDecimal result = add(mapValue(addend));
+
+        return result;
     }
 
     public FluentBigDecimal subtract(@Nullable BigDecimal subtrahend) {
@@ -202,8 +190,9 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         if (input == null) {
             return null;
         }
+        BigDecimal result = input.getValue();
 
-        return input.getValue();
+        return result;
     }
 
 }
