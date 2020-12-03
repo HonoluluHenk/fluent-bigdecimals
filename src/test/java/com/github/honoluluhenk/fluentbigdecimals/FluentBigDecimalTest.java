@@ -14,6 +14,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import static java.math.RoundingMode.DOWN;
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,7 +54,7 @@ class FluentBigDecimalTest {
 
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
     private static final MathContext FIXTURE_MATH_CONTEXT = new MathContext(5, HALF_UP);
-    private static final Scaler FIXTURE_SCALER = new MaxPrecisionScaler(FIXTURE_MATH_CONTEXT);
+    private static final Scaler FIXTURE_SCALER = new MaxPrecisionScaler();
     private static final FluentBigDecimal FIXTURE = new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
 
     @Nested
@@ -158,6 +159,27 @@ class FluentBigDecimalTest {
             assertThat(a.hashCode())
                 .isNotEqualTo(b.hashCode());
         }
+
+    }
+
+    @Nested
+    class CompareTo {
+        @Test
+        void compares_only_using_value() {
+
+            FluentBigDecimal sut = new FluentBigDecimal(
+                new BigDecimal("123.45"),
+                new MathContext(5, HALF_UP),
+                (a, mc) -> a);
+            FluentBigDecimal other = new FluentBigDecimal(
+                new BigDecimal("123.45"),
+                new MathContext(12, DOWN),
+                new DummyScaler());
+
+            assertThat(sut)
+                .isEqualByComparingTo(other);
+        }
+
 
     }
 
@@ -338,6 +360,19 @@ class FluentBigDecimalTest {
                 .isEqualTo(stubScaler.fixedValue);
         }
 
+    }
+
+    @Nested
+    class Map {
+        @Test
+        void maps() {
+            FluentBigDecimal sut = valueOf("123.45", FIXTURE_SCALER);
+
+            int actual = sut.map(BigDecimal::intValue);
+
+            assertThat(actual)
+                .isEqualTo(123);
+        }
     }
 
 

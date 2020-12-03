@@ -12,8 +12,6 @@ import java.math.MathContext;
 public class MaxPrecisionScaler implements Scaler {
     private static final long serialVersionUID = 7043803811609303754L;
 
-    private final @NonNull MathContext mathContext;
-
     @Override
     public BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
         return value;

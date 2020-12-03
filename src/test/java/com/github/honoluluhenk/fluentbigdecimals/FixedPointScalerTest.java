@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class FixedPointScalerTest {
 
     public static final FixedPointScaler FIXTURE = from(2);
-    private static final MathContext MATH_CONTEXT = new MathContext(10, HALF_UP);
+    private static final MathContext MATH_CONTEXT = new MathContext(5, HALF_UP);
 
     @Nested
     class From {
@@ -75,7 +75,7 @@ class FixedPointScalerTest {
 
         @Test
         void differs_on_different_scale() {
-            FixedPointScaler b = from(2);
+            FixedPointScaler b = from(99);
 
             assertThat(FIXTURE)
                 .isNotEqualTo(b);
@@ -92,7 +92,7 @@ class FixedPointScalerTest {
             var actual = FIXTURE.toString();
 
             assertThat(actual)
-                .isEqualTo(FixedPointScaler.class.getSimpleName() + "[5,2,HALF_UP]");
+                .isEqualTo(FixedPointScaler.class.getSimpleName() + "[2]");
         }
     }
 
