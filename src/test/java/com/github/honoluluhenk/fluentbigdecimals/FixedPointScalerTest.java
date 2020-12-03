@@ -176,11 +176,16 @@ class FixedPointScalerTest {
         }
 
 
-        // FIXME: moar edge cases?
         @ParameterizedTest
         @CsvSource({
             "99999",
             "9999.9",
+            "9999.0",
+            "9999",
+            "-99999",
+            "-9999.9",
+            "-9999.0",
+            "-9999",
         })
         void throws_on_values_exceeding_remaining(BigDecimal input) {
 
