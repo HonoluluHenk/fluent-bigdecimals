@@ -17,15 +17,25 @@
   <groupId>com.github.honoluluhenk.fluent-bigdecimals</groupId>
   <artifactId>fluent-bigdecimals</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-
-  <name>fluent-bigdecimals</name>
   <packaging>jar</packaging>
 
+  <name>fluent-bigdecimals</name>
+  <description>Wrap Java-BigDecimals into a nice fluent API and ease up rounding user-defined precision/scale.</description>
   <url>https://github.com/HonoluluHenk/fluent-bigdecimals</url>
 
+  <scm>
+    <connection>scm:git:https://github.com/HonoluluHenk/fluent-bigdecimals.git</connection>
+    <developerConnection>scm:git:https://github.com/HonoluluHenk/fluent-bigdecimals.git</developerConnection>
+  </scm>
+
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/HonoluluHenk/fluent-bigdecimals</url>
+  </issueManagement>
+
   <ciManagement>
-    <system>jitpack</system>
-    <url>https://jitpack.io</url>
+    <system>gitlab</system>
+    <url>https://gitlab.com/HonoluluHenk/fluent-bigdecimals</url>
   </ciManagement>
 
   <developers>
@@ -130,18 +140,17 @@
 
   <build>
     <pluginManagement>
-      <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.1</version>
@@ -171,9 +180,10 @@
             </annotationProcessorPaths>
             <annotationProcessors>
               <!-- Add all the checkers you want to enable here -->
-<!--              <annotationProcessor>-->
-<!--                org.checkerframework.checker.nullness.NullnessChecker-->
-<!--              </annotationProcessor>-->
+              <!-- FIXME: current IntelliJ version is b0rked :( -->
+              <!--              <annotationProcessor>-->
+              <!--                org.checkerframework.checker.nullness.NullnessChecker-->
+              <!--              </annotationProcessor>-->
               <annotationProcessor>
                 lombok.launch.AnnotationProcessorHider$AnnotationProcessor
               </annotationProcessor>
@@ -194,24 +204,30 @@
             </dependency>
           </dependencies>
         </plugin>
+
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.2</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>3.2.0</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
           <version>2.5.2</version>
         </plugin>
+
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>2.8.2</version>
         </plugin>
+
       </plugins>
     </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -267,6 +283,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
