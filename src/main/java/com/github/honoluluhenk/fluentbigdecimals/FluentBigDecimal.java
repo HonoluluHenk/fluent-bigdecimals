@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
-import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -61,17 +60,18 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
     }
 
     public FluentBigDecimal adjust() {
-        FluentBigDecimal result = adjusted(getValue());
+        ProjectionFunction<BigDecimal, BigDecimal, BigDecimal> identity = (a, b, mc) -> a;
+        FluentBigDecimal result = apply(identity, getValue());
 
         return result;
     }
-
-    private FluentBigDecimal adjusted(BigDecimal value) {
-        var adjusted = scaler.scale(value, getMathContext());
-        FluentBigDecimal result = withValue(adjusted);
-
-        return result;
-    }
+//
+//    private FluentBigDecimal adjusted(BigDecimal value) {
+//        var adjusted = scaler.scale(value, getMathContext());
+//        FluentBigDecimal result = withValue(adjusted);
+//
+//        return result;
+//    }
 
     /**
      * Switch to new scaler and adjust value accordingly.
@@ -95,14 +95,14 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         return result;
     }
 
-    public FluentBigDecimal apply(Function<BigDecimal, BigDecimal> function) {
-        BigDecimal temp = function.apply(getValue());
-        requireNonNull(temp);
-
-        var result = adjusted(temp);
-
-        return result;
-    }
+//    public FluentBigDecimal applyUnary(UnaryOperator<BigDecimal> function) {
+//        BigDecimal temp = function.apply(getValue());
+//        requireNonNull(temp);
+//
+//        var result = adjusted(temp);
+//
+//        return result;
+//    }
 
 
     public FluentBigDecimal apply(ProjectionFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
@@ -110,11 +110,10 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
             return this;
         }
 
-        BigDecimal temp = function.apply(getValue(), argument, getMathContext());
-        requireNonNull(temp);
+        BigDecimal outcome = scaler.apply(function, getValue(), argument);
+        requireNonNull(outcome, "Null result from Scaler not allowed");
 
-        var result = adjusted(temp);
-
+        var result = withValue(outcome);
 
         return result;
     }

@@ -1,6 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import com.github.honoluluhenk.fluentbigdecimals.scaler.IdentityScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.RoundingScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,6 +13,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import static com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal.HUNDRED;
 import static com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal.valueOf;
 import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
 import static java.math.RoundingMode.HALF_UP;
@@ -31,14 +32,28 @@ class FluentBigDecimalTest {
         private static final long serialVersionUID = 7707531701229950642L;
 
         @Override
-        public BigDecimal scale(BigDecimal value, MathContext mathContext) {
+        public <Argument> BigDecimal apply(ProjectionFunction<BigDecimal, Argument, BigDecimal> function, BigDecimal value, Argument argument) {
             throw new IllegalStateException("Should not be needed!");
         }
     }
 
+    private static class FixedValueScaler implements Scaler {
+        private static final long serialVersionUID = 5460135929536529147L;
+        private final BigDecimal fixedValue;
+
+        public FixedValueScaler(BigDecimal fixedValue) {
+            this.fixedValue = fixedValue;
+        }
+
+        @Override
+        public <Argument> BigDecimal apply(ProjectionFunction<BigDecimal, Argument, BigDecimal> function, BigDecimal value, Argument argument) {
+            return fixedValue;
+        }
+    }
+
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
-    private static final Scaler FIXTURE_SCALER = new IdentityScaler();
     private static final MathContext FIXTURE_MATH_CONTEXT = new MathContext(5, HALF_UP);
+    private static final Scaler FIXTURE_SCALER = new RoundingScaler(FIXTURE_MATH_CONTEXT);
     private static final FluentBigDecimal FIXTURE = new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
 
     @Nested
@@ -72,7 +87,7 @@ class FluentBigDecimalTest {
             new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_MATH_CONTEXT, scalerSpy);
 
             verify(scalerSpy, never())
-                .scale(any(BigDecimal.class), any(MathContext.class));
+                .apply(any(ProjectionFunction.class), any(BigDecimal.class), any(BigDecimal.class));
         }
 
         @Test
@@ -110,8 +125,8 @@ class FluentBigDecimalTest {
     class HashCodeEquals {
         @Test
         void equals_for_equal_value_and_any_scaler() {
-            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, new IdentityScaler());
-            FluentBigDecimal b = valueOf("123", FIXTURE_MATH_CONTEXT, new IdentityScaler());
+            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+            FluentBigDecimal b = valueOf("123", FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
 
             assertThat(a)
                 .isEqualTo(b);
@@ -122,8 +137,8 @@ class FluentBigDecimalTest {
 
         @Test
         void differs_for_value_with_differing_precision() {
-            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, new IdentityScaler());
-            FluentBigDecimal b = valueOf("123.0", FIXTURE_MATH_CONTEXT, new IdentityScaler());
+            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+            FluentBigDecimal b = valueOf("123.0", FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -134,8 +149,8 @@ class FluentBigDecimalTest {
 
         @Test
         void differs_for_different_values() {
-            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, new IdentityScaler());
-            FluentBigDecimal b = valueOf("456", FIXTURE_MATH_CONTEXT, new IdentityScaler());
+            FluentBigDecimal a = valueOf("123", FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+            FluentBigDecimal b = valueOf("456", FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -153,7 +168,7 @@ class FluentBigDecimalTest {
             String actual = FIXTURE.toString();
 
             assertThat(actual)
-                .isEqualTo("BigDecimalExt[123.45, IdentityScaler]");
+                .isEqualTo("BigDecimalExt[123.45, RoundingScaler]");
         }
     }
 
@@ -173,10 +188,11 @@ class FluentBigDecimalTest {
         @ParameterizedTest
         @CsvSource({
             "0, 0, 0",
-//            "0, 1, 1",
-//            "0, -1, -1",
-//            "123.45, 9999.99, 10123.44",
-//            "123.45, 9999.99999, 10123.44999",
+            "0, 1, 1",
+            "0, -1, -1",
+            "123.45, 543.21, 666.66",
+            "123.45, 9999.99, 10123",
+            "123.45, 9999.99999, 10123",
         })
         void adds_and_calls_scaler(BigDecimal augend, BigDecimal addend, BigDecimal expectedValue) {
             executes_and_calls_scaler_impl(FluentBigDecimal::add, augend, addend, expectedValue);
@@ -279,8 +295,8 @@ class FluentBigDecimalTest {
             "1, 0.01",
             "0.001, 0.00001",
         })
-        void calculates_and_calls_scaler(BigDecimal multiplicand, BigDecimal expectedValue) {
-            executes_and_calls_scaler_impl(FluentBigDecimal::pctToFraction, multiplicand, expectedValue);
+        void divides_by_HUNDRED_and_calls_scaler(BigDecimal multiplicand, BigDecimal expectedValue) {
+            executes_and_calls_scaler_impl(FluentBigDecimal::pctToFraction, multiplicand, HUNDRED, expectedValue);
         }
     }
 
@@ -300,8 +316,8 @@ class FluentBigDecimalTest {
             "0.01, 1.00",
             "0.00001, 0.00100",
         })
-        void calculates_and_calls_scaler(BigDecimal multiplicand, BigDecimal expectedValue) {
-            executes_and_calls_scaler_impl(FluentBigDecimal::fractionToPct, multiplicand, expectedValue);
+        void multiplies_by_HUNDRED_and_calls_scaler(BigDecimal multiplicand, BigDecimal expectedValue) {
+            executes_and_calls_scaler_impl(FluentBigDecimal::fractionToPct, multiplicand, HUNDRED, expectedValue);
         }
     }
 
@@ -310,26 +326,18 @@ class FluentBigDecimalTest {
 
         @Test
         void creates_adjusted_value_using_other_scaler() {
-            String initialValue = "123.456";
-            BigDecimal adjustedValue = new BigDecimal("42");
-            FluentBigDecimal sut = valueOf(initialValue, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
-            Scaler otherScaler = new Scaler() {
-                private static final long serialVersionUID = 5460135929536529147L;
-
-                @Override
-                public BigDecimal scale(BigDecimal value, MathContext mathContext) {
-                    return adjustedValue;
-                }
-            };
+            FluentBigDecimal sut = valueOf("123.456", FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+            FixedValueScaler stubScaler = new FixedValueScaler(new BigDecimal("42"));
 
             FluentBigDecimal result = sut
-                .adjustInto(otherScaler);
+                .adjustInto(stubScaler);
 
             assertThat(result.getScaler())
-                .isEqualTo(otherScaler);
+                .isEqualTo(stubScaler);
             assertThat(result.getValue())
-                .isEqualTo(adjustedValue);
+                .isEqualTo(stubScaler.fixedValue);
         }
+
     }
 
 
@@ -357,30 +365,30 @@ class FluentBigDecimalTest {
 
     void executes_and_calls_scaler_impl(
         BiFunction<FluentBigDecimal, FluentBigDecimal, FluentBigDecimal> operation,
-        BigDecimal start,
-        BigDecimal other,
+        BigDecimal operandA,
+        BigDecimal operandB,
         BigDecimal expectedValue
     ) {
-        FluentBigDecimal otherExt = valueOf(other, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
-        Function<FluentBigDecimal, FluentBigDecimal> curried = curryReverse(operation, otherExt);
+        FluentBigDecimal fluentOperandB = valueOf(operandB, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+        Function<FluentBigDecimal, FluentBigDecimal> curried = curryReverse(operation, fluentOperandB);
 
-        executes_and_calls_scaler_impl(curried, start, expectedValue);
+        executes_and_calls_scaler_impl(curried, operandA, operandB, expectedValue);
     }
 
     void executes_and_calls_scaler_impl(
         Function<FluentBigDecimal, FluentBigDecimal> operation,
-        BigDecimal start,
-        BigDecimal expectedValue
-    ) {
-        var scaler = spy(new IdentityScaler());
-        FluentBigDecimal sut = valueOf(start, FIXTURE_MATH_CONTEXT, scaler);
+        BigDecimal operandA,
+        BigDecimal operandB,
+        BigDecimal expectedValue) {
+        var scaler = spy(new RoundingScaler(FIXTURE_MATH_CONTEXT));
+        FluentBigDecimal sut = valueOf(operandA, FIXTURE_MATH_CONTEXT, scaler);
 
         var actual = operation.apply(sut);
 
         assertThat(actual.getValue())
             .isEqualTo(expectedValue);
         verify(scaler)
-            .scale(expectedValue, FIXTURE_MATH_CONTEXT);
+            .apply(any(ProjectionFunction.class), eq(operandA), eq(operandB));
     }
 
 }

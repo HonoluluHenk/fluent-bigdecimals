@@ -1,9 +1,11 @@
 package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
+import com.github.honoluluhenk.fluentbigdecimals.ProjectionFunction;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.MathContext;
 
 public interface Scaler extends Serializable {
-    BigDecimal scale(BigDecimal value, MathContext mathContext);
+
+    <Argument> BigDecimal apply(ProjectionFunction<BigDecimal, Argument, BigDecimal> function, BigDecimal value, Argument argument);
 }
