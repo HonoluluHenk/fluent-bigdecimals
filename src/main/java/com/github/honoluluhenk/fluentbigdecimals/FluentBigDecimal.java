@@ -3,14 +3,16 @@ package com.github.honoluluhenk.fluentbigdecimals;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.With;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
+import java.util.function.Function;
 
+import static com.github.honoluluhenk.fluentbigdecimals.Projection.identity;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -25,60 +27,31 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
     public static final BigDecimal HUNDRED = new BigDecimal("100");
 
     @EqualsAndHashCode.Include
-    private final BigDecimal value;
-    private final MathContext mathContext;
-    private final Scaler scaler;
+    private final @NonNull BigDecimal value;
+    private final @NonNull MathContext mathContext;
+    private final @NonNull Scaler scaler;
 
-    protected FluentBigDecimal(
-        BigDecimal value,
-        MathContext mathContext,
-        Scaler scaler
+    public FluentBigDecimal(
+        @NonNull BigDecimal value,
+        @NonNull MathContext mathContext,
+        @NonNull Scaler scaler
     ) {
         this.value = requireNonNull(value, "value required");
-        this.mathContext = requireNonNull(mathContext, "mathContext required"); // FIXME: test rnn
+        this.mathContext = requireNonNull(mathContext, "mathContext required");
         this.scaler = requireNonNull(scaler, "scaler required");
     }
 
-    public static FluentBigDecimal valueOf(BigDecimal value, MathContext mathContext, Scaler scaler) {
-        return new FluentBigDecimal(value, mathContext, scaler);
-    }
-
-    public static FluentBigDecimal valueOf(String bigDecimal, MathContext mathContext, Scaler scaler) {
-        return valueOf(new BigDecimal(bigDecimal), mathContext, scaler);
-    }
-
-    public static FluentBigDecimal valueOf(long value, MathContext mathContext, Scaler scaler) {
-        return valueOf(BigDecimal.valueOf(value), mathContext, scaler);
-    }
-
-    public static FluentBigDecimal valueOf(double value, MathContext mathContext, Scaler scaler) {
-        return valueOf(BigDecimal.valueOf(value), mathContext, scaler);
-    }
-
-    public static FluentBigDecimal valueOf(BigInteger value, MathContext mathContext, Scaler scaler) {
-        return valueOf(new BigDecimal(value), mathContext, scaler);
-    }
-
-    public FluentBigDecimal adjust() {
-        ProjectionFunction<BigDecimal, BigDecimal, BigDecimal> identity = (a, b, mc) -> a;
-        FluentBigDecimal result = apply(identity, getValue());
-
+    public @NonNull FluentBigDecimal adjust() {
+        @NonNull FluentBigDecimal result = apply(identity());
         return result;
     }
-//
-//    private FluentBigDecimal adjusted(BigDecimal value) {
-//        var adjusted = scaler.scale(value, getMathContext());
-//        FluentBigDecimal result = withValue(adjusted);
-//
-//        return result;
-//    }
 
     /**
      * Switch to new scaler and adjust value accordingly.
      * <p>
      * Related: {@link #withScaler(Scaler)}.
      */
-    public FluentBigDecimal adjustInto(Scaler scaler) {
+    public @NonNull FluentBigDecimal adjustInto(Scaler scaler) {
         var result = withScaler(scaler)
             .adjust();
 
@@ -89,97 +62,100 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
      * Compares {@link #getValue()} and delegates to {@link BigDecimal#compareTo(BigDecimal)}.
      */
     @Override
-    public int compareTo(FluentBigDecimal o) {
+    public int compareTo(@NonNull FluentBigDecimal o) {
         int result = getValue().compareTo(o.getValue());
 
         return result;
     }
 
-//    public FluentBigDecimal applyUnary(UnaryOperator<BigDecimal> function) {
-//        BigDecimal temp = function.apply(getValue());
-//        requireNonNull(temp);
-//
-//        var result = adjusted(temp);
-//
-//        return result;
-//    }
-
-
-    public FluentBigDecimal apply(ProjectionFunction<BigDecimal, BigDecimal, BigDecimal> function, @Nullable BigDecimal argument) {
+    public @NonNull FluentBigDecimal apply(@NonNull BiProjection projection, @Nullable BigDecimal argument) {
         if (argument == null) {
             return this;
         }
 
-        BigDecimal outcome = scaler.apply(function, getValue(), argument);
-        requireNonNull(outcome, "Null result from Scaler not allowed");
+        var result = apply((value, mathContext) -> projection.project(value, argument, mathContext));
 
-        var result = withValue(outcome);
+        return result;
+    }
+
+    public @NonNull FluentBigDecimal apply(@NonNull Projection projection) {
+        @NonNull var outcome = projection.project(value, getMathContext());
+
+        @NonNull var scaled = scaler.scale(outcome, getMathContext());
+
+        var result = withValue(scaled);
+
+        return result;
+    }
+
+    public <T> T map(@NonNull Function<BigDecimal, T> projection) {
+        var result = projection.apply(getValue());
 
         return result;
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         String result = String.format("BigDecimalExt[%s, %s]", value.toPlainString(), scaler);
 
         return result;
     }
 
-    public FluentBigDecimal add(@Nullable BigDecimal addend) {
+    public @NonNull FluentBigDecimal add(@Nullable BigDecimal addend) {
         var result = apply(BigDecimal::add, addend);
 
         return result;
     }
 
-    public FluentBigDecimal add(@Nullable FluentBigDecimal addend) {
+    public @NonNull FluentBigDecimal add(@Nullable FluentBigDecimal addend) {
         FluentBigDecimal result = add(mapValue(addend));
 
         return result;
     }
 
-    public FluentBigDecimal subtract(@Nullable BigDecimal subtrahend) {
+    public @NonNull FluentBigDecimal subtract(@Nullable BigDecimal subtrahend) {
         FluentBigDecimal result = apply(BigDecimal::subtract, subtrahend);
 
         return result;
     }
 
-    public FluentBigDecimal subtract(@Nullable FluentBigDecimal subtrahend) {
+    public @NonNull FluentBigDecimal subtract(@Nullable FluentBigDecimal subtrahend) {
         FluentBigDecimal result = subtract(mapValue(subtrahend));
 
         return result;
     }
 
-    public FluentBigDecimal multiply(@Nullable BigDecimal multiplicand) {
+    public @NonNull FluentBigDecimal multiply(@Nullable BigDecimal multiplicand) {
         FluentBigDecimal result = apply(BigDecimal::multiply, multiplicand);
 
         return result;
     }
 
-    public FluentBigDecimal multiply(@Nullable FluentBigDecimal multiplicand) {
+    public @NonNull FluentBigDecimal multiply(@Nullable FluentBigDecimal multiplicand) {
         FluentBigDecimal result = multiply(mapValue(multiplicand));
 
         return result;
     }
 
-    public FluentBigDecimal divide(@Nullable BigDecimal divisor) {
+    public @NonNull FluentBigDecimal divide(@Nullable BigDecimal divisor) {
         FluentBigDecimal result = apply(BigDecimal::divide, divisor);
 
         return result;
     }
 
-    public FluentBigDecimal divide(@Nullable FluentBigDecimal divisor) {
+    public @NonNull FluentBigDecimal divide(@Nullable FluentBigDecimal divisor) {
         FluentBigDecimal result = divide(mapValue(divisor));
 
         return result;
     }
 
-    public FluentBigDecimal pctToFraction() {
+    public @NonNull FluentBigDecimal pctToFraction() {
         FluentBigDecimal result = divide(HUNDRED);
 
         return result;
     }
 
-    public FluentBigDecimal fractionToPct() {
+    public @NonNull FluentBigDecimal fractionToPct() {
         FluentBigDecimal result = multiply(HUNDRED);
 
         return result;
