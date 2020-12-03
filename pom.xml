@@ -52,7 +52,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <lombok.version>1.18.16</lombok.version>
-    <checkerframework.version>3.7.1</checkerframework.version>
+    <checkerframework.version>3.8.0</checkerframework.version>
     <mockito.version>3.6.28</mockito.version>
   </properties>
 
@@ -171,9 +171,9 @@
             </annotationProcessorPaths>
             <annotationProcessors>
               <!-- Add all the checkers you want to enable here -->
-              <annotationProcessor>
-                org.checkerframework.checker.nullness.NullnessChecker
-              </annotationProcessor>
+<!--              <annotationProcessor>-->
+<!--                org.checkerframework.checker.nullness.NullnessChecker-->
+<!--              </annotationProcessor>-->
               <annotationProcessor>
                 lombok.launch.AnnotationProcessorHider$AnnotationProcessor
               </annotationProcessor>
