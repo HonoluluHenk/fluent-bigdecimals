@@ -48,8 +48,6 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
 
     /**
      * Switch to new scaler and adjust value accordingly.
-     * <p>
-     * Related: {@link #withScaler(Scaler)}.
      */
     public @NonNull FluentBigDecimal adjustInto(Scaler scaler) {
         var result = withScaler(scaler)
@@ -59,7 +57,7 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
     }
 
     /**
-     * Compares {@link #getValue()} and delegates to {@link BigDecimal#compareTo(BigDecimal)}.
+     * Compares current value and delegates to {@link BigDecimal#compareTo(BigDecimal)}.
      */
     @Override
     public int compareTo(@NonNull FluentBigDecimal o) {
