@@ -63,9 +63,7 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
      */
     @Override
     public int compareTo(@NonNull FluentBigDecimal o) {
-        int result = getValue().compareTo(o.getValue());
-
-        return result;
+        return getValue().compareTo(o.getValue());
     }
 
     public @NonNull FluentBigDecimal apply(@NonNull BiProjection projection, @Nullable BigDecimal argument) {
@@ -96,7 +94,8 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
 
     @Override
     public @NonNull String toString() {
-        String result = String.format("BigDecimalExt[%s, %s]", value.toPlainString(), scaler);
+        String result = String.format("%s[%s, %s]",
+            FluentBigDecimal.class.getSimpleName(), value.toPlainString(), scaler);
 
         return result;
     }

@@ -180,6 +180,33 @@ class FluentBigDecimalTest {
                 .isEqualByComparingTo(other);
         }
 
+        @Test
+        void differs_for_a_lt_b() {
+
+            FluentBigDecimal sut = new FluentBigDecimal(
+                new BigDecimal("123.45"),
+                new MathContext(5, HALF_UP),
+                (a, mc) -> a);
+            FluentBigDecimal other = sut.withValue(new BigDecimal("543.21"));
+
+            assertThat(sut.compareTo(other))
+                .isLessThan(0);
+        }
+
+
+        @Test
+        void differs_for_b_lt_a() {
+
+            FluentBigDecimal sut = new FluentBigDecimal(
+                new BigDecimal("543.21"),
+                new MathContext(5, HALF_UP),
+                (a, mc) -> a);
+            FluentBigDecimal other = sut.withValue(new BigDecimal("123.45"));
+
+            assertThat(sut.compareTo(other))
+                .isGreaterThan(0);
+        }
+
 
     }
 
@@ -190,7 +217,7 @@ class FluentBigDecimalTest {
             String actual = FIXTURE.toString();
 
             assertThat(actual)
-                .isEqualTo("BigDecimalExt[123.45, MaxPrecisionScaler]");
+                .isEqualTo("FluentBigDecimal[123.45, MaxPrecisionScaler]");
         }
     }
 
