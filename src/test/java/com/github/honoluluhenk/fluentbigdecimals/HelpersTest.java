@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.BiFunction;
 
-import static com.github.honoluluhenk.fluentbigdecimals.Helpers.castNonNull;
-import static com.github.honoluluhenk.fluentbigdecimals.Helpers.curryReverse;
+import static com.github.honoluluhenk.fluentbigdecimals.internal.Helpers.castNonNull;
+import static com.github.honoluluhenk.fluentbigdecimals.internal.Helpers.curryReverse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
