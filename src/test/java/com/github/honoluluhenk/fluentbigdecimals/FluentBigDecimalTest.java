@@ -47,7 +47,7 @@ class FluentBigDecimalTest {
         private static final long serialVersionUID = 4432500901893639859L;
 
         @Override
-        public @NonNull BigDecimal scale(@NonNull BigDecimal outcome, @NonNull MathContext mathContext) {
+        public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
             throw new IllegalStateException("should not be needed");
         }
     }
@@ -222,6 +222,36 @@ class FluentBigDecimalTest {
     }
 
     @Nested
+    class Round {
+        @Test
+        void rounds_and_keeps_same_scaler() {
+            FluentBigDecimal sut = valueOf("123.456789", FIXTURE_SCALER);
+
+            var actual = sut.round();
+
+            assertThat(actual.getValue().toPlainString())
+                .isEqualTo("123.46");
+            assertThat(actual.getScaler())
+                .isSameAs(FIXTURE_SCALER);
+        }
+    }
+
+    @Nested
+    class RoundInto {
+        @Test
+        void rounds_and_sets_other_scaler() {
+
+            Scaler otherScaler = (value, mc) -> value.setScale(0, DOWN);
+            FluentBigDecimal actual = FIXTURE.roundInto(otherScaler);
+
+            assertThat(actual.getValue().toPlainString())
+                .isEqualTo("123");
+            assertThat(actual.getScaler())
+                .isSameAs(otherScaler);
+        }
+    }
+
+    @Nested
     class Add {
 
         @Test
@@ -379,7 +409,7 @@ class FluentBigDecimalTest {
             FixedValueScaler stubScaler = new FixedValueScaler(new BigDecimal("42"));
 
             FluentBigDecimal result = sut
-                .adjustInto(stubScaler);
+                .roundInto(stubScaler);
 
             assertThat(result.getScaler())
                 .isEqualTo(stubScaler);

@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.function.Function;
 
-import static com.github.honoluluhenk.fluentbigdecimals.Projection.identity;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -41,17 +40,17 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         this.scaler = requireNonNull(scaler, "scaler required");
     }
 
-    public @NonNull FluentBigDecimal adjust() {
-        @NonNull FluentBigDecimal result = apply(identity());
+    public @NonNull FluentBigDecimal round() {
+        @NonNull FluentBigDecimal result = apply(BigDecimal::round);
         return result;
     }
 
     /**
      * Switch to new scaler and adjust value accordingly.
      */
-    public @NonNull FluentBigDecimal adjustInto(Scaler scaler) {
+    public @NonNull FluentBigDecimal roundInto(Scaler scaler) {
         var result = withScaler(scaler)
-            .adjust();
+            .round();
 
         return result;
     }
