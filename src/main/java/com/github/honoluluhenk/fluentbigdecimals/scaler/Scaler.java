@@ -8,6 +8,7 @@ import java.math.MathContext;
 
 @FunctionalInterface
 public interface Scaler extends Serializable {
+
     @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext);
 
 }
