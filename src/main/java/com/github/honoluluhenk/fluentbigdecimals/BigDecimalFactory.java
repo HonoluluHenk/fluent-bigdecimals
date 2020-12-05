@@ -6,6 +6,7 @@ import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.With;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -15,6 +16,7 @@ import static java.math.RoundingMode.HALF_UP;
 
 @AllArgsConstructor
 @Getter
+@With
 public class BigDecimalFactory implements Scaler {
     private static final long serialVersionUID = -153378950972296160L;
 
