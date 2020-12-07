@@ -90,9 +90,11 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
     }
 
     public @NonNull FluentBigDecimal apply(@NonNull Projection projection) {
-        @NonNull var outcome = projection.project(value, getMathContext());
+        var outcome = projection.project(value, getMathContext());
+        requireNonNull(outcome, "Result of projection must not be null");
 
-        @NonNull var scaled = scaler.scale(outcome, getMathContext());
+        var scaled = scaler.scale(outcome, getMathContext());
+        requireNonNull(scaled, "Scaler must not return null");
 
         var result = withValue(scaled);
 

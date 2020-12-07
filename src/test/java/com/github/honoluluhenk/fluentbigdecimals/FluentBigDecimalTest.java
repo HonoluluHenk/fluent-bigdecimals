@@ -491,11 +491,29 @@ class FluentBigDecimalTest {
                 // of FluentBigDecimals and not this mock scaler!
                 FluentBigDecimal sut = valueOf("123.45", NULL_RETURNING_SCALER);
 
-                assertThrows(
+                NullPointerException ex = assertThrows(
                     NullPointerException.class,
                     () -> sut.apply((value, argument, mc) -> BigDecimal.ONE, FIXTURE_VALUE)
                 );
 
+                assertThat(ex)
+                    .hasMessage("Scaler must not return null");
+            }
+
+            @Test
+            void checks_for_null_return_from_projection() {
+                // explicitly do not add any @NonNull annotation so we can see the behavior
+                // of FluentBigDecimals and not this mock scaler!
+                FluentBigDecimal sut = valueOf("123.45", new FixedValueScaler(BigDecimal.ONE));
+                BiProjection nullProjection = (value, argument, mc) -> null;
+
+                NullPointerException ex = assertThrows(
+                    NullPointerException.class,
+                    () -> sut.apply(nullProjection, FIXTURE_VALUE)
+                );
+
+                assertThat(ex)
+                    .hasMessage("Result of projection must not be null");
             }
         }
 
@@ -507,12 +525,32 @@ class FluentBigDecimalTest {
                 // of FluentBigDecimals and not this mock scaler!
                 FluentBigDecimal sut = valueOf("123.45", NULL_RETURNING_SCALER);
 
-                assertThrows(
+                NullPointerException ex = assertThrows(
                     NullPointerException.class,
                     () -> sut.apply((value, mc) -> BigDecimal.ONE)
                 );
 
+                assertThat(ex)
+                    .hasMessage("Scaler must not return null");
+
             }
+
+            @Test
+            void checks_for_null_return_from_projection() {
+                // explicitly do not add any @NonNull annotation so we can see the behavior
+                // of FluentBigDecimals and not this mock scaler!
+                FluentBigDecimal sut = valueOf("123.45", new FixedValueScaler(BigDecimal.ONE));
+                Projection nullProjection = (value, mc) -> null;
+
+                NullPointerException ex = assertThrows(
+                    NullPointerException.class,
+                    () -> sut.apply(nullProjection)
+                );
+
+                assertThat(ex)
+                    .hasMessage("Result of projection must not be null");
+            }
+
         }
 
     }
