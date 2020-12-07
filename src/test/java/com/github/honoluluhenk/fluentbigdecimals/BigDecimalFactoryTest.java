@@ -29,10 +29,8 @@ class BigDecimalFactoryTest {
 
         assertThat(actual.getValue())
             .isEqualTo(value);
-        assertThat(actual.getScaler())
-            .isEqualTo(scaler);
-        assertThat(actual.getMathContext())
-            .isEqualTo(mathContext);
+        assertThat(actual.getConfiguration())
+            .isEqualTo(new SimpleConfiguration(mathContext, scaler));
     }
 
     @Test
@@ -40,10 +38,9 @@ class BigDecimalFactoryTest {
         var actual = BigDecimalFactory.excel()
             .of(new BigDecimal("42"));
 
-        assertThat(actual.getMathContext())
-            .isEqualTo(new MathContext(15, HALF_UP));
-        assertThat(actual.getScaler())
-            .isExactlyInstanceOf(MaxPrecisionScaler.class);
+        assertThat(actual.getConfiguration())
+            .isEqualTo(new SimpleConfiguration(new MathContext(15, HALF_UP), new MaxPrecisionScaler()));
+
     }
 
     @Test
@@ -51,13 +48,8 @@ class BigDecimalFactoryTest {
         var actual = BigDecimalFactory.jpaBigDecimal()
             .of(new BigDecimal("42"));
 
-        assertThat(actual.getMathContext())
-            .isEqualTo(new MathContext(18, HALF_UP));
-
-        assertThat(actual.getScaler())
-            .isExactlyInstanceOf(MaxScaleScaler.class);
-        assertThat(((MaxScaleScaler) actual.getScaler()).getMaxScale())
-            .isEqualTo(2);
+        assertThat(actual.getConfiguration())
+            .isEqualTo(new SimpleConfiguration(new MathContext(18, HALF_UP), new MaxScaleScaler(2)));
     }
 
     @Test
@@ -65,13 +57,8 @@ class BigDecimalFactoryTest {
         var actual = BigDecimalFactory.database(5, 1)
             .of(new BigDecimal("42"));
 
-        assertThat(actual.getMathContext())
-            .isEqualTo(new MathContext(6, HALF_UP));
-
-        assertThat(actual.getScaler())
-            .isExactlyInstanceOf(MaxScaleScaler.class);
-        assertThat(((MaxScaleScaler) actual.getScaler()).getMaxScale())
-            .isEqualTo(1);
+        assertThat(actual.getConfiguration())
+            .isEqualTo(new SimpleConfiguration(new MathContext(6, HALF_UP), new MaxScaleScaler(1)));
     }
 
     @Test
@@ -79,13 +66,8 @@ class BigDecimalFactoryTest {
         var actual = BigDecimalFactory.databasePrecision(5, 2, HALF_UP)
             .of(new BigDecimal("42"));
 
-        assertThat(actual.getMathContext())
-            .isEqualTo(new MathContext(7, HALF_UP));
-
-        assertThat(actual.getScaler())
-            .isExactlyInstanceOf(MaxScaleScaler.class);
-        assertThat(((MaxScaleScaler) actual.getScaler()).getMaxScale())
-            .isEqualTo(2);
+        assertThat(actual.getConfiguration())
+            .isEqualTo(new SimpleConfiguration(new MathContext(7, HALF_UP), new MaxScaleScaler(2)));
     }
 
 }

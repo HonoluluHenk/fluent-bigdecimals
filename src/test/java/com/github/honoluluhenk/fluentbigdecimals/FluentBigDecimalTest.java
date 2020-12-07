@@ -15,8 +15,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import static java.math.RoundingMode.DOWN;
-import static java.math.RoundingMode.HALF_UP;
+import static java.math.RoundingMode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,7 +96,7 @@ class FluentBigDecimalTest {
         void sets_fields() {
             assertThat(FIXTURE.getValue())
                 .isSameAs(FIXTURE_VALUE);
-            assertThat(FIXTURE.getScaler())
+            assertThat(FIXTURE.getConfiguration().getScaler())
                 .isSameAs(FIXTURE_SCALER);
         }
 
@@ -264,38 +263,41 @@ class FluentBigDecimalTest {
             String actual = FIXTURE.toString();
 
             assertThat(actual)
-                .isEqualTo("FluentBigDecimal[123.45, MaxPrecisionScaler]");
+                .isEqualTo("FluentBigDecimal[123.45, SimpleConfiguration[5,HALF_UP,MaxPrecisionScaler]]");
         }
     }
 
     @Nested
     class Round {
         @Test
-        void rounds_and_keeps_same_scaler() {
+        void rounds_and_keeps_same_configuration() {
             FluentBigDecimal sut = valueOf("123.456789", FIXTURE_SCALER);
 
             var actual = sut.round();
 
-            assertThat(actual.getValue().toPlainString())
+            assertThat(actual.getValue())
                 .isEqualTo("123.46");
-            assertThat(actual.getScaler())
-                .isSameAs(FIXTURE_SCALER);
+            assertThat(actual.getConfiguration())
+                .isEqualTo(new SimpleConfiguration(FIXTURE_MATH_CONTEXT, FIXTURE_SCALER));
         }
     }
 
     @Nested
     class RoundInto {
         @Test
-        void rounds_and_sets_other_scaler() {
-
+        void rounds_and_sets_other_configuration() {
             Scaler otherScaler = (value, mc) -> value.setScale(0, DOWN);
-            FluentBigDecimal actual = FIXTURE.roundInto(otherScaler);
+            MathContext otherMathContext = new MathContext(32, UP);
+            SimpleConfiguration otherConfiguration = new SimpleConfiguration(otherMathContext, otherScaler);
 
-            assertThat(actual.getValue().toPlainString())
+            FluentBigDecimal actual = FIXTURE.roundInto(otherConfiguration);
+
+            assertThat(actual.getValue())
                 .isEqualTo("123");
-            assertThat(actual.getScaler())
-                .isSameAs(otherScaler);
+            assertThat(actual.getConfiguration())
+                .isEqualTo(otherConfiguration);
         }
+
     }
 
     @Nested
@@ -448,25 +450,6 @@ class FluentBigDecimalTest {
     }
 
     @Nested
-    class AdjustInto {
-
-        @Test
-        void creates_adjusted_value_using_other_scaler() {
-            FluentBigDecimal sut = valueOf("123.456", FIXTURE_SCALER);
-            FixedValueScaler stubScaler = new FixedValueScaler(new BigDecimal("42"));
-
-            FluentBigDecimal result = sut
-                .roundInto(stubScaler);
-
-            assertThat(result.getScaler())
-                .isEqualTo(stubScaler);
-            assertThat(result.getValue())
-                .isEqualTo(stubScaler.fixedValue);
-        }
-
-    }
-
-    @Nested
     class Map {
         @Test
         void maps() {
@@ -559,15 +542,15 @@ class FluentBigDecimalTest {
     void keeps_same_scaler_impl(BinaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE, FIXTURE);
 
-        assertThat(actual.getScaler())
-            .isEqualTo(FIXTURE.getScaler());
+        assertThat(actual.getConfiguration().getScaler())
+            .isEqualTo(FIXTURE.getConfiguration().getScaler());
     }
 
     void keeps_same_scaler_impl(UnaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE);
 
-        assertThat(actual.getScaler())
-            .isEqualTo(FIXTURE.getScaler());
+        assertThat(actual.getConfiguration().getScaler())
+            .isEqualTo(FIXTURE.getConfiguration().getScaler());
     }
 
     void adds_null_as_neutral_value_impl(BinaryOperator<FluentBigDecimal> fnc) {

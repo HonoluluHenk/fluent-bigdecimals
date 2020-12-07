@@ -28,17 +28,19 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
 
     @EqualsAndHashCode.Include
     private final @NonNull BigDecimal value;
-    private final @NonNull MathContext mathContext;
-    private final @NonNull Scaler scaler;
+    private final @NonNull Configuration configuration;
 
     public FluentBigDecimal(
         @NonNull BigDecimal value,
         @NonNull MathContext mathContext,
         @NonNull Scaler scaler
     ) {
+        this(value, new SimpleConfiguration(mathContext, scaler));
+    }
+
+    public FluentBigDecimal(@NonNull BigDecimal value, @NonNull Configuration configuration) {
         this.value = requireNonNull(value, "value required");
-        this.mathContext = requireNonNull(mathContext, "mathContext required");
-        this.scaler = requireNonNull(scaler, "scaler required");
+        this.configuration = requireNonNull(configuration, "configuration required");
     }
 
     public static @NonNull FluentBigDecimal of(@NonNull BigDecimal value, @NonNull MathContext mathContext, @NonNull Scaler scaler) {
@@ -61,32 +63,21 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
     }
 
     /**
-     * Switch to new scaler and scale value accordingly.
-     * <p>
-     * If you need to switch to a new scaler <i>without</i> scaling, use {@link #withScaler(Scaler)}.
-     */
-    public @NonNull FluentBigDecimal roundInto(Scaler scaler) {
-        var result = withScaler(scaler)
-            .round();
-
-        return result;
-    }
-
-    /**
      * Switch to new MathContext/Scaler and round/scale value accordingly.
      * <p>
-     * If you need to switch to a new Configuration <i>without</i> scaling/rounding, use {@link #with(Configuration}.
+     * If you need to switch to a new Configuration <i>without</i> scaling/rounding,
+     * use {@link #withConfiguration(Configuration)}.
      */
     public @NonNull FluentBigDecimal roundInto(Configuration configuration) {
         return of(getValue(), configuration.getMathContext(), configuration.getScaler());
     }
 
-    public @NonNull FluentBigDecimal with(MathContext mathContext, Scaler scaler) {
-        return ofRaw(getValue(), mathContext, scaler);
+    public @NonNull FluentBigDecimal withMathContext(MathContext mathContext) {
+        return ofRaw(getValue(), mathContext, getConfiguration().getScaler());
     }
 
-    public @NonNull FluentBigDecimal with(Configuration configuration) {
-        return ofRaw(getValue(), configuration.getMathContext(), configuration.getScaler());
+    public @NonNull FluentBigDecimal withScaler(Scaler scaler) {
+        return ofRaw(getValue(), getConfiguration().getMathContext(), scaler);
     }
 
     /**
@@ -108,10 +99,11 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
     }
 
     public @NonNull FluentBigDecimal apply(@NonNull Projection projection) {
-        var outcome = projection.project(value, getMathContext());
+        var outcome = projection.project(value, getConfiguration().getMathContext());
         requireNonNull(outcome, "Result of projection must not be null");
 
-        var scaled = scaler.scale(outcome, getMathContext());
+        var scaler = getConfiguration().getScaler();
+        var scaled = scaler.scale(outcome, getConfiguration().getMathContext());
         requireNonNull(scaled, "Scaler must not return null");
 
         var result = withValue(scaled);
@@ -128,7 +120,9 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
     @Override
     public @NonNull String toString() {
         String result = String.format("%s[%s, %s]",
-            FluentBigDecimal.class.getSimpleName(), value.toPlainString(), scaler);
+            FluentBigDecimal.class.getSimpleName(),
+            value.toPlainString(),
+            getConfiguration());
 
         return result;
     }
