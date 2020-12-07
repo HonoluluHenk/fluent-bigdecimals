@@ -479,6 +479,44 @@ class FluentBigDecimalTest {
         }
     }
 
+    @Nested
+    class Apply {
+        final Scaler NULL_RETURNING_SCALER = (value, mathContext) -> null;
+
+        @Nested
+        class ApplyBiProjection {
+            @Test
+            void checks_for_null_return_from_Scaler() {
+                // explicitly do not add any @NonNull annotation so we can see the behavior
+                // of FluentBigDecimals and not this mock scaler!
+                FluentBigDecimal sut = valueOf("123.45", NULL_RETURNING_SCALER);
+
+                assertThrows(
+                    NullPointerException.class,
+                    () -> sut.apply((value, argument, mc) -> BigDecimal.ONE, FIXTURE_VALUE)
+                );
+
+            }
+        }
+
+        @Nested
+        class ApplyProjection {
+            @Test
+            void checks_for_null_return_from_Scaler() {
+                // explicitly do not add any @NonNull annotation so we can see the behavior
+                // of FluentBigDecimals and not this mock scaler!
+                FluentBigDecimal sut = valueOf("123.45", NULL_RETURNING_SCALER);
+
+                assertThrows(
+                    NullPointerException.class,
+                    () -> sut.apply((value, mc) -> BigDecimal.ONE)
+                );
+
+            }
+        }
+
+    }
+
 
     void keeps_same_scaler_impl(BinaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE, FIXTURE);
