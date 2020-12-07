@@ -61,6 +61,20 @@ class BigDecimalFactoryTest {
     }
 
     @Test
+    void database_adds_scale_and_precision() {
+        var actual = BigDecimalFactory.database(5, 1)
+            .of(new BigDecimal("42"));
+
+        assertThat(actual.getMathContext())
+            .isEqualTo(new MathContext(6, HALF_UP));
+
+        assertThat(actual.getScaler())
+            .isExactlyInstanceOf(MaxScaleScaler.class);
+        assertThat(((MaxScaleScaler) actual.getScaler()).getMaxScale())
+            .isEqualTo(1);
+    }
+
+    @Test
     void calculates_java_precision_from_database_precision_notation() {
         var actual = BigDecimalFactory.databasePrecision(5, 2, HALF_UP)
             .of(new BigDecimal("42"));

@@ -30,8 +30,18 @@ public class BigDecimalFactory implements Scaler {
      * | BigDecimal  | 18        | 2     |
      */
     public static class Database {
-        public static final int JPA_BIGDECIMAL_PRECISION = 18;
-        public static final int JPA_BIGDECIMAL_SCALE = 2;
+        /**
+         * Precision as required by database definitions.
+         */
+        public static final int BIGDECIMAL_PRECISION = 16;
+        /**
+         * Scale as required by database definitions.
+         */
+        public static final int BIGDECIMAL_SCALE = 2;
+        /**
+         * Precision as required by JPA specification.
+         */
+        public static final int BIGDECIMAL_JPA_PRECISION = BIGDECIMAL_PRECISION + BIGDECIMAL_SCALE;
     }
 
     /**
@@ -60,14 +70,22 @@ public class BigDecimalFactory implements Scaler {
      * Compatible to JPA defaults for BigDecimal: @Column(precision = 16, scale = 2).
      */
     public static BigDecimalFactory jpaBigDecimal(@NonNull RoundingMode roundingMode) {
-        return database(Database.JPA_BIGDECIMAL_PRECISION, Database.JPA_BIGDECIMAL_SCALE, roundingMode);
+        return database(Database.BIGDECIMAL_PRECISION, Database.BIGDECIMAL_SCALE, roundingMode);
+    }
+
+    /**
+     * Custom precision/scale with a {@link MaxScaleScaler} (used by most SQL database systems), uses HALF_UP rounding.
+     */
+    public static BigDecimalFactory database(int databasePrecsion, int databaseScale) {
+        return database(databasePrecsion, databaseScale, HALF_UP);
     }
 
     /**
      * Custom precision/scale with a {@link MaxScaleScaler} (used by most SQL database systems).
      */
     public static BigDecimalFactory database(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
-        return factory(new MathContext(databasePrecsion, roundingMode), new MaxScaleScaler(databaseScale));
+        int javaPrecision = databasePrecsion + databaseScale;
+        return factory(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
     }
 
     /**
@@ -119,5 +137,13 @@ public class BigDecimalFactory implements Scaler {
     @Override
     public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
         return scaler.scale(value, mathContext);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s[%s,%s]",
+            getClass().getSimpleName(),
+            getMathContext(),
+            getScaler());
     }
 }
