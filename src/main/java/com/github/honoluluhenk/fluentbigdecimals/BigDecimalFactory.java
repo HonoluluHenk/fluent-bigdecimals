@@ -1,7 +1,7 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import com.github.honoluluhenk.fluentbigdecimals.scaler.FixedPointScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -64,14 +64,14 @@ public class BigDecimalFactory implements Scaler {
     }
 
     /**
-     * Custom precision/scale with a {@link FixedPointScaler} (used by most SQL database systems).
+     * Custom precision/scale with a {@link MaxScaleScaler} (used by most SQL database systems).
      */
     public static BigDecimalFactory database(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
-        return factory(new MathContext(databasePrecsion, roundingMode), new FixedPointScaler(databaseScale));
+        return factory(new MathContext(databasePrecsion, roundingMode), new MaxScaleScaler(databaseScale));
     }
 
     /**
-     * Custom precision/scale with a {@link FixedPointScaler} (used by most SQL database systems).
+     * Custom precision/scale with a {@link MaxScaleScaler} (used by most SQL database systems).
      * <p>
      * <strong>This method expects parameters in database notation!</strong>
      * <p>
@@ -81,7 +81,7 @@ public class BigDecimalFactory implements Scaler {
      */
     public static BigDecimalFactory databasePrecision(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
         int javaPrecision = databasePrecsion + databaseScale;
-        return factory(new MathContext(javaPrecision, roundingMode), new FixedPointScaler(databaseScale));
+        return factory(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
     }
 
     /**

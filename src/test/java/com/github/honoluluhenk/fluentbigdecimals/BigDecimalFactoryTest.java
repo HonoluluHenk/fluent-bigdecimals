@@ -1,7 +1,7 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import com.github.honoluluhenk.fluentbigdecimals.scaler.FixedPointScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import org.junit.jupiter.api.Test;
 
@@ -50,8 +50,8 @@ class BigDecimalFactoryTest {
             .isEqualTo(new MathContext(18, HALF_UP));
 
         assertThat(actual.getScaler())
-            .isExactlyInstanceOf(FixedPointScaler.class);
-        assertThat(((FixedPointScaler) actual.getScaler()).getMaxScale())
+            .isExactlyInstanceOf(MaxScaleScaler.class);
+        assertThat(((MaxScaleScaler) actual.getScaler()).getMaxScale())
             .isEqualTo(2);
     }
 
@@ -64,8 +64,8 @@ class BigDecimalFactoryTest {
             .isEqualTo(new MathContext(7, HALF_UP));
 
         assertThat(actual.getScaler())
-            .isExactlyInstanceOf(FixedPointScaler.class);
-        assertThat(((FixedPointScaler) actual.getScaler()).getMaxScale())
+            .isExactlyInstanceOf(MaxScaleScaler.class);
+        assertThat(((MaxScaleScaler) actual.getScaler()).getMaxScale())
             .isEqualTo(2);
     }
 

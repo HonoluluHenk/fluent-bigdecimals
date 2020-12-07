@@ -10,17 +10,19 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
- * First round to precision, then reduce scale if needed.
+ * First round to precision, then reduce scale if needed ("Database" mode).
+ * <p>
+ * Databases usually allow only a definable <i>maximum</i> scale for decimals.
  */
 @Getter
 @EqualsAndHashCode(callSuper = false)
-public class FixedPointScaler implements Scaler {
+public class MaxScaleScaler implements Scaler {
     private static final long serialVersionUID = -8755733728910066293L;
 
     @With
     private final int maxScale;
 
-    public FixedPointScaler(int maxScale) {
+    public MaxScaleScaler(int maxScale) {
         this.maxScale = maxScale;
     }
 
@@ -51,16 +53,15 @@ public class FixedPointScaler implements Scaler {
         return result;
     }
 
-    public static FixedPointScaler from(int maxScale) {
-        return new FixedPointScaler(maxScale);
+    public static MaxScaleScaler from(int maxScale) {
+        return new MaxScaleScaler(maxScale);
     }
-
 
     /**
      * Copy-Factory.
      */
-    public static FixedPointScaler from(FixedPointScaler other) {
-        return new FixedPointScaler(other.getMaxScale());
+    public static MaxScaleScaler from(MaxScaleScaler other) {
+        return new MaxScaleScaler(other.getMaxScale());
     }
 
     @Override

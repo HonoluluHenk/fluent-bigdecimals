@@ -1,6 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import com.github.honoluluhenk.fluentbigdecimals.scaler.FixedPointScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
-import static com.github.honoluluhenk.fluentbigdecimals.scaler.FixedPointScaler.from;
+import static com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler.from;
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,16 +16,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
 @IndicativeSentencesGeneration(generator = DisplayNameGenerator.ReplaceUnderscores.class)
 // we want to test runtime null-checks:
-class FixedPointScalerTest {
+class MaxScaleScalerTest {
 
-    public static final FixedPointScaler FIXTURE = from(2);
+    public static final MaxScaleScaler FIXTURE = from(2);
     private static final MathContext MATH_CONTEXT = new MathContext(5, HALF_UP);
 
     @Nested
     class From {
         @Test
         void passes_values_to_getters() {
-            FixedPointScaler scaler = from(7);
+            MaxScaleScaler scaler = from(7);
 
             assertThat(scaler.getMaxScale())
                 .isEqualTo(7);
@@ -34,9 +34,9 @@ class FixedPointScalerTest {
 
     @Test
     void copy_factory_produces_same_properties() {
-        FixedPointScaler scaler = from(7);
+        MaxScaleScaler scaler = from(7);
 
-        FixedPointScaler copy = from(scaler);
+        MaxScaleScaler copy = from(scaler);
 
         assertThat(copy.getMaxScale())
             .isEqualTo(7);
@@ -44,7 +44,7 @@ class FixedPointScalerTest {
 
     @Nested
     class WithMaxScale {
-        private final FixedPointScaler actual = FIXTURE.withMaxScale(3);
+        private final MaxScaleScaler actual = FIXTURE.withMaxScale(3);
 
         @Test
         void creates_new_instance() {
@@ -64,7 +64,7 @@ class FixedPointScalerTest {
 
         @Test
         void equals_for_same_values() {
-            FixedPointScaler b = from(2);
+            MaxScaleScaler b = from(2);
 
             assertThat(FIXTURE)
                 .isEqualTo(b);
@@ -75,7 +75,7 @@ class FixedPointScalerTest {
 
         @Test
         void differs_on_different_scale() {
-            FixedPointScaler b = from(99);
+            MaxScaleScaler b = from(99);
 
             assertThat(FIXTURE)
                 .isNotEqualTo(b);
@@ -92,7 +92,7 @@ class FixedPointScalerTest {
             var actual = FIXTURE.toString();
 
             assertThat(actual)
-                .isEqualTo(FixedPointScaler.class.getSimpleName() + "[2]");
+                .isEqualTo(MaxScaleScaler.class.getSimpleName() + "[2]");
         }
     }
 

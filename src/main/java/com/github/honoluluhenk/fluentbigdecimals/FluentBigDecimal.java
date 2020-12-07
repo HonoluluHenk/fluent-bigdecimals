@@ -9,6 +9,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.function.Function;
 
@@ -47,12 +48,18 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
 
     /**
      * Switch to new scaler and adjust value accordingly.
+     * <p>
+     * If you need to switch to a new scaler <i>without</i> scaling, use {@link #withScaler(Scaler)}.
      */
     public @NonNull FluentBigDecimal roundInto(Scaler scaler) {
         var result = withScaler(scaler)
             .round();
 
         return result;
+    }
+
+    public @NonNull FluentBigDecimal with(MathContext mathContext, Scaler scaler) {
+        return new FluentBigDecimal(getValue(), mathContext, scaler);
     }
 
     /**
@@ -95,6 +102,34 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
             FluentBigDecimal.class.getSimpleName(), value.toPlainString(), scaler);
 
         return result;
+    }
+
+    /**
+     * See {@link BigDecimal#toPlainString()}.
+     */
+    public @NonNull String toPlainString() {
+        return getValue().toPlainString();
+    }
+
+    /**
+     * See {@link BigDecimal#toEngineeringString()}.
+     */
+    public @NonNull String toEngineeringString() {
+        return getValue().toEngineeringString();
+    }
+
+    /**
+     * See {@link BigDecimal#toBigInteger()}.
+     */
+    public BigInteger toBigInteger() {
+        return getValue().toBigInteger();
+    }
+
+    /**
+     * See {@link BigDecimal#toBigIntegerExact()}.
+     */
+    public BigInteger toBigIntegerExact() {
+        return getValue().toBigIntegerExact();
     }
 
     public @NonNull FluentBigDecimal add(@Nullable BigDecimal addend) {
