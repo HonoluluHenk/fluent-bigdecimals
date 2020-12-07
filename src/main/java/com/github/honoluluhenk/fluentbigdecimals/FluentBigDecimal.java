@@ -41,6 +41,15 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         this.scaler = requireNonNull(scaler, "scaler required");
     }
 
+    public static @NonNull FluentBigDecimal of(@NonNull BigDecimal value, @NonNull MathContext mathContext, @NonNull Scaler scaler) {
+        return ofRaw(value, mathContext, scaler)
+            .round();
+    }
+
+    public static @NonNull FluentBigDecimal ofRaw(@NonNull BigDecimal value, @NonNull MathContext mathContext, @NonNull Scaler scaler) {
+        return new FluentBigDecimal(value, mathContext, scaler);
+    }
+
     public @NonNull FluentBigDecimal round() {
         @NonNull FluentBigDecimal result = apply(BigDecimal::round);
         return result;

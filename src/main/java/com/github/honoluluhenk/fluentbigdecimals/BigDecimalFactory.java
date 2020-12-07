@@ -98,12 +98,20 @@ public class BigDecimalFactory implements Scaler {
         return factory(new MathContext(Excel.EXCEL_PRECISION, roundingMode), Excel.EXCEL_SCALER);
     }
 
-    public FluentBigDecimal of(@NonNull BigDecimal value) {
-        return new FluentBigDecimal(value, mathContext, scaler);
+    public @NonNull FluentBigDecimal of(@NonNull BigDecimal value) {
+        return FluentBigDecimal.of(value, mathContext, scaler);
     }
 
-    public FluentBigDecimal of(@NonNull String bigDecimal) {
+    public @NonNull FluentBigDecimal of(@NonNull String bigDecimal) {
         return of(new BigDecimal(bigDecimal));
+    }
+
+    public @NonNull FluentBigDecimal ofRaw(@NonNull BigDecimal value) {
+        return FluentBigDecimal.ofRaw(value, mathContext, scaler);
+    }
+
+    public @NonNull FluentBigDecimal ofRaw(@NonNull String bigDecimal) {
+        return ofRaw(new BigDecimal(bigDecimal));
     }
 
     //FIXME: implement the others

@@ -10,15 +10,20 @@ import java.math.MathContext;
 
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 class BigDecimalFactoryTest {
     @Test
     void creates_instance_with_given_values() {
+        BigDecimal value = new BigDecimal("123.45");
         MathContext mathContext = new MathContext(5, HALF_UP);
         Scaler scaler = mock(Scaler.class);
+        given(scaler.scale(any(), any()))
+            .willReturn(value);
+
         BigDecimalFactory factory = BigDecimalFactory.factory(mathContext, scaler);
-        BigDecimal value = new BigDecimal("123.45");
 
         FluentBigDecimal actual = factory.of(value);
 

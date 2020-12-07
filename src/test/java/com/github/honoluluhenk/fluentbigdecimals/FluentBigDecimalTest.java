@@ -6,6 +6,7 @@ import lombok.NonNull;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentMatchers;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -19,6 +20,7 @@ import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
@@ -120,6 +122,51 @@ class FluentBigDecimalTest {
             assertThat(ex)
                 .hasMessageContaining("scaler");
         }
+    }
+
+    @Nested
+    class Factories {
+        final BigDecimal inputValue = new BigDecimal("123.45");
+        final BigDecimal roundedValue = new BigDecimal("999.999");
+        final Scaler mockScaler = mock(Scaler.class);
+
+
+        @BeforeEach
+        void beforeEach() {
+            given(mockScaler.scale(any(), any()))
+                .willReturn(roundedValue);
+        }
+
+        @Nested
+        class Of {
+            @Test
+            void rounds_and_calls_scaler() {
+                FluentBigDecimal actual = FluentBigDecimal
+                    .of(inputValue, new MathContext(3, HALF_UP), mockScaler);
+
+                verify(mockScaler)
+                    .scale(ArgumentMatchers.eq(new BigDecimal("123")), any(MathContext.class));
+
+                assertThat(actual.getValue())
+                    .isSameAs(roundedValue);
+            }
+        }
+
+        @Nested
+        class OfRaw {
+            @Test
+            void does_neither_round_nor_call_scaler() {
+                FluentBigDecimal actual = FluentBigDecimal
+                    .ofRaw(inputValue, new MathContext(3, HALF_UP), mockScaler);
+
+                verify(mockScaler, never())
+                    .scale(any(), any());
+
+                assertThat(actual.getValue())
+                    .isSameAs(inputValue);
+            }
+        }
+
     }
 
     @Nested

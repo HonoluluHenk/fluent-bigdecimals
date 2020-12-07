@@ -1,6 +1,7 @@
 package com.github.honoluluhenk.fluentbigdecimals.demo;
 
 import com.github.honoluluhenk.fluentbigdecimals.BigDecimalFactory;
+import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,6 @@ import java.math.MathContext;
 
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DemoTest {
 
@@ -24,34 +24,52 @@ public class DemoTest {
     @Nested
     class OldSchool {
         @Test
-        void using_bigdcimals() {
+        public void usingBigDecimalsStepByStep() {
 
-            var a = new BigDecimal("12.3456789");
+            BigDecimal a = new BigDecimal("12.3456789");
             assertThat(a).isEqualTo("12.3456789");
 
             // explicit rounding
-            var b = a.round(DEFAULT_MATH_CONTEXT);
+            BigDecimal b = a.round(DEFAULT_MATH_CONTEXT);
             assertThat(b).isEqualTo("12.34568");
 
             // some math operation
-            var c = b.add(new BigDecimal("54.555555"), DEFAULT_MATH_CONTEXT);
+            BigDecimal c = b.add(new BigDecimal("54.555555"), DEFAULT_MATH_CONTEXT);
             // intermediate result: 66.901235 and then rounded
             assertThat(c).isEqualTo("66.90124");
 
             // continue with different scaler
-            var x = c.round(DATABASE_MATH_CONTEXT) // remember: needs scaling
+            BigDecimal x = c.round(DATABASE_MATH_CONTEXT) // remember: needs scaling
                 .setScale(DATABASE_MAX_SCALE, DATABASE_MATH_CONTEXT.getRoundingMode());
 
             assertThat(x).isEqualTo("66.90");
 
-            var y = x.multiply(new BigDecimal("123.99999"), DATABASE_MATH_CONTEXT)
+            BigDecimal y = x.multiply(new BigDecimal("123.99999"), DATABASE_MATH_CONTEXT)
                 .setScale(DATABASE_MAX_SCALE, DATABASE_MATH_CONTEXT.getRoundingMode());
             // intermediate result: 8295.599331
             assertThat(y).isEqualTo("8295.60");
 
             // finally...
-            var result = y;
-            assertEquals("8295.60", result.toPlainString());
+            BigDecimal result = y;
+            assertThat(result).isEqualTo("8295.60");
+
+            // return result;
+        }
+
+        @Test
+        public void usingBigDecimalsCompact() {
+
+            BigDecimal result = new BigDecimal("12.3456789")
+                .round(DEFAULT_MATH_CONTEXT)
+                .add(new BigDecimal("54.555555"), DEFAULT_MATH_CONTEXT)
+                .round(DATABASE_MATH_CONTEXT)
+                .setScale(DATABASE_MAX_SCALE, DATABASE_MATH_CONTEXT.getRoundingMode())
+                .multiply(new BigDecimal("123.99999"), DATABASE_MATH_CONTEXT)
+                .setScale(DATABASE_MAX_SCALE, DATABASE_MATH_CONTEXT.getRoundingMode());
+
+            assertThat(result).isEqualTo("8295.60");
+
+            // return result;
         }
 
     }
@@ -59,53 +77,51 @@ public class DemoTest {
     @Nested
     class ApiDemo {
         @Test
-        void step_by_step() {
+        public void fluentStepByStep() {
 
             // start from factory
-            var a = DEFAULT.of("12.3456789");
-            // please note: no implicit rounding on creation
+            FluentBigDecimal a = DEFAULT.of("12.3456789");
+            // please note: implicit rounding on creation
             assertThat(a.getValue())
-                .isEqualTo("12.3456789");
-
-            // explicit rounding
-            var b = a.round();
-            assertThat(b.getValue())
                 .isEqualTo("12.34568");
 
+            // explicit rounding not necessary
+            FluentBigDecimal b = a;
+
             // some math operation
-            var c = b.add(new BigDecimal("54.555555"));
+            FluentBigDecimal c = b.add(new BigDecimal("54.555555"));
             // intermediate result: 66.901235 and then rounded
             assertThat(c.getValue())
                 .isEqualTo("66.90124");
 
             // continue with different scaler
-            var x = c.roundInto(DATABASE); // = 592.54 (database only allows two decimals
+            FluentBigDecimal x = c.roundInto(DATABASE); // = 592.54 (database only allows two decimals
             assertThat(x.getValue())
                 .isEqualTo("66.90");
 
             // still on the other scaler
-            var y = x.multiply(new BigDecimal("123.99999"));
+            FluentBigDecimal y = x.multiply(new BigDecimal("123.99999"));
             // intermediate result: 8295.599331
             assertThat(y.getValue())
                 .isEqualTo("8295.60");
 
-            // finally get the actual BigDecimal
-            var result = y.getValue();
+            // finally...
+            BigDecimal result = y.getValue();
+            assertThat(result).isEqualTo("8295.60");
 
-            assertEquals("8295.60", result.toPlainString());
+            // return result;
         }
 
         @Test
-        void using_the_nice_fluent_api() {
+        public void fluentCompact() {
 
-            var result = DEFAULT.of("12.3456789")
-                .round()
+            BigDecimal result = DEFAULT.of("12.3456789")
                 .add(new BigDecimal("54.555555"))
                 .roundInto(DATABASE)
                 .multiply(new BigDecimal("123.99999"))
                 .getValue();
 
-            assertEquals("8295.60", result.toPlainString());
+            assertThat(result).isEqualTo("8295.60");
         }
     }
 
