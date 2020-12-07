@@ -2,9 +2,9 @@
 
 Forget all about rounding/scaling in your day-to-day programming tasks!
 
-#
+# How?
 
-# Demo
+## Define factories for common use-cases
 
 ```java
 public class MyMathUtil {
@@ -12,6 +12,9 @@ public class MyMathUtil {
   public static final BigDecimalFactory DATABASE = BigDecimalFactory.jpaBigDecimal();
 }
 
+```
+
+```java
 public class MyBusiness {
   public BigDecimal usingBigDecimals() {
 

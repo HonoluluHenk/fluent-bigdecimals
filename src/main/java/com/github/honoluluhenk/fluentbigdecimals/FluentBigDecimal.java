@@ -50,13 +50,18 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         return new FluentBigDecimal(value, mathContext, scaler);
     }
 
+    /**
+     * Actually round <strong>and</strong> scale.
+     * <p>
+     * Mostly needed when you started with a raw value and need to round it.
+     */
     public @NonNull FluentBigDecimal round() {
         @NonNull FluentBigDecimal result = apply(BigDecimal::round);
         return result;
     }
 
     /**
-     * Switch to new scaler and adjust value accordingly.
+     * Switch to new scaler and scale value accordingly.
      * <p>
      * If you need to switch to a new scaler <i>without</i> scaling, use {@link #withScaler(Scaler)}.
      */
@@ -67,8 +72,21 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         return result;
     }
 
+    /**
+     * Switch to new MathContext/Scaler and round/scale value accordingly.
+     * <p>
+     * If you need to switch to a new Factory <i>without</i> scaling/rounding, use {@link #with(BigDecimalFactory}.
+     */
+    public @NonNull FluentBigDecimal roundInto(BigDecimalFactory factory) {
+        return of(getValue(), factory.getMathContext(), factory.getScaler());
+    }
+
     public @NonNull FluentBigDecimal with(MathContext mathContext, Scaler scaler) {
-        return new FluentBigDecimal(getValue(), mathContext, scaler);
+        return ofRaw(getValue(), mathContext, scaler);
+    }
+
+    public @NonNull FluentBigDecimal with(BigDecimalFactory factory) {
+        return ofRaw(getValue(), factory.getMathContext(), factory.getScaler());
     }
 
     /**
