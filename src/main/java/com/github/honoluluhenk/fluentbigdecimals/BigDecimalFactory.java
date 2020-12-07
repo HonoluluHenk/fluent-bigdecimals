@@ -17,7 +17,7 @@ import static java.math.RoundingMode.HALF_UP;
 @AllArgsConstructor
 @Getter
 @With
-public class BigDecimalFactory implements Scaler {
+public class BigDecimalFactory implements Configuration {
     private static final long serialVersionUID = -153378950972296160L;
 
     /**
@@ -133,11 +133,6 @@ public class BigDecimalFactory implements Scaler {
     }
 
     //FIXME: implement the others
-
-    @Override
-    public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
-        return scaler.scale(value, mathContext);
-    }
 
     @Override
     public String toString() {
