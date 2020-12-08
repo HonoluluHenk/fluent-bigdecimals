@@ -73,6 +73,12 @@ See methods
 in [BigDecimalConfiguration](src/main/java/com/github/honoluluhenk/fluentbigdecimals/BigDecimalConfiguration.java)
 for some predefined configurations.
 
+Some examples:
+
+* `BigDecimalConfiguration::monetary` (configurable precision/scale, HALF_UP rounding and stick to the given scale)
+* `BigDecimalConfiguration::jpaBigDecimal` (precision/scale taken
+  from [JPA/Hibernate](https://de.wikipedia.org/wiki/Java_Persistence_API) defaults for BigDecimal)
+
 ## Advanced usage
 
 ### compareTo/equals/hashCode

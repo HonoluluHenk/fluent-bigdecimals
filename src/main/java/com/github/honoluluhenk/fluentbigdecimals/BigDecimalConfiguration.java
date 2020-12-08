@@ -65,7 +65,7 @@ public class BigDecimalConfiguration implements Configuration {
     /**
      * Convenience: some precision, {@link RoundingMode#HALF_UP} rounding and {@link MaxScaleScaler} with a scale.
      */
-    public static BigDecimalConfiguration currency(@NonNull int precision, int scale) {
+    public static BigDecimalConfiguration monetary(@NonNull int precision, int scale) {
         return create(new MathContext(precision, HALF_UP), new MaxScaleScaler(scale));
     }
 

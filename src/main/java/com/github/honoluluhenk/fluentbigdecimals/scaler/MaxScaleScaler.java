@@ -10,9 +10,9 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
- * First round to precision, then reduce scale if needed ("Database" mode).
+ * First round to precision, then reduce scale if needed ("Database" mode, also typically monetary calculations).
  * <p>
- * Databases usually allow only a definable <i>maximum</i> scale for decimals.
+ * Databases usually allows only a definable <i>maximum</i> scale for decimals.
  */
 @Getter
 @EqualsAndHashCode(callSuper = false)

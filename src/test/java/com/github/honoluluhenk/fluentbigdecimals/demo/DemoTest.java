@@ -22,7 +22,7 @@ public class DemoTest {
     public static final int DATABASE_MAX_SCALE = 2;
     public static final BigDecimalConfiguration DATABASE = BigDecimalConfiguration.jpaBigDecimal();
 
-    public static final BigDecimalConfiguration DEMO_CONFIG = BigDecimalConfiguration.currency(10, 2);
+    public static final BigDecimalConfiguration DEMO_CONFIG = BigDecimalConfiguration.monetary(10, 2);
 
     @Nested
     class OldSchool {
