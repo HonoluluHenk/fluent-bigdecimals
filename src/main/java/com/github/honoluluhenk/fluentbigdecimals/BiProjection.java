@@ -7,6 +7,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 
 @FunctionalInterface
-public interface BiProjection {
-    @NonNull BigDecimal project(@NonNull BigDecimal value, @Nullable BigDecimal argument, @NonNull MathContext mathContext);
+public interface BiProjection<Arg> {
+    @NonNull BigDecimal project(@NonNull BigDecimal value, @Nullable Arg argument, @NonNull MathContext mathContext);
 }

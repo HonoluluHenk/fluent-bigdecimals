@@ -1,6 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals.demo;
 
-import com.github.honoluluhenk.fluentbigdecimals.BigDecimalFactory;
+import com.github.honoluluhenk.fluentbigdecimals.BigDecimalConfiguration;
 import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
 import org.junit.jupiter.api.Nested;
@@ -15,11 +15,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DemoTest {
 
     public static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
-    public static final BigDecimalFactory DEFAULT = BigDecimalFactory.factory(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
+    // some custom configuration
+    public static final BigDecimalConfiguration DEFAULT = BigDecimalConfiguration.create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
 
     public static final MathContext DATABASE_MATH_CONTEXT = new MathContext(18, HALF_UP);
     public static final int DATABASE_MAX_SCALE = 2;
-    public static final BigDecimalFactory DATABASE = BigDecimalFactory.jpaBigDecimal();
+    public static final BigDecimalConfiguration DATABASE = BigDecimalConfiguration.jpaBigDecimal();
+
+    public static final BigDecimalConfiguration DEMO_CONFIG = BigDecimalConfiguration.currency(10, 2);
 
     @Nested
     class OldSchool {
@@ -115,14 +118,47 @@ public class DemoTest {
         @Test
         public void fluentCompact() {
 
+            // after each step: round/scale according to currrent configuration
             BigDecimal result = DEFAULT.of("12.3456789")
                 .add(new BigDecimal("54.555555"))
+                // continue with other configuration
                 .roundInto(DATABASE)
                 .multiply(new BigDecimal("123.99999"))
                 .getValue();
 
+            // return result;
             assertThat(result).isEqualTo("8295.60");
         }
+
+        public BigDecimal myFancyOperation(BigDecimal value, int argument, MathContext mc) {
+            // just a simple simulation
+            var result = value.add(BigDecimal.valueOf(argument));
+
+            return result;
+        }
+
+        @Test
+        public void customOperationsWithOneArgument() {
+            FluentBigDecimal result = DATABASE.of("12345678.90")
+                .apply(this::myFancyOperation, 42);
+
+            assertThat(result.getValue())
+                .isEqualTo("12345720.90");
+
+        }
+
+        private BigDecimal doStuffWith(BigDecimal value, Object whatever) {
+            return value.add(new BigDecimal(whatever.hashCode()));
+        }
+
+        @Test
+        public void customOperationsWithAnyArgument() {
+            FluentBigDecimal result = DATABASE.of("12345678.90")
+                .apply((value, mathContext) -> doStuffWith(value, new Object()));
+
+            // return result;
+        }
+
     }
 
 //    @Nested
