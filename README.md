@@ -5,15 +5,23 @@
 ![GitHub stars](https://img.shields.io/github/stars/HonoluluHenk/fluent-bigdecimals?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/HonoluluHenk/fluent-bigdecimals?style=social)
 
-fluent-bigdecimals is a library that lets Java programmers forget about BigDecimal rounding/scaling!
+fluent-bigdecimals is a library that lets Java programmers forget about BigDecimal rounding/scaling.
 
-## Prerequisites
+It does this by wrapping
+Javas [BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html#compareTo-java.math.BigDecimal-)
+into a class with fancy fluent API.
 
-This project requires Java >= 11
+Very few and low-impact transitive dependencies.
+
+Java 9 modules supported.
+
+## Prerequisites/Dependencies
+
+This project requires Java >= 11.
 
 ## Installing
 
-Use this maven dependency:
+Maven dependency:
 
 ```xml
 
@@ -24,7 +32,7 @@ Use this maven dependency:
 </dependency>
 ```
 
-Current version: see [GitHub releases](./releases)
+Current version: see [GitHub releases](https://github.com/HonoluluHenk/fluent-bigdecimals/releases)
 or [Maven Central](https://search.maven.org/search?q=g:com.github.honoluluhenk.fluent-bigdecimals%20a:fluent-bigdecimals)
 
 ## Basic Usage
@@ -38,7 +46,7 @@ then re-use this configuration on all BigDecimal operations.
 public class MyMathUtil {
   // some custom configuration
   public static final BigDecimalFactory DEFAULT = BigDecimalConfiguration.factory(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
-  // predefined: round/scale in a databse compatible way (See FIXME: link to method).
+  // predefined: round/scale in a databse compatible way.
   public static final BigDecimalFactory DATABASE = BigDecimalConfiguration.jpaBigDecimal();
 }
 
@@ -60,6 +68,10 @@ public class MyBusiness {
 
 }
 ```
+
+See methods
+in [BigDecimalConfiguration](src/main/java/com/github/honoluluhenk/fluentbigdecimals/BigDecimalConfiguration.java)
+for some predefined configurations.
 
 ## Advanced usage
 
@@ -141,7 +153,7 @@ class Foo {
 }
 ```
 
-### mapping to other types
+### Mapping to other types
 
 There is the `map` method:
 
