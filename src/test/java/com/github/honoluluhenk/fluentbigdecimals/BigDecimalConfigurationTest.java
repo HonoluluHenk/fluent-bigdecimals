@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-class BigDecimalFactoryTest {
+class BigDecimalConfigurationTest {
     @Test
     void creates_instance_with_given_values() {
         BigDecimal value = new BigDecimal("123.45");
@@ -23,7 +23,7 @@ class BigDecimalFactoryTest {
         given(scaler.scale(any(), any()))
             .willReturn(value);
 
-        BigDecimalFactory factory = BigDecimalFactory.factory(mathContext, scaler);
+        BigDecimalConfiguration factory = BigDecimalConfiguration.create(mathContext, scaler);
 
         FluentBigDecimal actual = factory.of(value);
 
@@ -35,7 +35,7 @@ class BigDecimalFactoryTest {
 
     @Test
     void excel_creates_excel_compatible_factory() {
-        var actual = BigDecimalFactory.excel()
+        var actual = BigDecimalConfiguration.excel()
             .of(new BigDecimal("42"));
 
         assertThat(actual.getConfiguration())
@@ -45,7 +45,7 @@ class BigDecimalFactoryTest {
 
     @Test
     void jpaBigDecimal_creates_JPA_compatible_factory() {
-        var actual = BigDecimalFactory.jpaBigDecimal()
+        var actual = BigDecimalConfiguration.jpaBigDecimal()
             .of(new BigDecimal("42"));
 
         assertThat(actual.getConfiguration())
@@ -54,7 +54,7 @@ class BigDecimalFactoryTest {
 
     @Test
     void database_adds_scale_and_precision() {
-        var actual = BigDecimalFactory.database(5, 1)
+        var actual = BigDecimalConfiguration.database(5, 1)
             .of(new BigDecimal("42"));
 
         assertThat(actual.getConfiguration())
@@ -63,7 +63,7 @@ class BigDecimalFactoryTest {
 
     @Test
     void calculates_java_precision_from_database_precision_notation() {
-        var actual = BigDecimalFactory.databasePrecision(5, 2, HALF_UP)
+        var actual = BigDecimalConfiguration.databasePrecision(5, 2, HALF_UP)
             .of(new BigDecimal("42"));
 
         assertThat(actual.getConfiguration())

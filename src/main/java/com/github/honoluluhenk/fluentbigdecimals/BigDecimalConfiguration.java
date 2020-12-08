@@ -14,10 +14,13 @@ import java.math.RoundingMode;
 
 import static java.math.RoundingMode.HALF_UP;
 
+/**
+ * Factory class for the most common use-cases.
+ */
 @AllArgsConstructor
 @Getter
 @With
-public class BigDecimalFactory implements Configuration {
+public class BigDecimalConfiguration implements Configuration {
     private static final long serialVersionUID = -153378950972296160L;
 
     /**
@@ -55,37 +58,44 @@ public class BigDecimalFactory implements Configuration {
     private final @NonNull MathContext mathContext;
     private final @NonNull Scaler scaler;
 
-    public static BigDecimalFactory factory(@NonNull MathContext mathContext, @NonNull Scaler scaler) {
-        return new BigDecimalFactory(mathContext, scaler);
+    public static BigDecimalConfiguration create(@NonNull MathContext mathContext, @NonNull Scaler scaler) {
+        return new BigDecimalConfiguration(mathContext, scaler);
+    }
+
+    /**
+     * Convenience: some precision, {@link RoundingMode#HALF_UP} rounding and {@link MaxScaleScaler} with a scale.
+     */
+    public static BigDecimalConfiguration currency(@NonNull int precision, int scale) {
+        return create(new MathContext(precision, HALF_UP), new MaxScaleScaler(scale));
     }
 
     /**
      * Compatible to JPA defaults for BigDecimal: @Column(precision = 16, scale = 2) with {@link RoundingMode#HALF_UP}.
      */
-    public static BigDecimalFactory jpaBigDecimal() {
+    public static BigDecimalConfiguration jpaBigDecimal() {
         return jpaBigDecimal(HALF_UP);
     }
 
     /**
      * Compatible to JPA defaults for BigDecimal: @Column(precision = 16, scale = 2).
      */
-    public static BigDecimalFactory jpaBigDecimal(@NonNull RoundingMode roundingMode) {
+    public static BigDecimalConfiguration jpaBigDecimal(@NonNull RoundingMode roundingMode) {
         return database(Database.BIGDECIMAL_PRECISION, Database.BIGDECIMAL_SCALE, roundingMode);
     }
 
     /**
      * Custom precision/scale with a {@link MaxScaleScaler} (used by most SQL database systems), uses HALF_UP rounding.
      */
-    public static BigDecimalFactory database(int databasePrecsion, int databaseScale) {
+    public static BigDecimalConfiguration database(int databasePrecsion, int databaseScale) {
         return database(databasePrecsion, databaseScale, HALF_UP);
     }
 
     /**
      * Custom precision/scale with a {@link MaxScaleScaler} (used by most SQL database systems).
      */
-    public static BigDecimalFactory database(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
+    public static BigDecimalConfiguration database(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
         int javaPrecision = databasePrecsion + databaseScale;
-        return factory(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
+        return create(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
     }
 
     /**
@@ -97,23 +107,23 @@ public class BigDecimalFactory implements Configuration {
      * <p>
      * See {@link Database} for more details.
      */
-    public static BigDecimalFactory databasePrecision(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
+    public static BigDecimalConfiguration databasePrecision(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
         int javaPrecision = databasePrecsion + databaseScale;
-        return factory(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
+        return create(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
     }
 
     /**
      * Excel compatible rounding/scaling.
      */
-    public static BigDecimalFactory excel() {
+    public static BigDecimalConfiguration excel() {
         return excel(HALF_UP);
     }
 
     /**
      * Excel compatible rounding/scaling.
      */
-    public static BigDecimalFactory excel(@NonNull RoundingMode roundingMode) {
-        return factory(new MathContext(Excel.EXCEL_PRECISION, roundingMode), Excel.EXCEL_SCALER);
+    public static BigDecimalConfiguration excel(@NonNull RoundingMode roundingMode) {
+        return create(new MathContext(Excel.EXCEL_PRECISION, roundingMode), Excel.EXCEL_SCALER);
     }
 
     public @NonNull FluentBigDecimal of(@NonNull BigDecimal value) {
