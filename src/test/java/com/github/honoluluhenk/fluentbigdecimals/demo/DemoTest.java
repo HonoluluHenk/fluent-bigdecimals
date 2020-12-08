@@ -130,33 +130,38 @@ public class DemoTest {
             assertThat(result).isEqualTo("8295.60");
         }
 
+        public void customOperationsWithOneArgument() {
+            FluentBigDecimal result = DATABASE.of("12345678.90")
+                .apply(BigDecimal::divideToIntegralValue, new BigDecimal("42"))
+                .apply(this::myFancyOperation, 42);
+        }
+
         public BigDecimal myFancyOperation(BigDecimal value, int argument, MathContext mc) {
             // just a simple simulation
-            var result = value.add(BigDecimal.valueOf(argument));
+            BigDecimal result = value.add(BigDecimal.valueOf(argument));
 
             return result;
         }
 
-        @Test
-        public void customOperationsWithOneArgument() {
+        public void customOperationsWithAnyArgument(Object someParam) {
             FluentBigDecimal result = DATABASE.of("12345678.90")
-                .apply(this::myFancyOperation, 42);
+                .apply((value, mathContext) -> doStuffWith(value, someParam));
 
-            assertThat(result.getValue())
-                .isEqualTo("12345720.90");
-
+            // return result;
         }
 
         private BigDecimal doStuffWith(BigDecimal value, Object whatever) {
             return value.add(new BigDecimal(whatever.hashCode()));
         }
 
-        @Test
-        public void customOperationsWithAnyArgument() {
-            FluentBigDecimal result = DATABASE.of("12345678.90")
-                .apply((value, mathContext) -> doStuffWith(value, new Object()));
+        public void mapping() {
+            double result = DATABASE.of("12345678.90")
+                .map(BigDecimal::doubleValue);
+        }
 
-            // return result;
+        private void roundIntoDemo() {
+            FluentBigDecimal result = DEFAULT.of("12345678.90")
+                .withConfiguration(DATABASE);
         }
 
     }
