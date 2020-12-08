@@ -87,6 +87,13 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         return getValue().compareTo(o.getValue());
     }
 
+    /**
+     * Convenience: compare current value to other using {@link BigDecimal#compareTo(BigDecimal)}.
+     */
+    public int compareTo(@NonNull BigDecimal other) {
+        return getValue().compareTo(other);
+    }
+
     public <Arg> @NonNull FluentBigDecimal apply(@NonNull BiProjection<Arg> projection, @Nullable Arg argument) {
         if (argument == null) {
             return this;
