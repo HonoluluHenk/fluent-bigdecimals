@@ -20,13 +20,12 @@ import static java.util.Objects.requireNonNull;
  */
 @Getter
 @With
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecimal> {
     private static final long serialVersionUID = 1646116594300550112L;
 
     public static final BigDecimal HUNDRED = new BigDecimal("100");
 
-    @EqualsAndHashCode.Include
     private final @NonNull BigDecimal value;
     private final @NonNull Configuration configuration;
 

@@ -171,15 +171,29 @@ class FluentBigDecimalTest {
     @Nested
     class HashCodeEquals {
         @Test
-        void equals_for_equal_value_and_any_scaler() {
-            FluentBigDecimal a = valueOf("123", FIXTURE_SCALER);
-            FluentBigDecimal b = valueOf("123", FIXTURE_SCALER);
+        void equals_for_equal_value_and_configuration() {
+            FluentBigDecimal a = FluentBigDecimal.of(new BigDecimal("123"), FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+            FluentBigDecimal b = FluentBigDecimal.of(new BigDecimal("123"), FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
 
             assertThat(a)
                 .isEqualTo(b);
 
             assertThat(a.hashCode())
                 .isEqualTo(b.hashCode());
+        }
+
+        @Test
+        void differs_for_equal_value_and_differing_configuration() {
+            FluentBigDecimal a = FluentBigDecimal.of(
+                new BigDecimal("123"), FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+            FluentBigDecimal b = new FluentBigDecimal(
+                new BigDecimal("123"), new SimpleConfiguration(new MathContext(10, DOWN), FIXTURE_SCALER));
+
+            assertThat(a)
+                .isNotEqualTo(b);
+
+            assertThat(a.hashCode())
+                .isNotEqualTo(b.hashCode());
         }
 
         @Test
