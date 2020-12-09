@@ -69,6 +69,10 @@ public class MyBusiness {
 }
 ```
 
+## Common usecases
+
+### Creating your own Configuration
+
 See methods in [ConfigurationFactory](src/main/java/com/github/honoluluhenk/fluentbigdecimals/ConfigurationFactory.java)
 for some predefined configurations.
 
@@ -77,10 +81,13 @@ Some examples:
 * `ConfigurationFactory::monetary` (configurable precision/scale, HALF_UP rounding and stick to the given scale)
 * `ConfigurationFactory::jpaBigDecimal` (precision/scale taken
   from [JPA/Hibernate](https://de.wikipedia.org/wiki/Java_Persistence_API) defaults for BigDecimal)
+* `ConfigurationFactory::cashRounding` (apply Cash Rounding on each step, See also enum `CashRoundingUnits` for some
+  predefined values)
 
-## Common usecases
+### Builders/with
 
-### Creating your own Configuration
+All relevant classes (Configuration, Scaler, ...) support various `withFoo` methods.
+This means you can always start with some defaults from `ConfigurationFactory` and then adjust to your preference.
 
 ### Cash Rounding (predefined configuration)
 
