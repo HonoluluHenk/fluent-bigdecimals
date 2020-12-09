@@ -187,7 +187,7 @@ class FluentBigDecimalTest {
             FluentBigDecimal a = FluentBigDecimal.of(
                 new BigDecimal("123"), FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
             FluentBigDecimal b = new FluentBigDecimal(
-                new BigDecimal("123"), new SimpleConfiguration(new MathContext(10, DOWN), FIXTURE_SCALER));
+                new BigDecimal("123"), new Configuration(new MathContext(10, DOWN), FIXTURE_SCALER));
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -277,7 +277,7 @@ class FluentBigDecimalTest {
             String actual = FIXTURE.toString();
 
             assertThat(actual)
-                .isEqualTo("FluentBigDecimal[123.45, SimpleConfiguration[5,HALF_UP,MaxPrecisionScaler]]");
+                .isEqualTo("FluentBigDecimal[123.45,[5,HALF_UP,MaxPrecisionScaler]]");
         }
     }
 
@@ -292,7 +292,7 @@ class FluentBigDecimalTest {
             assertThat(actual.getValue())
                 .isEqualTo("123.46");
             assertThat(actual.getConfiguration())
-                .isEqualTo(new SimpleConfiguration(FIXTURE_MATH_CONTEXT, FIXTURE_SCALER));
+                .isEqualTo(new Configuration(FIXTURE_MATH_CONTEXT, FIXTURE_SCALER));
         }
     }
 
@@ -302,7 +302,7 @@ class FluentBigDecimalTest {
         void rounds_and_sets_other_configuration() {
             Scaler otherScaler = (value, mc) -> value.setScale(0, DOWN);
             MathContext otherMathContext = new MathContext(32, UP);
-            SimpleConfiguration otherConfiguration = new SimpleConfiguration(otherMathContext, otherScaler);
+            Configuration otherConfiguration = new Configuration(otherMathContext, otherScaler);
 
             FluentBigDecimal actual = FIXTURE.roundInto(otherConfiguration);
 

@@ -1,8 +1,8 @@
 package com.github.honoluluhenk.fluentbigdecimals.demo;
 
-import com.github.honoluluhenk.fluentbigdecimals.BigDecimalConfiguration;
 import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
+import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
 import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
@@ -19,11 +19,11 @@ public class DemoTest {
 
     public static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
     // some custom configuration
-    public static final BigDecimalConfiguration DEFAULT = BigDecimalConfiguration.create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
+    public static final Configuration DEFAULT = ConfigurationFactory.create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
 
     public static final MathContext DATABASE_MATH_CONTEXT = new MathContext(18, HALF_UP);
     public static final int DATABASE_MAX_SCALE = 2;
-    public static final BigDecimalConfiguration DATABASE = BigDecimalConfiguration.jpaBigDecimal();
+    public static final Configuration DATABASE = ConfigurationFactory.jpaBigDecimal();
 
     @Nested
     class OldSchool {
@@ -169,10 +169,10 @@ public class DemoTest {
 
     @Nested
     class CashRoundingDemo {
-        private final Configuration SWISS_CASH = BigDecimalConfiguration
+        private final Configuration SWISS_CASH = ConfigurationFactory
             .cashRounding(20, CashRoundingUnits.ROUND_DOT05);
 
-        private final BigDecimalConfiguration HIGH_PRECISION = BigDecimalConfiguration
+        private final Configuration HIGH_PRECISION = ConfigurationFactory
             .create(20, HALF_UP, MaxScaleScaler.of(10));
 
         @Test

@@ -34,7 +34,7 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
         @NonNull MathContext mathContext,
         @NonNull Scaler scaler
     ) {
-        this(value, new SimpleConfiguration(mathContext, scaler));
+        this(value, new Configuration(mathContext, scaler));
     }
 
     public FluentBigDecimal(@NonNull BigDecimal value, @NonNull Configuration configuration) {
@@ -125,7 +125,7 @@ public class FluentBigDecimal implements Serializable, Comparable<FluentBigDecim
 
     @Override
     public @NonNull String toString() {
-        String result = String.format("%s[%s, %s]",
+        String result = String.format("%s[%s,%s]",
             FluentBigDecimal.class.getSimpleName(),
             value.toPlainString(),
             getConfiguration());

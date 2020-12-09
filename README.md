@@ -45,9 +45,9 @@ then re-use this configuration on all BigDecimal operations.
 ```java
 public class MyMathUtil {
   // some custom configuration
-  public static final BigDecimalFactory DEFAULT = BigDecimalConfiguration.factory(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
+  public static final BigDecimalFactory DEFAULT = ConfigurationFactory.factory(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
   // predefined: round/scale in a databse compatible way.
-  public static final BigDecimalFactory DATABASE = BigDecimalConfiguration.jpaBigDecimal();
+  public static final BigDecimalFactory DATABASE = ConfigurationFactory.jpaBigDecimal();
 }
 
 ```
@@ -69,14 +69,13 @@ public class MyBusiness {
 }
 ```
 
-See methods
-in [BigDecimalConfiguration](src/main/java/com/github/honoluluhenk/fluentbigdecimals/BigDecimalConfiguration.java)
+See methods in [ConfigurationFactory](src/main/java/com/github/honoluluhenk/fluentbigdecimals/ConfigurationFactory.java)
 for some predefined configurations.
 
 Some examples:
 
-* `BigDecimalConfiguration::monetary` (configurable precision/scale, HALF_UP rounding and stick to the given scale)
-* `BigDecimalConfiguration::jpaBigDecimal` (precision/scale taken
+* `ConfigurationFactory::monetary` (configurable precision/scale, HALF_UP rounding and stick to the given scale)
+* `ConfigurationFactory::jpaBigDecimal` (precision/scale taken
   from [JPA/Hibernate](https://de.wikipedia.org/wiki/Java_Persistence_API) defaults for BigDecimal)
 
 ## Common usecases
@@ -87,10 +86,10 @@ Some examples:
 
 ```java
 class Foo {
-  private final Configuration SWISS_CASH = BigDecimalConfiguration
+  private final Configuration SWISS_CASH = ConfigurationFactory
     .cashRounding(20, CashRoundingUnits.ROUND_DOT05);
 
-  private final BigDecimalConfiguration HIGH_PRECISION = BigDecimalConfiguration
+  private final ConfigurationFactory HIGH_PRECISION = ConfigurationFactory
     .create(20, HALF_UP, MaxScaleScaler.of(10));
 
   void roundIntoCash() {
@@ -112,17 +111,16 @@ In contrast to Java Bigdecimals, databases usually only allow a definable *maxim
 
 Also, Java usually treat precision and scale differently:
 Java: `precision` is total number of relevant digits (integer + decimal part together), allowing a maximum of `scale`
-digits after the decimal point.
-Database: `precision` is the total number of digits including `scale`. There are `precision - scale` digits available
-for the integer part.
+digits after the decimal point. Database: `precision` is the total number of digits including `scale`. There
+are `precision - scale` digits available for the integer part.
 
 A configuration matching the above behavior can be obtained by Using database notation:
-[BigDecimalConfiguration.database(precision, scale)](src/main/java/com/github/honoluluhenk/fluentbigdecimals/BigDecimalConfiguration.java)
+[ConfigurationFactory.database(precision, scale)](src/main/java/com/github/honoluluhenk/fluentbigdecimals/ConfigurationFactory.java)
 .
 
 Also there is a shortcut to obtain a database configuration using JPA/Hibernate default values for precision/scale:
 Using JPA/Hibernate notation:
-[BigDecimalConfiguration.jpaBigDecimal(precision, scale)](src/main/java/com/github/honoluluhenk/fluentbigdecimals/BigDecimalConfiguration.java)
+[ConfigurationFactory.jpaBigDecimal(precision, scale)](src/main/java/com/github/honoluluhenk/fluentbigdecimals/ConfigurationFactory.java)
 .
 
 Just the scaling part is implemented by

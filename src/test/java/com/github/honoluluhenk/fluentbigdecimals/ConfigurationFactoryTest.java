@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-class BigDecimalConfigurationTest {
+class ConfigurationFactoryTest {
     @Test
     void creates_instance_with_given_values() {
         BigDecimal value = new BigDecimal("123.45");
@@ -23,51 +23,51 @@ class BigDecimalConfigurationTest {
         given(scaler.scale(any(), any()))
             .willReturn(value);
 
-        BigDecimalConfiguration factory = BigDecimalConfiguration.create(mathContext, scaler);
+        Configuration configuration = ConfigurationFactory.create(mathContext, scaler);
 
-        FluentBigDecimal actual = factory.of(value);
+        FluentBigDecimal actual = configuration.of(value);
 
         assertThat(actual.getValue())
             .isEqualTo(value);
         assertThat(actual.getConfiguration())
-            .isEqualTo(new SimpleConfiguration(mathContext, scaler));
+            .isEqualTo(new Configuration(mathContext, scaler));
     }
 
     @Test
     void excel_creates_excel_compatible_factory() {
-        var actual = BigDecimalConfiguration.excel()
+        var actual = ConfigurationFactory.excel()
             .of(new BigDecimal("42"));
 
         assertThat(actual.getConfiguration())
-            .isEqualTo(new SimpleConfiguration(new MathContext(15, HALF_UP), new MaxPrecisionScaler()));
+            .isEqualTo(new Configuration(new MathContext(15, HALF_UP), new MaxPrecisionScaler()));
 
     }
 
     @Test
     void jpaBigDecimal_creates_JPA_compatible_factory() {
-        var actual = BigDecimalConfiguration.jpaBigDecimal()
+        var actual = ConfigurationFactory.jpaBigDecimal()
             .of(new BigDecimal("42"));
 
         assertThat(actual.getConfiguration())
-            .isEqualTo(new SimpleConfiguration(new MathContext(18, HALF_UP), new MaxScaleScaler(2)));
+            .isEqualTo(new Configuration(new MathContext(18, HALF_UP), new MaxScaleScaler(2)));
     }
 
     @Test
     void database_adds_scale_and_precision() {
-        var actual = BigDecimalConfiguration.database(5, 1)
+        var actual = ConfigurationFactory.databaseJavaNotation(5, 1)
             .of(new BigDecimal("42"));
 
         assertThat(actual.getConfiguration())
-            .isEqualTo(new SimpleConfiguration(new MathContext(6, HALF_UP), new MaxScaleScaler(1)));
+            .isEqualTo(new Configuration(new MathContext(6, HALF_UP), new MaxScaleScaler(1)));
     }
 
     @Test
     void calculates_java_precision_from_database_precision_notation() {
-        var actual = BigDecimalConfiguration.databasePrecision(5, 2, HALF_UP)
+        var actual = ConfigurationFactory.databaseDBNotation(5, 2, HALF_UP)
             .of(new BigDecimal("42"));
 
         assertThat(actual.getConfiguration())
-            .isEqualTo(new SimpleConfiguration(new MathContext(7, HALF_UP), new MaxScaleScaler(2)));
+            .isEqualTo(new Configuration(new MathContext(7, HALF_UP), new MaxScaleScaler(2)));
     }
 
 }
