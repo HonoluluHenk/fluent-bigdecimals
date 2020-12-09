@@ -37,15 +37,16 @@ or [Maven Central](https://search.maven.org/search?q=g:com.github.honoluluhenk.f
 
 ## Basic Usage
 
-FluentBigDecimals requires you to only setup precision, rounding and scaling (a.k.a.: the "configuration") once. It will
-then re-use this configuration on all BigDecimal operations.
+fluent-bigdecimals requires you to only setup precision, rounding and scaling (a.k.a.: the `Configuration`) once.
+You can then re-use this configuration on all BigDecimal operations.
 
 ### Step 1: Define your rounding/scaling configurations globally
 
 ```java
 public class MyMathUtil {
+  private static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
   // some custom configuration
-  public static final BigDecimalFactory DEFAULT = ConfigurationFactory.factory(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
+  public static final Configuration DEFAULT = ConfigurationFactory.create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
   // predefined: round/scale in a databse compatible way.
   public static final BigDecimalFactory DATABASE = ConfigurationFactory.jpaBigDecimal();
 }
