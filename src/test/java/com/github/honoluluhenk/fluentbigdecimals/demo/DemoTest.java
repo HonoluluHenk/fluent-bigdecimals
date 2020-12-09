@@ -131,6 +131,17 @@ public class DemoTest {
             assertThat(result).isEqualTo("8295.60");
         }
 
+        @Test
+        public void usingFancyOperators() {
+            // call your own operators (or BigDecimal operations not yet directly implemented by fluent-bigdecimals)
+            FluentBigDecimal result = DEFAULT.of("12.3456789")
+                .apply(this::myFancyOperation, 42);
+
+            // operators returning other values thant BigDecimal
+            int signum = DEFAULT.of("12.3456789")
+                .map(BigDecimal::signum);
+        }
+
         public void customOperationsWithOneArgument() {
             FluentBigDecimal result = DATABASE.of("12345678.90")
                 .apply(BigDecimal::divideToIntegralValue, new BigDecimal("42"))

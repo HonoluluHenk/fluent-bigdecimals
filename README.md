@@ -40,7 +40,7 @@ or [Maven Central](https://search.maven.org/search?q=g:com.github.honoluluhenk.f
 FluentBigDecimals requires you to only setup precision, rounding and scaling (a.k.a.: the "configuration") once. It will
 then re-use this configuration on all BigDecimal operations.
 
-### Step 1: Define your configurations for common use-cases
+### Step 1: Define your rounding/scaling configurations globally
 
 ```java
 public class MyMathUtil {
@@ -66,10 +66,19 @@ public class MyBusiness {
     return result;
   }
 
+  public void usingFancyOperators() {
+    // call your own operators (or BigDecimal operations not yet directly implemented by fluent-bigdecimals)
+    FluentBigDecimal result = DEFAULT.of("12.3456789")
+      .apply(this::myFancyOperation, 42);
+
+    // operators returning other values thant BigDecimal
+    int signum = DEFAULT.of("12.3456789")
+      .map(BigDecimal::signum);
+  }
 }
 ```
 
-## Common usecases
+## Common Usecases
 
 ### Creating your own Configuration
 
@@ -79,15 +88,17 @@ for some predefined configurations.
 Some examples:
 
 * `ConfigurationFactory::monetary` (configurable precision/scale, HALF_UP rounding and stick to the given scale)
+* `ConfigurationFactory::cashRounding` (same as monetary plus
+  apply [Cash Rounding](https://en.wikipedia.org/wiki/Cash_rounding) on each step, See also enum `CashRoundingUnits` for
+  some predefined values, see also: Advanced Usage)
 * `ConfigurationFactory::jpaBigDecimal` (precision/scale taken
-  from [JPA/Hibernate](https://de.wikipedia.org/wiki/Java_Persistence_API) defaults for BigDecimal)
-* `ConfigurationFactory::cashRounding` (apply Cash Rounding on each step, See also enum `CashRoundingUnits` for some
-  predefined values)
+  from [JPA/Hibernate](https://de.wikipedia.org/wiki/Java_Persistence_API) defaults for BigDecimal, see also: Advanced
+  Usage)
 
 ### Builders/with
 
-All relevant classes (Configuration, Scaler, ...) support various `withFoo` methods.
-This means you can always start with some defaults from `ConfigurationFactory` and then adjust to your preference.
+All relevant classes (Configuration, Scaler, ...) support various `withFoo` methods. This means you can always start
+with some defaults from `ConfigurationFactory` and then adjust to your preference.
 
 ### Cash Rounding (predefined configuration)
 
@@ -114,7 +125,7 @@ class Foo {
 
 ### JPA/Database precision and scale (predefined configuration)
 
-In contrast to Java Bigdecimals, databases usually only allow a definable *maximum* scale for numeric values.
+In contrast to Java BigDecimals, databases usually only allow a definable *maximum* scale for numeric values.
 
 Also, Java usually treat precision and scale differently:
 Java: `precision` is total number of relevant digits (integer + decimal part together), allowing a maximum of `scale`
