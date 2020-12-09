@@ -7,10 +7,9 @@
   <!-- Release checklist                                              -->
   <!--                                                                -->
   <!-- set version in pom.xml                                         -->
-  <!-- ./mvnw clean package                                           -->
+  <!-- ./mvnw clean deploy                                            -->
   <!-- set git tag using release version                              -->
   <!-- push master + tag                                              -->
-  <!-- force jitpack build: see maven profile "build-jitpack"         -->
   <!-- update pom.xml to next SNAPSHOT                                -->
   <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 
