@@ -552,7 +552,6 @@ class FluentBigDecimalTest {
 
     }
 
-
     void keeps_same_scaler_impl(BinaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE, FIXTURE);
 

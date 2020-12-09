@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
-import static com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler.from;
+import static com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler.of;
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,14 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 // we want to test runtime null-checks:
 class MaxScaleScalerTest {
 
-    public static final MaxScaleScaler FIXTURE = from(2);
+    public static final MaxScaleScaler FIXTURE = MaxScaleScaler.of(2);
     private static final MathContext MATH_CONTEXT = new MathContext(5, HALF_UP);
 
     @Nested
     class From {
         @Test
         void passes_values_to_getters() {
-            MaxScaleScaler scaler = from(7);
+            MaxScaleScaler scaler = MaxScaleScaler.of(7);
 
             assertThat(scaler.getMaxScale())
                 .isEqualTo(7);
@@ -34,9 +34,9 @@ class MaxScaleScalerTest {
 
     @Test
     void copy_factory_produces_same_properties() {
-        MaxScaleScaler scaler = from(7);
+        MaxScaleScaler scaler = MaxScaleScaler.of(7);
 
-        MaxScaleScaler copy = from(scaler);
+        MaxScaleScaler copy = of(scaler);
 
         assertThat(copy.getMaxScale())
             .isEqualTo(7);
@@ -64,7 +64,7 @@ class MaxScaleScalerTest {
 
         @Test
         void equals_for_same_values() {
-            MaxScaleScaler b = from(2);
+            MaxScaleScaler b = MaxScaleScaler.of(2);
 
             assertThat(FIXTURE)
                 .isEqualTo(b);
@@ -75,7 +75,7 @@ class MaxScaleScalerTest {
 
         @Test
         void differs_on_different_scale() {
-            MaxScaleScaler b = from(99);
+            MaxScaleScaler b = MaxScaleScaler.of(99);
 
             assertThat(FIXTURE)
                 .isNotEqualTo(b);

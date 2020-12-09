@@ -1,8 +1,11 @@
 package com.github.honoluluhenk.fluentbigdecimals.demo;
 
 import com.github.honoluluhenk.fluentbigdecimals.BigDecimalConfiguration;
+import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
+import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -21,8 +24,6 @@ public class DemoTest {
     public static final MathContext DATABASE_MATH_CONTEXT = new MathContext(18, HALF_UP);
     public static final int DATABASE_MAX_SCALE = 2;
     public static final BigDecimalConfiguration DATABASE = BigDecimalConfiguration.jpaBigDecimal();
-
-    public static final BigDecimalConfiguration DEMO_CONFIG = BigDecimalConfiguration.monetary(10, 2);
 
     @Nested
     class OldSchool {
@@ -164,6 +165,27 @@ public class DemoTest {
                 .withConfiguration(DATABASE);
         }
 
+    }
+
+    @Nested
+    class CashRoundingDemo {
+        private final Configuration SWISS_CASH = BigDecimalConfiguration
+            .cashRounding(20, CashRoundingUnits.ROUND_DOT05);
+
+        private final BigDecimalConfiguration HIGH_PRECISION = BigDecimalConfiguration
+            .create(20, HALF_UP, MaxScaleScaler.of(10));
+
+        @Test
+        void roundIntoCash() {
+            // start off with some high precision calculations
+            FluentBigDecimal cash = HIGH_PRECISION.of("12345.67890")
+                .multiply(new BigDecimal("3"))
+                // intermediate result: 37037.03670
+                .roundInto(SWISS_CASH);
+
+            assertThat(cash.getValue())
+                .isEqualTo("37037.05");
+        }
     }
 
 //    @Nested

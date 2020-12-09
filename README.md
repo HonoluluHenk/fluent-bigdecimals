@@ -79,6 +79,57 @@ Some examples:
 * `BigDecimalConfiguration::jpaBigDecimal` (precision/scale taken
   from [JPA/Hibernate](https://de.wikipedia.org/wiki/Java_Persistence_API) defaults for BigDecimal)
 
+## Common usecases
+
+### Creating your own Configuration
+
+### Cash Rounding (predefined configuration)
+
+```java
+class Foo {
+  private final Configuration SWISS_CASH = BigDecimalConfiguration
+    .cashRounding(20, CashRoundingUnits.ROUND_DOT05);
+
+  private final BigDecimalConfiguration HIGH_PRECISION = BigDecimalConfiguration
+    .create(20, HALF_UP, MaxScaleScaler.of(10));
+
+  void roundIntoCash() {
+    // start off with some high precision calculations
+    FluentBigDecimal cash = HIGH_PRECISION.of("12345.67890")
+      .multiply(new BigDecimal("3"))
+      // intermediate result: 37037.03670
+      .roundInto(SWISS_CASH);
+
+    assertThat(cash.getValue())
+      .isEqualTo("37037.05");
+  }
+}
+```
+
+### JPA/Database precision and scale (predefined configuration)
+
+In contrast to Java Bigdecimals, databases usually only allow a definable *maximum* scale for numeric values.
+
+Also, Java usually treat precision and scale differently:
+Java: `precision` is total number of relevant digits (integer + decimal part together), allowing a maximum of `scale`
+digits after the decimal point.
+Database: `precision` is the total number of digits including `scale`. There are `precision - scale` digits available
+for the integer part.
+
+A configuration matching the above behavior can be obtained by Using database notation:
+[BigDecimalConfiguration.database(precision, scale)](src/main/java/com/github/honoluluhenk/fluentbigdecimals/BigDecimalConfiguration.java)
+.
+
+Also there is a shortcut to obtain a database configuration using JPA/Hibernate default values for precision/scale:
+Using JPA/Hibernate notation:
+[BigDecimalConfiguration.jpaBigDecimal(precision, scale)](src/main/java/com/github/honoluluhenk/fluentbigdecimals/BigDecimalConfiguration.java)
+.
+
+Just the scaling part is implemented by
+the [MaxScaleScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/MaxScaleScaler.java).
+
+###
+
 ## Advanced usage
 
 ### compareTo/equals/hashCode
@@ -91,6 +142,12 @@ This allows putting a `FluentBigDecimal` into anything that needs sorting.
 
 equals/hashCode take both value and configuration into account. This breaks the contract on compareTo in regard to
 equals/hashcode... just like BigDecimal does (so: nothing new here).
+
+### Cash Rounding
+
+See [Wikipedia](https://en.wikipedia.org/wiki/Cash_rounding)
+
+Some countries round to some custom fraction (e.g.: Switzerland rounds to 0.05 Rappen).
 
 ### Switching to other configurations
 

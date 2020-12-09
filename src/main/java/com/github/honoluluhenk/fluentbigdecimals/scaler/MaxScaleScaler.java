@@ -53,14 +53,14 @@ public class MaxScaleScaler implements Scaler {
         return result;
     }
 
-    public static MaxScaleScaler from(int maxScale) {
+    public static MaxScaleScaler of(int maxScale) {
         return new MaxScaleScaler(maxScale);
     }
 
     /**
      * Copy-Factory.
      */
-    public static MaxScaleScaler from(MaxScaleScaler other) {
+    public static MaxScaleScaler of(MaxScaleScaler other) {
         return new MaxScaleScaler(other.getMaxScale());
     }
 

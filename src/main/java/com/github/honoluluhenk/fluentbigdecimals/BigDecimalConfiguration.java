@@ -1,5 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import com.github.honoluluhenk.fluentbigdecimals.scaler.CashRoundingScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
@@ -62,6 +63,10 @@ public class BigDecimalConfiguration implements Configuration {
         return new BigDecimalConfiguration(mathContext, scaler);
     }
 
+    public static BigDecimalConfiguration create(int precision, @NonNull RoundingMode roundingMode, @NonNull Scaler scaler) {
+        return new BigDecimalConfiguration(new MathContext(precision, roundingMode), scaler);
+    }
+
     /**
      * Convenience: some precision, {@link RoundingMode#HALF_UP} rounding and {@link MaxScaleScaler} with a scale.
      */
@@ -110,6 +115,11 @@ public class BigDecimalConfiguration implements Configuration {
     public static BigDecimalConfiguration databasePrecision(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
         int javaPrecision = databasePrecsion + databaseScale;
         return create(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
+    }
+
+    public static BigDecimalConfiguration cashRounding(int precision, @NonNull CashRoundingUnits units) {
+        CashRounding rounding = CashRounding.of(units);
+        return create(new MathContext(precision, rounding.getRoundingMode()), new CashRoundingScaler(rounding));
     }
 
     /**

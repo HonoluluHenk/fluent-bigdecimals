@@ -1,10 +1,12 @@
 package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+@EqualsAndHashCode(callSuper = false)
 public class IntegerScaler implements Scaler {
     private static final long serialVersionUID = 1951794142376474049L;
 
