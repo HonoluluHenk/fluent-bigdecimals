@@ -109,8 +109,8 @@ Some examples:
 
 ### Builders/with
 
-All relevant classes (Configuration, Scaler, ...) support various `with` methods. This means you can always start with
-some defaults from `ConfigurationFactory` and then adjust to your liking.
+All relevant classes (Configuration, Scaler, FluentBigDecimal, ...) support various `with` methods. This means you can
+always start with some defaults from `ConfigurationFactory` and then adjust to your liking.
 
 Example:
 
@@ -145,6 +145,14 @@ class Foo {
   }
 }
 ```
+
+You might also give a custom rounding unit using the `CashRoundingScaler`.
+
+Rouding units represent the smallest amount representable in the cash system.
+
+Example: Switzerland. The Swiss Rappen is avaiable only 5/100 units (0.05, 0.10, 0.15, ...). As such, the unit parameter
+would be "0.05"
+(but for most units you should find constants in `CashRoundingUnits`)
 
 ### JPA/Database precision and scale (predefined configuration)
 
@@ -332,3 +340,5 @@ Just create an issue.
 ## License
 
 This project uses the following license: [LGPL-3.0](https://www.gnu.org/licenses/lgpl-3.0-standalone.html)
+
+// FIXME: document scalers // FIXME: add source links for classes.
