@@ -17,11 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DemoTest {
 
     public static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
-    // some custom configuration
-    public static final Configuration<FluentBigDecimal> DEFAULT = ConfigurationFactory.create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
+    // some custom configuration to your liking
+    public static final Configuration<FluentBigDecimal> DEFAULT = ConfigurationFactory
+        .create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
 
     public static final MathContext DATABASE_MATH_CONTEXT = new MathContext(18, HALF_UP);
     public static final int DATABASE_MAX_SCALE = 2;
+    // predefined: round/scale in a database compatible way.
     public static final Configuration<FluentBigDecimal> DATABASE = ConfigurationFactory.jpaBigDecimal();
 
     @Nested
@@ -50,7 +52,7 @@ public class DemoTest {
         @Test
         public void fluentCompact() {
 
-            // after each step: round/scale according to currrent configuration
+            // after each step: automatic rounding/scaling according to current configuration
             BigDecimal result = DEFAULT.of("12.3456789")
                 .add("54.555555")
                 // continue with other configuration
@@ -102,10 +104,36 @@ public class DemoTest {
                 .map(BigDecimal::doubleValue);
         }
 
-        private void roundIntoDemo() {
+        @Test
+        public void roundIntoDemo() {
             FluentBigDecimal result = DEFAULT.of("12345678.90")
-                .withConfiguration(DATABASE);
+                .add("999.999999")
+                .roundInto(DATABASE) // exact result: 124456789.899999, gets rounded to (124456789.90).
+                // now we continue with DATABASE precision/scaling
+                .multiply("12.3456");
+
+            assertThat(result.getValue())
+                .isEqualTo("152427172.61");
         }
+
+        @Test
+        public void withConfiguration() {
+            FluentBigDecimal result = DEFAULT.of("12345678.90")
+                .add("999.999999")
+                .withConfiguration(DATABASE) // exact result: 124456789.899999, does *not* get rounded here
+                // ... but on the next step:
+                .multiply("12.3456");
+
+            assertThat(result.getValue())
+                .isEqualTo("152427172.61");
+        }
+    }
+
+    @Nested
+    class WithDemo {
+        private final MonetaryConfiguration<FluentBigDecimal> SWISS_CASH = ConfigurationFactory
+            .monetary(20)
+            .withScale(10);
 
     }
 
@@ -132,7 +160,7 @@ public class DemoTest {
 
     @Nested
     class MonetaryDemo {
-        private final Configuration<FluentBigDecimal> STOCK_DEPOT = ConfigurationFactory
+        private final MonetaryConfiguration<FluentBigDecimal> STOCK_DEPOT = ConfigurationFactory
             .monetary(20);
 
         @Test
@@ -149,8 +177,15 @@ public class DemoTest {
 
     @Nested
     class ExtensionDemo {
-        class MyMath extends AbstractFluentBigDecimal<MyMath> {
+        public final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
+            .withFactory(MyMath::new);
 
+        public final Configuration<MyMath> SWISS_CASH = ConfigurationFactory
+            .cashRounding(20, CashRoundingUnits.ROUND_DOT05)
+            .withFactory(MyMath::new);
+
+
+        class MyMath extends AbstractFluentBigDecimal<MyMath> {
             private static final long serialVersionUID = -1828369497254888980L;
 
             protected MyMath(@NonNull BigDecimal value, @NonNull Configuration<MyMath> configuration) {
@@ -160,19 +195,22 @@ public class DemoTest {
             public String toJson() {
                 return "{ value: \"" + getValue().toPlainString() + "\" }";
             }
+
+            public MyMath roundIntoSwissRappen() {
+                return roundInto(SWISS_CASH);
+            }
         }
 
-        private final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
-            .withFactory(MyMath::new);
 
         @Test
-        void useMyFancyOperator() {
-            var json = MY_MATH.of("42") // of() creates an instance of MyMath
+        void useMyFancyOperators() {
+            var json = MY_MATH.of("42.04") // of() creates an instance of MyMath
+                .roundIntoSwissRappen()
                 .add(new BigDecimal("23"))
                 .toJson();
 
             assertThat(json)
-                .isEqualTo("{ value: \"65\" }");
+                .isEqualTo("{ value: \"65.05\" }");
         }
     }
 

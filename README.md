@@ -45,9 +45,12 @@ can then re-use this configuration on all BigDecimal operations.
 ```java
 public class MyMathUtil {
   private static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
-  // some custom configuration
-  public static final Configuration DEFAULT = ConfigurationFactory.create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
-  // predefined: round/scale in a databse compatible way.
+
+  // some custom configuration to your liking
+  public static final Configuration<FluentBigDecimal> DEFAULT = ConfigurationFactory
+    .create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
+
+  // predefined: round/scale in a database compatible way.
   public static final BigDecimalFactory DATABASE = ConfigurationFactory.jpaBigDecimal();
 }
 
@@ -58,10 +61,13 @@ public class MyMathUtil {
 ```java
 public class MyBusiness {
   public BigDecimal usingBigDecimals() {
+
+    // after each step: automatic rounding/scaling according to current configuration
     BigDecimal result = DEFAULT.of("12.3456789")
-      .add(new BigDecimal("54.555555"))
-      .roundInto(DATABASE) // round/scale using the DATABASE configuration and use it for future operations
-      .multiply(new BigDecimal("123.99999"))
+      .add("54.555555")
+      // continue with other configuration
+      .roundInto(DATABASE)
+      .multiply("123.99999")
       .getValue();
 
     return result;
@@ -81,6 +87,11 @@ public class MyBusiness {
 
 ## Common Usecases
 
+### Nullability
+
+All method arguments and return values are @NonNull if not stated otherwise. Passing an *illegal* null parameter will
+immediately result in a `NullPointerException`.
+
 ### Creating your own Configuration
 
 See methods in [ConfigurationFactory](src/main/java/com/github/honoluluhenk/fluentbigdecimals/ConfigurationFactory.java)
@@ -98,23 +109,34 @@ Some examples:
 
 ### Builders/with
 
-All relevant classes (Configuration, Scaler, ...) support various `withFoo` methods. This means you can always start
-with some defaults from `ConfigurationFactory` and then adjust to your preference.
+All relevant classes (Configuration, Scaler, ...) support various `with` methods. This means you can always start with
+some defaults from `ConfigurationFactory` and then adjust to your liking.
+
+Example:
+
+```java
+class Foo {
+  private final MonetaryConfiguration<FluentBigDecimal> SWISS_CASH = ConfigurationFactory
+    .monetary(20)
+    .withScale(10);
+}
+```
 
 ### Cash Rounding (predefined configuration)
 
 ```java
 class Foo {
-  private final Configuration SWISS_CASH = ConfigurationFactory
+  private final Configuration<FluentBigDecimal> SWISS_CASH = ConfigurationFactory
     .cashRounding(20, CashRoundingUnits.ROUND_DOT05);
 
-  private final ConfigurationFactory HIGH_PRECISION = ConfigurationFactory
+  private final Configuration<FluentBigDecimal> HIGH_PRECISION = ConfigurationFactory
     .create(20, HALF_UP, MaxScaleScaler.of(10));
 
+  @Test
   void roundIntoCash() {
     // start off with some high precision calculations
     FluentBigDecimal cash = HIGH_PRECISION.of("12345.67890")
-      .multiply(new BigDecimal("3"))
+      .multiply("3")
       // intermediate result: 37037.03670
       .roundInto(SWISS_CASH);
 
@@ -160,28 +182,41 @@ See [Wikipedia](https://en.wikipedia.org/wiki/Cash_rounding)
 
 Some countries round to some custom fraction (e.g.: Switzerland rounds to 0.05 Rappen).
 
-### Switching to other configurations
+### rounding/scaling using configurations
 
-While rounding: use the `roundInto` method
+Maybe you do some high-precision calculations. Then, at some point, you need to continue calculating using the (e.g.)
+database precision.
+
+This can be achieved using the `roundInto` method:
 
 ```java
 class Foo {
-  private void roundIntoDemo() {
+  public void roundIntoDemo() {
     FluentBigDecimal result = DEFAULT.of("12345678.90")
-      .roundInto(DATABASE);
+      .add("999.999999")
+      .roundInto(DATABASE) // exact result: 124456789.899999, gets rounded to (124456789.90).
+      // now we continue with DATABASE precision/scaling
+      .multiply("12.3456");
+
+    assertThat(result.getValue())
+      .isEqualTo("152427172.61");
   }
 }
 ```
 
-Without rounding: use the `withConfiguration` method:
+Rare usecase: If immediate rounding is not wanted: use the `withConfiguration` method instead:
 
 ```java
 class Foo {
-  private void roundIntoDemo() {
+  public void withConfiguration() {
     FluentBigDecimal result = DEFAULT.of("12345678.90")
-      .withConfiguration(DATABASE);
+      .add("999.999999")
+      .withConfiguration(DATABASE) // exact result: 124456789.899999, does *not* get rounded here
+      // ... but on the next step:
+      .multiply("12.3456");
 
-
+    assertThat(result.getValue())
+      .isEqualTo("152427172.61");
   }
 }
 ```
@@ -223,7 +258,6 @@ class Foo {
 
     return result;
   }
-
 }
 ```
 
@@ -250,16 +284,27 @@ from `AbstractFluentBigDecimal`.
 `Configuration` supports the factory pattern for instantiating your subclas on each operation:
 
 ```java
-class MyMath extends AbstractFluentBigDecimal<MyMath> {
+public class MyMath extends AbstractFluentBigDecimal<MyMath> {
   private static final long serialVersionUID = -1828369497254888980L;
+
+  public final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
+    .withFactory(MyMath::new);
+
+  public final Configuration<MyMath> SWISS_CASH = ConfigurationFactory
+    .cashRounding(20, CashRoundingUnits.ROUND_DOT05)
+    .withFactory(MyMath::new);
+
 
   protected MyMath(@NonNull BigDecimal value, @NonNull Configuration<MyMath> configuration) {
     super(value, configuration);
   }
 
-  // custom operator
   public String toJson() {
     return "{ value: \"" + getValue().toPlainString() + "\" }";
+  }
+
+  public MyMath roundIntoSwissRappen() {
+    return roundInto(SWISS_CASH);
   }
 }
 
@@ -267,11 +312,16 @@ class MyBusiness {
   private final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
     .withFactory(MyMath::new);
 
-  void useMyFancyOperator() {
-    String json = MY_MATH.of("42") // of() creates an instance of MyMath
+  void useMyFancyOperators() {
+    var json = MY_MATH.of("42.04") // of() creates an instance of MyMath
+      .roundIntoSwissRappen()
       .add(new BigDecimal("23"))
       .toJson();
+
+    assertThat(json)
+      .isEqualTo("{ value: \"65.05\" }");
   }
+
 }
 ```
 
