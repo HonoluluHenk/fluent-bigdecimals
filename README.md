@@ -37,8 +37,8 @@ or [Maven Central](https://search.maven.org/search?q=g:com.github.honoluluhenk.f
 
 ## Basic Usage
 
-fluent-bigdecimals requires you to only setup precision, rounding and scaling (a.k.a.: the `Configuration`) once.
-You can then re-use this configuration on all BigDecimal operations.
+fluent-bigdecimals requires you to only setup precision, rounding and scaling (a.k.a.: the `Configuration`) once. You
+can then re-use this configuration on all BigDecimal operations.
 
 ### Step 1: Define your rounding/scaling configurations globally
 
@@ -151,14 +151,8 @@ the [MaxScaleScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/sca
 
 ### compareTo/equals/hashCode
 
-`compareTo` is implemented by directly delegating
-to [BigDecimal::compareTo](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html#compareTo-java.math.BigDecimal-)
-(i.e.: it does not take any `Configuration` into account).
-
-This allows putting a `FluentBigDecimal` into anything that needs sorting.
-
-equals/hashCode take both value and configuration into account. This breaks the contract on compareTo in regard to
-equals/hashcode... just like BigDecimal does (so: nothing new here).
+`compareTo`, `equals` and `hashCode` are implemented by directly delegating to their BigDecimal equivalents and thus
+could be treated as a drop-in replacement for mose usecases.
 
 ### Cash Rounding
 

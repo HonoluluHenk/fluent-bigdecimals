@@ -6,7 +6,6 @@ import lombok.NonNull;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentMatchers;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -19,7 +18,6 @@ import static java.math.RoundingMode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
@@ -44,6 +42,7 @@ class FluentBigDecimalTest {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="DummyScaler">
     private static class DummyScaler implements Scaler {
         private static final long serialVersionUID = 4432500901893639859L;
 
@@ -52,11 +51,13 @@ class FluentBigDecimalTest {
             throw new IllegalStateException("should not be needed");
         }
     }
+    //</editor-fold>
 
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
     private static final MathContext FIXTURE_MATH_CONTEXT = new MathContext(5, HALF_UP);
     private static final Scaler FIXTURE_SCALER = new MaxPrecisionScaler();
-    private static final FluentBigDecimal FIXTURE = new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+    private static final Configuration<FluentBigDecimal> FIXTURE_CONFIG = new Configuration<>(FIXTURE_MATH_CONTEXT, FIXTURE_SCALER, FluentBigDecimal::new);
+    private static final FluentBigDecimal FIXTURE = FIXTURE_CONFIG.of(FIXTURE_VALUE);
 
     @Nested
     class TestSetup {
@@ -86,7 +87,8 @@ class FluentBigDecimalTest {
         @Test
         void does_not_call_scaler() {
             var scalerSpy = spy(Scaler.class);
-            new FluentBigDecimal(FIXTURE_VALUE, FIXTURE_MATH_CONTEXT, scalerSpy);
+            var config = FIXTURE_CONFIG.withScaler(scalerSpy);
+            new FluentBigDecimal(FIXTURE_VALUE, config);
 
             verify(scalerSpy, never())
                 .scale(any(BigDecimal.class), eq(FIXTURE_MATH_CONTEXT));
@@ -104,7 +106,7 @@ class FluentBigDecimalTest {
         void throws_for_null_value() {
             var ex = assertThrows(
                 NullPointerException.class,
-                () -> new FluentBigDecimal(null, FIXTURE_MATH_CONTEXT, FIXTURE_SCALER)
+                () -> new FluentBigDecimal(null, FIXTURE_CONFIG)
             );
 
             assertThat(ex)
@@ -112,68 +114,23 @@ class FluentBigDecimalTest {
         }
 
         @Test
-        void throws_for_null_scaler() {
+        void throws_for_null_configuration() {
             var ex = assertThrows(
                 NullPointerException.class,
-                () -> new FluentBigDecimal(BigDecimal.ONE, FIXTURE_MATH_CONTEXT, null)
+                () -> new FluentBigDecimal(BigDecimal.ONE, null)
             );
 
             assertThat(ex)
-                .hasMessageContaining("scaler");
+                .hasMessageContaining("configuration required");
         }
-    }
-
-    @Nested
-    class Factories {
-        final BigDecimal inputValue = new BigDecimal("123.45");
-        final BigDecimal roundedValue = new BigDecimal("999.999");
-        final Scaler mockScaler = mock(Scaler.class);
-
-
-        @BeforeEach
-        void beforeEach() {
-            given(mockScaler.scale(any(), any()))
-                .willReturn(roundedValue);
-        }
-
-        @Nested
-        class Of {
-            @Test
-            void rounds_and_calls_scaler() {
-                FluentBigDecimal actual = FluentBigDecimal
-                    .of(inputValue, new MathContext(3, HALF_UP), mockScaler);
-
-                verify(mockScaler)
-                    .scale(ArgumentMatchers.eq(new BigDecimal("123")), any(MathContext.class));
-
-                assertThat(actual.getValue())
-                    .isSameAs(roundedValue);
-            }
-        }
-
-        @Nested
-        class OfRaw {
-            @Test
-            void does_neither_round_nor_call_scaler() {
-                FluentBigDecimal actual = FluentBigDecimal
-                    .ofRaw(inputValue, new MathContext(3, HALF_UP), mockScaler);
-
-                verify(mockScaler, never())
-                    .scale(any(), any());
-
-                assertThat(actual.getValue())
-                    .isSameAs(inputValue);
-            }
-        }
-
     }
 
     @Nested
     class HashCodeEquals {
         @Test
         void equals_for_equal_value_and_configuration() {
-            FluentBigDecimal a = FluentBigDecimal.of(new BigDecimal("123"), FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
-            FluentBigDecimal b = FluentBigDecimal.of(new BigDecimal("123"), FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
+            FluentBigDecimal a = FIXTURE_CONFIG.of("123");
+            FluentBigDecimal b = FIXTURE_CONFIG.of("123");
 
             assertThat(a)
                 .isEqualTo(b);
@@ -183,23 +140,22 @@ class FluentBigDecimalTest {
         }
 
         @Test
-        void differs_for_equal_value_and_differing_configuration() {
-            FluentBigDecimal a = FluentBigDecimal.of(
-                new BigDecimal("123"), FIXTURE_MATH_CONTEXT, FIXTURE_SCALER);
-            FluentBigDecimal b = new FluentBigDecimal(
-                new BigDecimal("123"), new Configuration(new MathContext(10, DOWN), FIXTURE_SCALER));
+        void equals_for_equal_value_and_differing_configuration() {
+            FluentBigDecimal a = FIXTURE_CONFIG.of("123");
+            FluentBigDecimal b = FIXTURE_CONFIG.of("123")
+                .withMathContext(new MathContext(10, DOWN));
 
             assertThat(a)
-                .isNotEqualTo(b);
+                .isEqualTo(b);
 
             assertThat(a.hashCode())
-                .isNotEqualTo(b.hashCode());
+                .isEqualTo(b.hashCode());
         }
 
         @Test
         void differs_for_value_with_differing_precision() {
-            FluentBigDecimal a = valueOf("123", FIXTURE_SCALER);
-            FluentBigDecimal b = valueOf("123.0", FIXTURE_SCALER);
+            FluentBigDecimal a = FIXTURE_CONFIG.of("123");
+            FluentBigDecimal b = FIXTURE_CONFIG.of("123.0");
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -210,8 +166,8 @@ class FluentBigDecimalTest {
 
         @Test
         void differs_for_different_values() {
-            FluentBigDecimal a = valueOf("123", FIXTURE_SCALER);
-            FluentBigDecimal b = valueOf("456", FIXTURE_SCALER);
+            FluentBigDecimal a = FIXTURE_CONFIG.of("123");
+            FluentBigDecimal b = FIXTURE_CONFIG.of("456");
 
             assertThat(a)
                 .isNotEqualTo(b);
@@ -227,14 +183,10 @@ class FluentBigDecimalTest {
         @Test
         void compares_only_using_value() {
 
-            FluentBigDecimal sut = new FluentBigDecimal(
-                new BigDecimal("123.45"),
-                new MathContext(5, HALF_UP),
-                (a, mc) -> a);
-            FluentBigDecimal other = new FluentBigDecimal(
-                new BigDecimal("123.45"),
-                new MathContext(12, DOWN),
-                new DummyScaler());
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("123.45");
+            FluentBigDecimal other = FIXTURE_CONFIG
+                .withScaler(new DummyScaler())
+                .ofRaw("123.45");
 
             assertThat(sut)
                 .isEqualByComparingTo(other);
@@ -243,11 +195,8 @@ class FluentBigDecimalTest {
         @Test
         void differs_for_a_lt_b() {
 
-            FluentBigDecimal sut = new FluentBigDecimal(
-                new BigDecimal("123.45"),
-                new MathContext(5, HALF_UP),
-                (a, mc) -> a);
-            FluentBigDecimal other = sut.withValue(new BigDecimal("543.21"));
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("123.45");
+            FluentBigDecimal other = FIXTURE_CONFIG.of("543.21");
 
             assertThat(sut.compareTo(other))
                 .isLessThan(0);
@@ -257,11 +206,8 @@ class FluentBigDecimalTest {
         @Test
         void differs_for_b_lt_a() {
 
-            FluentBigDecimal sut = new FluentBigDecimal(
-                new BigDecimal("543.21"),
-                new MathContext(5, HALF_UP),
-                (a, mc) -> a);
-            FluentBigDecimal other = sut.withValue(new BigDecimal("123.45"));
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("543.21");
+            FluentBigDecimal other = FIXTURE_CONFIG.of("123.45");
 
             assertThat(sut.compareTo(other))
                 .isGreaterThan(0);
@@ -285,14 +231,14 @@ class FluentBigDecimalTest {
     class Round {
         @Test
         void rounds_and_keeps_same_configuration() {
-            FluentBigDecimal sut = valueOf("123.456789", FIXTURE_SCALER);
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("123.456789");
 
             var actual = sut.round();
 
             assertThat(actual.getValue())
                 .isEqualTo("123.46");
             assertThat(actual.getConfiguration())
-                .isEqualTo(new Configuration(FIXTURE_MATH_CONTEXT, FIXTURE_SCALER));
+                .isSameAs(FIXTURE_CONFIG);
         }
     }
 
@@ -302,7 +248,7 @@ class FluentBigDecimalTest {
         void rounds_and_sets_other_configuration() {
             Scaler otherScaler = (value, mc) -> value.setScale(0, DOWN);
             MathContext otherMathContext = new MathContext(32, UP);
-            Configuration otherConfiguration = new Configuration(otherMathContext, otherScaler);
+            Configuration<FluentBigDecimal> otherConfiguration = ConfigurationFactory.create(otherMathContext, otherScaler);
 
             FluentBigDecimal actual = FIXTURE.roundInto(otherConfiguration);
 
@@ -467,7 +413,7 @@ class FluentBigDecimalTest {
     class Map {
         @Test
         void maps() {
-            FluentBigDecimal sut = valueOf("123.45", FIXTURE_SCALER);
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("123.45");
 
             int actual = sut.map(BigDecimal::intValue);
 
@@ -486,7 +432,9 @@ class FluentBigDecimalTest {
             void checks_for_null_return_from_Scaler() {
                 // explicitly do not add any @NonNull annotation so we can see the behavior
                 // of FluentBigDecimals and not this mock scaler!
-                FluentBigDecimal sut = valueOf("123.45", NULL_RETURNING_SCALER);
+                FluentBigDecimal sut = FIXTURE_CONFIG
+                    .of("123.45")
+                    .withScaler(NULL_RETURNING_SCALER);
 
                 NullPointerException ex = assertThrows(
                     NullPointerException.class,
@@ -501,8 +449,10 @@ class FluentBigDecimalTest {
             void checks_for_null_return_from_projection() {
                 // explicitly do not add any @NonNull annotation so we can see the behavior
                 // of FluentBigDecimals and not this mock scaler!
-                FluentBigDecimal sut = valueOf("123.45", new FixedValueScaler(BigDecimal.ONE));
-                BiProjection nullProjection = (value, argument, mc) -> null;
+                FluentBigDecimal sut = FIXTURE_CONFIG
+                    .withScaler(new FixedValueScaler(BigDecimal.ONE))
+                    .of("123.45");
+                BiProjection<Object> nullProjection = (value, argument, mc) -> null;
 
                 NullPointerException ex = assertThrows(
                     NullPointerException.class,
@@ -520,7 +470,8 @@ class FluentBigDecimalTest {
             void checks_for_null_return_from_Scaler() {
                 // explicitly do not add any @NonNull annotation so we can see the behavior
                 // of FluentBigDecimals and not this mock scaler!
-                FluentBigDecimal sut = valueOf("123.45", NULL_RETURNING_SCALER);
+                FluentBigDecimal sut = FIXTURE_CONFIG.of("123.45")
+                    .withScaler(NULL_RETURNING_SCALER);
 
                 NullPointerException ex = assertThrows(
                     NullPointerException.class,
@@ -536,7 +487,9 @@ class FluentBigDecimalTest {
             void checks_for_null_return_from_projection() {
                 // explicitly do not add any @NonNull annotation so we can see the behavior
                 // of FluentBigDecimals and not this mock scaler!
-                FluentBigDecimal sut = valueOf("123.45", new FixedValueScaler(BigDecimal.ONE));
+                FluentBigDecimal sut = FIXTURE_CONFIG
+                    .withScaler(new FixedValueScaler(BigDecimal.ONE))
+                    .of("123.45");
                 Projection nullProjection = (value, mc) -> null;
 
                 NullPointerException ex = assertThrows(
@@ -580,9 +533,16 @@ class FluentBigDecimalTest {
         BigDecimal argument,
         BigDecimal expectedValue
     ) {
-        FluentBigDecimal fluentArgument = valueOf(argument, new DummyScaler());
+        // use ofRaw() because we do not want to test scaling on instantiation
+
+        FluentBigDecimal fluentArgument = FIXTURE_CONFIG
+            .withScaler(new DummyScaler())
+            .ofRaw(argument);
+
         var scalerSpy = spy(FIXTURE_SCALER);
-        FluentBigDecimal sut = valueOf(srcValue, scalerSpy);
+        FluentBigDecimal sut = FIXTURE_CONFIG
+            .withScaler(scalerSpy)
+            .ofRaw(srcValue);
 
         var actual = operation.apply(sut, fluentArgument);
 
@@ -599,8 +559,12 @@ class FluentBigDecimalTest {
         BigDecimal srcValue,
         BigDecimal expectedValue
     ) {
+        // use ofRaw() because we do not want to test scaling on instantiation
+
         var scaler = spy(FIXTURE_SCALER);
-        FluentBigDecimal sut = valueOf(srcValue, scaler);
+        FluentBigDecimal sut = FIXTURE_CONFIG
+            .withScaler(scaler)
+            .ofRaw(srcValue);
 
         var actual = operation.apply(sut);
 
@@ -609,14 +573,6 @@ class FluentBigDecimalTest {
 
         assertThat(actual.getValue())
             .isEqualTo(expectedValue);
-    }
-
-    private FluentBigDecimal valueOf(String s, Scaler scaler) {
-        return new FluentBigDecimal(new BigDecimal(s), FIXTURE_MATH_CONTEXT, scaler);
-    }
-
-    private FluentBigDecimal valueOf(BigDecimal srcValue, Scaler scaler) {
-        return new FluentBigDecimal(srcValue, FIXTURE_MATH_CONTEXT, scaler);
     }
 
 }

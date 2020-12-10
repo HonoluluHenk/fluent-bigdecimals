@@ -15,15 +15,16 @@ import java.math.MathContext;
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings({"unused", "UnnecessaryLocalVariable"})
 public class DemoTest {
 
     public static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
     // some custom configuration
-    public static final Configuration DEFAULT = ConfigurationFactory.create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
+    public static final Configuration<FluentBigDecimal> DEFAULT = ConfigurationFactory.create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
 
     public static final MathContext DATABASE_MATH_CONTEXT = new MathContext(18, HALF_UP);
     public static final int DATABASE_MAX_SCALE = 2;
-    public static final Configuration DATABASE = ConfigurationFactory.jpaBigDecimal();
+    public static final Configuration<FluentBigDecimal> DATABASE = ConfigurationFactory.jpaBigDecimal();
 
     @Nested
     class OldSchool {
@@ -180,10 +181,10 @@ public class DemoTest {
 
     @Nested
     class CashRoundingDemo {
-        private final Configuration SWISS_CASH = ConfigurationFactory
+        private final Configuration<FluentBigDecimal> SWISS_CASH = ConfigurationFactory
             .cashRounding(20, CashRoundingUnits.ROUND_DOT05);
 
-        private final Configuration HIGH_PRECISION = ConfigurationFactory
+        private final Configuration<FluentBigDecimal> HIGH_PRECISION = ConfigurationFactory
             .create(20, HALF_UP, MaxScaleScaler.of(10));
 
         @Test
