@@ -1,11 +1,9 @@
 package com.github.honoluluhenk.fluentbigdecimals.demo;
 
-import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
-import com.github.honoluluhenk.fluentbigdecimals.Configuration;
-import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
-import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
+import com.github.honoluluhenk.fluentbigdecimals.*;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
+import lombok.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +13,7 @@ import java.math.MathContext;
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings({"unused", "UnnecessaryLocalVariable"})
+@SuppressWarnings({"unused"})
 public class DemoTest {
 
     public static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
@@ -28,39 +26,6 @@ public class DemoTest {
 
     @Nested
     class OldSchool {
-        @Test
-        public void usingBigDecimalsStepByStep() {
-
-            BigDecimal a = new BigDecimal("12.3456789");
-            assertThat(a).isEqualTo("12.3456789");
-
-            // explicit rounding
-            BigDecimal b = a.round(DEFAULT_MATH_CONTEXT);
-            assertThat(b).isEqualTo("12.34568");
-
-            // some math operation
-            BigDecimal c = b.add(new BigDecimal("54.555555"), DEFAULT_MATH_CONTEXT);
-            // intermediate result: 66.901235 and then rounded
-            assertThat(c).isEqualTo("66.90124");
-
-            // continue with different scaler
-            BigDecimal x = c.round(DATABASE_MATH_CONTEXT) // remember: needs scaling
-                .setScale(DATABASE_MAX_SCALE, DATABASE_MATH_CONTEXT.getRoundingMode());
-
-            assertThat(x).isEqualTo("66.90");
-
-            BigDecimal y = x.multiply(new BigDecimal("123.99999"), DATABASE_MATH_CONTEXT)
-                .setScale(DATABASE_MAX_SCALE, DATABASE_MATH_CONTEXT.getRoundingMode());
-            // intermediate result: 8295.599331
-            assertThat(y).isEqualTo("8295.60");
-
-            // finally...
-            BigDecimal result = y;
-            assertThat(result).isEqualTo("8295.60");
-
-            // return result;
-        }
-
         @Test
         public void usingBigDecimalsCompact() {
 
@@ -81,51 +46,16 @@ public class DemoTest {
 
     @Nested
     class ApiDemo {
-        @Test
-        public void fluentStepByStep() {
-
-            // start from factory
-            FluentBigDecimal a = DEFAULT.of("12.3456789");
-            // please note: implicit rounding on creation
-            assertThat(a.getValue())
-                .isEqualTo("12.34568");
-
-            // explicit rounding not necessary
-            FluentBigDecimal b = a;
-
-            // some math operation
-            FluentBigDecimal c = b.add(new BigDecimal("54.555555"));
-            // intermediate result: 66.901235 and then rounded
-            assertThat(c.getValue())
-                .isEqualTo("66.90124");
-
-            // continue with different scaler
-            FluentBigDecimal x = c.roundInto(DATABASE); // = 592.54 (database only allows two decimals
-            assertThat(x.getValue())
-                .isEqualTo("66.90");
-
-            // still on the other scaler
-            FluentBigDecimal y = x.multiply(new BigDecimal("123.99999"));
-            // intermediate result: 8295.599331
-            assertThat(y.getValue())
-                .isEqualTo("8295.60");
-
-            // finally...
-            BigDecimal result = y.getValue();
-            assertThat(result).isEqualTo("8295.60");
-
-            // return result;
-        }
 
         @Test
         public void fluentCompact() {
 
             // after each step: round/scale according to currrent configuration
             BigDecimal result = DEFAULT.of("12.3456789")
-                .add(new BigDecimal("54.555555"))
+                .add("54.555555")
                 // continue with other configuration
                 .roundInto(DATABASE)
-                .multiply(new BigDecimal("123.99999"))
+                .multiply("123.99999")
                 .getValue();
 
             // return result;
@@ -191,12 +121,58 @@ public class DemoTest {
         void roundIntoCash() {
             // start off with some high precision calculations
             FluentBigDecimal cash = HIGH_PRECISION.of("12345.67890")
-                .multiply(new BigDecimal("3"))
+                .multiply("3")
                 // intermediate result: 37037.03670
                 .roundInto(SWISS_CASH);
 
             assertThat(cash.getValue())
                 .isEqualTo("37037.05");
+        }
+    }
+
+    @Nested
+    class MonetaryDemo {
+        private final Configuration<FluentBigDecimal> STOCK_DEPOT = ConfigurationFactory
+            .monetary(20);
+
+        @Test
+        void myLife() {
+            var currentStockBalance = STOCK_DEPOT.of("0.00")
+                .add("42.23")
+                .multiply("5.333333") // = 225.22665259 rounded to 225.23
+                .getValue();
+
+            assertThat(currentStockBalance)
+                .isEqualTo("225.23");
+        }
+    }
+
+    @Nested
+    class ExtensionDemo {
+        class MyMath extends AbstractFluentBigDecimal<MyMath> {
+
+            private static final long serialVersionUID = -1828369497254888980L;
+
+            protected MyMath(@NonNull BigDecimal value, @NonNull Configuration<MyMath> configuration) {
+                super(value, configuration);
+            }
+
+            public String toJson() {
+                return "{ value: \"" + getValue().toPlainString() + "\" }";
+            }
+        }
+
+        private final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
+            .withFactory(MyMath::new);
+
+        @Test
+        void useMyFancyOperator() {
+            var json = MY_MATH.of("42") // of() creates an instance of MyMath
+                .add(new BigDecimal("23"))
+                .toJson();
+
+            assertThat(json)
+                .isEqualTo("{ value: \"65\" }");
         }
     }
 

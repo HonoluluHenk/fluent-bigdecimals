@@ -188,7 +188,22 @@ class Foo {
 
 If you need this rounded, you might call the `round()` method afterwards.
 
-### Custom operators
+### Mapping to other types
+
+There is the `map` method:
+
+```java
+class Foo {
+  public void mapping() {
+    double result = DATABASE.of("12345678.90")
+      .map(BigDecimal::doubleValue);
+  }
+}
+```
+
+### Custom one-off operators
+
+If you need re-usable operators, consider extension (see below) instead!
 
 Custom operators can be applied using the various `apply()` methods.
 
@@ -227,15 +242,35 @@ class Foo {
 }
 ```
 
-### Mapping to other types
+### Extension
 
-There is the `map` method:
+If you regularly need some custom operators, you do have the option to extend your custom FluentBigDecimal
+from `AbstractFluentBigDecimal`.
+
+`Configuration` supports the factory pattern for instantiating your subclas on each operation:
 
 ```java
-class Foo {
-  public void mapping() {
-    double result = DATABASE.of("12345678.90")
-      .map(BigDecimal::doubleValue);
+class MyMath extends AbstractFluentBigDecimal<MyMath> {
+  private static final long serialVersionUID = -1828369497254888980L;
+
+  protected MyMath(@NonNull BigDecimal value, @NonNull Configuration<MyMath> configuration) {
+    super(value, configuration);
+  }
+
+  // custom operator
+  public String toJson() {
+    return "{ value: \"" + getValue().toPlainString() + "\" }";
+  }
+}
+
+class MyBusiness {
+  private final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
+    .withFactory(MyMath::new);
+
+  void useMyFancyOperator() {
+    String json = MY_MATH.of("42") // of() creates an instance of MyMath
+      .add(new BigDecimal("23"))
+      .toJson();
   }
 }
 ```
