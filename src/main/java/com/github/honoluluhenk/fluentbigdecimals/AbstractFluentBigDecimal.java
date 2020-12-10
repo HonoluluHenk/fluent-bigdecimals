@@ -18,14 +18,14 @@ import static java.util.Objects.requireNonNull;
  * Regarding equals/hashcode/compareTo: see {@link BigDecimal};
  */
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>> implements Serializable, Comparable<T> {
     private static final long serialVersionUID = 1646116594300550112L;
 
     public static final BigDecimal HUNDRED = new BigDecimal("100");
 
+    @EqualsAndHashCode.Include
     private final @NonNull BigDecimal value;
-    @EqualsAndHashCode.Exclude
     private final @NonNull Configuration<T> configuration;
 
     protected AbstractFluentBigDecimal(@NonNull BigDecimal value, @NonNull Configuration<T> configuration) {
