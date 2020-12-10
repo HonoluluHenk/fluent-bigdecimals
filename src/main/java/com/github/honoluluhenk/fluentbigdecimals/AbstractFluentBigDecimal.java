@@ -60,6 +60,8 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
             .round();
     }
 
+    //FIXME: implement roundUsing(Configuration other): do a one-time adjustment using the other Configuration but keep old config for future use.
+
     public T withValue(@NonNull BigDecimal value) {
         return newRawInstance(value, getConfiguration());
     }
@@ -173,6 +175,12 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
         return result;
     }
 
+    public @NonNull T add(@NonNull String addendBigDecimal) {
+        var result = add(new BigDecimal(addendBigDecimal));
+
+        return result;
+    }
+
     public @NonNull T subtract(@Nullable BigDecimal subtrahend) {
         T result = apply(BigDecimal::subtract, subtrahend);
 
@@ -181,6 +189,12 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
 
     public @NonNull T subtract(@Nullable T subtrahend) {
         T result = subtract(mapValue(subtrahend));
+
+        return result;
+    }
+
+    public @NonNull T subtract(@NonNull String subtrahendBigDecimal) {
+        var result = add(new BigDecimal(subtrahendBigDecimal));
 
         return result;
     }
@@ -197,6 +211,12 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
         return result;
     }
 
+    public @NonNull T multiply(@NonNull String multiplicandBigDecimal) {
+        T result = multiply(new BigDecimal(multiplicandBigDecimal));
+
+        return result;
+    }
+
     public @NonNull T divide(@Nullable BigDecimal divisor) {
         T result = apply(BigDecimal::divide, divisor);
 
@@ -205,6 +225,12 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
 
     public @NonNull T divide(@Nullable T divisor) {
         T result = divide(mapValue(divisor));
+
+        return result;
+    }
+
+    public @NonNull T divide(@NonNull String divisorBigDecimal) {
+        var result = divide(new BigDecimal(divisorBigDecimal));
 
         return result;
     }
