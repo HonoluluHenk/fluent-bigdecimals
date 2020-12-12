@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DemoTest {
 
     public static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
-    // some custom configuration to your liking
+    // some custom configuration to your liking (here: just rounding when calling the operation but no scaling)
     public static final Configuration<FluentBigDecimal> DEFAULT = ConfigurationFactory
         .create(DEFAULT_MATH_CONTEXT, new NopScaler());
 
@@ -131,7 +131,7 @@ public class DemoTest {
 
     @Nested
     class WithDemo {
-        private final ScalingConfiguration<FluentBigDecimal, MaxScaleScaler> SWISS_CASH = ConfigurationFactory
+        private final ScalingConfiguration<FluentBigDecimal> SWISS_CASH = ConfigurationFactory
             .monetary(20)
             .withScale(10);
 
@@ -160,7 +160,7 @@ public class DemoTest {
 
     @Nested
     class MonetaryDemo {
-        private final ScalingConfiguration<FluentBigDecimal, MaxScaleScaler> STOCK_DEPOT = ConfigurationFactory
+        private final ScalingConfiguration<FluentBigDecimal> STOCK_DEPOT = ConfigurationFactory
             .monetary(20);
 
         @Test

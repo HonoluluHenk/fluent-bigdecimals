@@ -21,24 +21,42 @@ public class ScalingConfiguration<T extends AbstractFluentBigDecimal<T>> extends
         super(mathContext, scaler, factory);
     }
 
+    private static <FBD extends AbstractFluentBigDecimal<FBD>, Scal extends Scaler & WithScale<Scal>>
+    ScalingConfiguration<FBD> from(Configuration<FBD> other) {
+        @SuppressWarnings("unchecked") Scal scaler = (Scal) other.getScaler();
+        return new ScalingConfiguration<>(
+            other.getMathContext(),
+            scaler,
+            other.getFactory()
+        );
+    }
+
     @Override
     public ScalingConfiguration<T> withMathContext(@NonNull MathContext mathContext) {
-        return (ScalingConfiguration<T>) super.withMathContext(mathContext);
+        var result = from(super.withMathContext(mathContext));
+
+        return result;
     }
 
     @Override
     public ScalingConfiguration<T> withScaler(@NonNull Scaler scaler) {
-        return (ScalingConfiguration<T>) super.withScaler(scaler);
+        var result = from(super.withScaler(scaler));
+
+        return result;
     }
 
     @Override
     public <S extends Scaler & WithScale<S>> ScalingConfiguration<T> withScalingScaler(@NonNull S scaler) {
-        return super.withScalingScaler(scaler);
+        var result = from(super.withScalingScaler(scaler));
+
+        return result;
     }
 
     @Override
     public <O extends AbstractFluentBigDecimal<O>> ScalingConfiguration<O> withFactory(@NonNull Factory<O> factory) {
-        return (ScalingConfiguration<O>) super.withFactory(factory);
+        var result = from(super.withFactory(factory));
+
+        return result;
     }
 
     public <S extends Scaler & WithScale<S>> @NonNull ScalingConfiguration<T> withScale(int newScale) {

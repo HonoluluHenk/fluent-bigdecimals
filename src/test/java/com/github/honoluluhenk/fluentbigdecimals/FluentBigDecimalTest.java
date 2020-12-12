@@ -50,13 +50,22 @@ class FluentBigDecimalTest {
         public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
             throw new IllegalStateException("should not be needed");
         }
+
+        @Override
+        public String toString() {
+            return "DummyScaler";
+        }
     }
     //</editor-fold>
 
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
     private static final MathContext FIXTURE_MATH_CONTEXT = new MathContext(5, HALF_UP);
     private static final Scaler FIXTURE_SCALER = new NopScaler();
-    private static final Configuration<FluentBigDecimal> FIXTURE_CONFIG = new Configuration<>(FIXTURE_MATH_CONTEXT, FIXTURE_SCALER, FluentBigDecimal::new);
+    private static final Configuration<FluentBigDecimal> FIXTURE_CONFIG = new Configuration<>(
+        FIXTURE_MATH_CONTEXT,
+        FIXTURE_SCALER,
+        FluentBigDecimal::new
+    );
     private static final FluentBigDecimal FIXTURE = FIXTURE_CONFIG.of(FIXTURE_VALUE);
 
     @Nested
@@ -220,10 +229,12 @@ class FluentBigDecimalTest {
     class ToString {
         @Test
         void includes_all_parameters() {
-            String actual = FIXTURE.toString();
+            String actual = FIXTURE
+                .withScaler(new DummyScaler()) // has a stable toString()
+                .toString();
 
             assertThat(actual)
-                .isEqualTo("FluentBigDecimal[123.45,[5,HALF_UP,MaxPrecisionScaler]]");
+                .isEqualTo("FluentBigDecimal[123.45,[5,HALF_UP,DummyScaler]]");
         }
     }
 
@@ -248,7 +259,10 @@ class FluentBigDecimalTest {
         void rounds_and_sets_other_configuration() {
             Scaler otherScaler = (value, mc) -> value.setScale(0, DOWN);
             MathContext otherMathContext = new MathContext(32, UP);
-            Configuration<FluentBigDecimal> otherConfiguration = ConfigurationFactory.create(otherMathContext, otherScaler);
+            Configuration<FluentBigDecimal> otherConfiguration = ConfigurationFactory.create(
+                otherMathContext,
+                otherScaler
+            );
 
             FluentBigDecimal actual = FIXTURE.roundInto(otherConfiguration);
 
@@ -336,7 +350,12 @@ class FluentBigDecimalTest {
             "123.45, 9999.99999, 1.2345E+6", // remember: precision = 5
         })
         void multiplys_and_calls_scaler(BigDecimal multiplicand, BigDecimal multiplicator, BigDecimal expectedValue) {
-            executes_biProjection_and_calls_scaler_impl(FluentBigDecimal::multiply, multiplicand, multiplicator, expectedValue);
+            executes_biProjection_and_calls_scaler_impl(
+                FluentBigDecimal::multiply,
+                multiplicand,
+                multiplicator,
+                expectedValue
+            );
         }
     }
 
