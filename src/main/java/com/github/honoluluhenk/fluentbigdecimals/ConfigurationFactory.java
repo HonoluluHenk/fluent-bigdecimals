@@ -59,7 +59,7 @@ public class ConfigurationFactory {
     /**
      * Convenience: some precision, {@link RoundingMode#HALF_UP} rounding and {@link MaxScaleScaler} with a scale.
      */
-    public static ScalingConfiguration<FluentBigDecimal> monetary(@NonNull int precision) {
+    public static ScalingConfiguration<FluentBigDecimal> monetary(int precision) {
         return new ScalingConfiguration<>(
             new MathContext(precision, DEFAULT_MONETARY_ROUNDING),
             new MaxScaleScaler(DEFAULT_MONETARY_SCALE),

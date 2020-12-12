@@ -3,7 +3,6 @@ package com.github.honoluluhenk.fluentbigdecimals.demo;
 import com.github.honoluluhenk.fluentbigdecimals.*;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
-import lombok.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -180,46 +179,7 @@ public class DemoTest {
         }
     }
 
-    @Nested
-    class ExtensionDemo {
-        public /* static */ final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
-            .withFactory(MyMath::new);
-
-        public /* static */ final Configuration<MyMath> SWISS_CASH = ConfigurationFactory
-            .cashRounding(20, CashRoundingUnits.ROUND_DOT05)
-            .withFactory(MyMath::new);
-
-
-        class MyMath extends AbstractFluentBigDecimal<MyMath> {
-            private static final long serialVersionUID = -1828369497254888980L;
-
-            protected MyMath(@NonNull BigDecimal value, @NonNull Configuration<MyMath> configuration) {
-                super(value, configuration);
-            }
-
-            public String toJson() {
-                return "{ value: \"" + getValue().toPlainString() + "\" }";
-            }
-
-            public MyMath roundIntoSwissRappen() {
-                return roundInto(SWISS_CASH);
-            }
-        }
-
-
-        @Test
-        void doStuff() {
-            var json = MY_MATH.of("42.04") // of() creates an instance of MyMath
-                .roundIntoSwissRappen()
-                .add(new BigDecimal("23"))
-                .toJson();
-
-            assertThat(json)
-                .isEqualTo("{ value: \"65.05\" }");
-        }
-    }
-
-//    @Nested
+    //    @Nested
 //    @Disabled
 //        // FIXME: implement excel behavior correctly
 //    class Excel {

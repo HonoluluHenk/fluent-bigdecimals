@@ -182,9 +182,9 @@
             <annotationProcessors>
               <!-- Add all the checkers you want to enable here -->
               <!-- FIXME: current IntelliJ version is b0rked :( -->
-              <!--              <annotationProcessor>-->
-              <!--                org.checkerframework.checker.nullness.NullnessChecker-->
-              <!--              </annotationProcessor>-->
+              <!--<annotationProcessor>-->
+              <!--  org.checkerframework.checker.nullness.NullnessChecker-->
+              <!--</annotationProcessor>-->
               <annotationProcessor>
                 lombok.launch.AnnotationProcessorHider$AnnotationProcessor
               </annotationProcessor>

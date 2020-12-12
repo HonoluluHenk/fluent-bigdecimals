@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 @DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
 @IndicativeSentencesGeneration(generator = DisplayNameGenerator.ReplaceUnderscores.class)
 // FIXME: create checker annotations for AssertJ
-@SuppressWarnings({"nullable", "argument.type.incompatible", "initialization.fields.uninitialized"})
+@SuppressWarnings({"nullable", "argument.type.incompatible", "return.type.incompatible", "initialization.fields.uninitialized"})
 class FluentBigDecimalTest {
 
     //<editor-fold defaultstate="collapsed" desc="FixedValueScaler">
