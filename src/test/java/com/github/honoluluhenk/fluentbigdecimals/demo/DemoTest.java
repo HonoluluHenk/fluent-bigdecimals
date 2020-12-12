@@ -1,8 +1,8 @@
 package com.github.honoluluhenk.fluentbigdecimals.demo;
 
 import com.github.honoluluhenk.fluentbigdecimals.*;
-import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import lombok.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ public class DemoTest {
     public static final MathContext DEFAULT_MATH_CONTEXT = new MathContext(7, HALF_UP);
     // some custom configuration to your liking
     public static final Configuration<FluentBigDecimal> DEFAULT = ConfigurationFactory
-        .create(DEFAULT_MATH_CONTEXT, new MaxPrecisionScaler());
+        .create(DEFAULT_MATH_CONTEXT, new NopScaler());
 
     public static final MathContext DATABASE_MATH_CONTEXT = new MathContext(18, HALF_UP);
     public static final int DATABASE_MAX_SCALE = 2;
@@ -131,7 +131,7 @@ public class DemoTest {
 
     @Nested
     class WithDemo {
-        private final MonetaryConfiguration<FluentBigDecimal> SWISS_CASH = ConfigurationFactory
+        private final ScalingConfiguration<FluentBigDecimal, MaxScaleScaler> SWISS_CASH = ConfigurationFactory
             .monetary(20)
             .withScale(10);
 
@@ -160,7 +160,7 @@ public class DemoTest {
 
     @Nested
     class MonetaryDemo {
-        private final MonetaryConfiguration<FluentBigDecimal> STOCK_DEPOT = ConfigurationFactory
+        private final ScalingConfiguration<FluentBigDecimal, MaxScaleScaler> STOCK_DEPOT = ConfigurationFactory
             .monetary(20);
 
         @Test

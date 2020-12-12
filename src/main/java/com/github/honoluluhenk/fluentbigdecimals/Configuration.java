@@ -1,6 +1,7 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -17,10 +18,12 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> {
 
     @Override
     public @NonNull String toString() {
-        return String.format("[%s,%s,%s]",
+        return String.format(
+            "[%s,%s,%s]",
             getMathContext().getPrecision(),
             getMathContext().getRoundingMode(),
-            getScaler());
+            getScaler()
+        );
     }
 
     public @NonNull T ofRaw(@NonNull String bigDecimal) {
@@ -48,6 +51,10 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> {
 
     public Configuration<T> withScaler(@NonNull Scaler scaler) {
         return this.scaler == scaler ? this : new Configuration<T>(mathContext, scaler, factory);
+    }
+
+    public <S extends Scaler & WithScale<S>> ScalingConfiguration<T> withScalingScaler(@NonNull S scaler) {
+        return new ScalingConfiguration<>(getMathContext(), scaler, getFactory());
     }
 
     public <O extends AbstractFluentBigDecimal<O>> Configuration<O> withFactory(@NonNull Factory<O> factory) {

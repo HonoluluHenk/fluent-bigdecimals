@@ -11,9 +11,9 @@ import java.math.RoundingMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MaxPrecisionScalerTest {
+class NopScalerTest {
     public static final Configuration<FluentBigDecimal> CONFIG = ConfigurationFactory
-        .create(4, RoundingMode.HALF_UP, new MaxPrecisionScaler());
+        .create(4, RoundingMode.HALF_UP, new NopScaler());
     public static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
 
     @Nested
@@ -34,8 +34,8 @@ class MaxPrecisionScalerTest {
 
         @Test
         void contains_class_name() {
-            assertThat(new MaxPrecisionScaler().toString())
-                .isEqualTo(MaxPrecisionScaler.class.getSimpleName());
+            assertThat(new NopScaler().toString())
+                .isEqualTo(NopScaler.class.getSimpleName());
         }
     }
 

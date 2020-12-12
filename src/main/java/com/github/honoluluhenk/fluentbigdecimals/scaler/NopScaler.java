@@ -5,11 +5,14 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+/**
+ * Do not scale but leave the value as is.
+ */
 @AllArgsConstructor
 @Getter
 @With
 @EqualsAndHashCode(callSuper = false)
-public class MaxPrecisionScaler implements Scaler {
+public class NopScaler implements Scaler {
     private static final long serialVersionUID = 7043803811609303754L;
 
     @Override
@@ -19,6 +22,6 @@ public class MaxPrecisionScaler implements Scaler {
 
     @Override
     public String toString() {
-        return MaxPrecisionScaler.class.getSimpleName();
+        return NopScaler.class.getSimpleName();
     }
 }

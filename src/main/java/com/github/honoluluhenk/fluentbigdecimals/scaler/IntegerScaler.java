@@ -6,6 +6,9 @@ import lombok.NonNull;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+/**
+ * Scale to scale 0 (i.e.: convert to integer).
+ */
 @EqualsAndHashCode(callSuper = false)
 public class IntegerScaler implements Scaler {
     private static final long serialVersionUID = 1951794142376474049L;

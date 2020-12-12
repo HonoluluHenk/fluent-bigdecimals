@@ -1,6 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxPrecisionScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.NonNull;
 import org.junit.jupiter.api.*;
@@ -55,7 +55,7 @@ class FluentBigDecimalTest {
 
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
     private static final MathContext FIXTURE_MATH_CONTEXT = new MathContext(5, HALF_UP);
-    private static final Scaler FIXTURE_SCALER = new MaxPrecisionScaler();
+    private static final Scaler FIXTURE_SCALER = new NopScaler();
     private static final Configuration<FluentBigDecimal> FIXTURE_CONFIG = new Configuration<>(FIXTURE_MATH_CONTEXT, FIXTURE_SCALER, FluentBigDecimal::new);
     private static final FluentBigDecimal FIXTURE = FIXTURE_CONFIG.of(FIXTURE_VALUE);
 

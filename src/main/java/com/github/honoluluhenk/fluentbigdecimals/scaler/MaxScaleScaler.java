@@ -10,13 +10,13 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 /**
- * First round to precision, then reduce scale if needed ("Database" mode, also typically monetary calculations).
+ * Reduce scale if it exceeds the maximum ("Database" mode, also typically monetary calculations).
  * <p>
  * Databases usually allows only a definable <i>maximum</i> scale for decimals.
  */
 @Getter
 @EqualsAndHashCode(callSuper = false)
-public class MaxScaleScaler implements Scaler {
+public class MaxScaleScaler implements Scaler, WithScale<MaxScaleScaler> {
     private static final long serialVersionUID = -8755733728910066293L;
 
     @With
@@ -72,4 +72,8 @@ public class MaxScaleScaler implements Scaler {
         );
     }
 
+    @Override
+    public MaxScaleScaler withScale(int newScale) {
+        return of(newScale);
+    }
 }
