@@ -21,4 +21,8 @@ public class FixedScaleScaler implements Scaler, WithScale<FixedScaleScaler> {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return String.format("FixedScaleScaler[%d]", scale);
+    }
 }

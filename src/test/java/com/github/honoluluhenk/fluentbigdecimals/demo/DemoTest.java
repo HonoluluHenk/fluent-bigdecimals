@@ -50,18 +50,23 @@ public class DemoTest {
     class ApiDemo {
 
         @Test
-        public void fluentCompact() {
+        public void showcase() {
 
             // after each step: automatic rounding/scaling according to current configuration
             BigDecimal result = DEFAULT.of("12.3456789")
                 .add("54.555555")
+                // currently supports BigDecimal, String and other FluentBigDecimals on all implemented operations
+                .multiply("42.23")
+                .divide(new BigDecimal("555.5"))
+                .subtract(DEFAULT.of("99"))
                 // continue with other configuration
                 .roundInto(DATABASE)
                 .multiply("123.99999")
                 .getValue();
 
             // return result;
-            assertThat(result).isEqualTo("8295.60");
+            assertThat(result)
+                .isEqualTo("-11644.84");
         }
 
         @Test
@@ -177,10 +182,10 @@ public class DemoTest {
 
     @Nested
     class ExtensionDemo {
-        public final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
+        public /* static */ final Configuration<MyMath> MY_MATH = ConfigurationFactory.monetary(20)
             .withFactory(MyMath::new);
 
-        public final Configuration<MyMath> SWISS_CASH = ConfigurationFactory
+        public /* static */ final Configuration<MyMath> SWISS_CASH = ConfigurationFactory
             .cashRounding(20, CashRoundingUnits.ROUND_DOT05)
             .withFactory(MyMath::new);
 
@@ -203,7 +208,7 @@ public class DemoTest {
 
 
         @Test
-        void useMyFancyOperators() {
+        void doStuff() {
             var json = MY_MATH.of("42.04") // of() creates an instance of MyMath
                 .roundIntoSwissRappen()
                 .add(new BigDecimal("23"))

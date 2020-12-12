@@ -2,6 +2,7 @@ package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
 import lombok.NonNull;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -34,5 +35,16 @@ class FixedScaleScalerTest {
                 .isEqualTo(expected);
         }
     }
+
+    @Nested
+    class ToSTring {
+
+        @Test
+        void includes_all_values() {
+            assertThat(new FixedScaleScaler(12).toString())
+                .isEqualTo("FixedScaleScaler[12]");
+        }
+    }
+
 
 }
