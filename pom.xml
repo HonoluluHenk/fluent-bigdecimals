@@ -2,15 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-  <!-- Release checklist                                              -->
-  <!--                                                                -->
-  <!-- set version in pom.xml                                         -->
-  <!-- ./mvnw clean deploy                                            -->
-  <!-- set git tag using release version                              -->
-  <!-- push master + tag                                              -->
-  <!-- update pom.xml to next SNAPSHOT                                -->
-  <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+  <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+  <!-- Release checklist                                                       -->
+  <!--                                                                         -->
+  <!-- Using maven-release-plugin                                              -->
+  <!-- ./mvnw -B release:prepare release:perform -Dusername=xxx -Dpassword=yyy -->
+  <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 
   <groupId>com.github.honoluluhenk.fluent-bigdecimals</groupId>
   <artifactId>fluent-bigdecimals</artifactId>
