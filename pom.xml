@@ -5,6 +5,8 @@
   <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
   <!-- Release checklist                                                       -->
   <!--                                                                         -->
+  <!-- !!!!!!! update changelog !!!!!!!                                        -->
+  <!--                                                                         -->
   <!-- Using maven-release-plugin                                              -->
   <!-- ./mvnw -B release:prepare release:perform -Dusername=xxx -Dpassword=yyy -->
   <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->

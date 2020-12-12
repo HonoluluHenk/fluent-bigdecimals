@@ -419,5 +419,6 @@ This project uses the following license: [LGPL-3.0](https://www.gnu.org/licenses
 
 | version | changes |
 |---------|-------------|
+| 1.0.4   | fix some nullability problems, update release instructions |
 | 1.0.3   | feature-complete |
 
