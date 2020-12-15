@@ -1,0 +1,9 @@
+include:
+  - template: Auto-DevOps.gitlab-ci.yml
+
+deploy:
+  stage: deploy
+  script:
+    - ./mvnw --batch-mode -s gitlab/.m2/settings.xml
+  only:
+    - main
