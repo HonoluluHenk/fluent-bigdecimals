@@ -418,8 +418,4 @@ This project uses the following license: [LGPL-3.0](https://www.gnu.org/licenses
 
 ## Changelog
 
-| version | changes |
-|---------|-------------|
-| 1.0.4   | fix some nullability problems, update release instructions |
-| 1.0.3   | feature-complete |
-
+See [releases](https://github.com/HonoluluHenk/fluent-bigdecimals/releases)
