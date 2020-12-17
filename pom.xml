@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
@@ -250,14 +251,14 @@
             <phase>validate</phase>
             <configuration>
               <rules>
-                <banDuplicatePomDependencyVersions />
+                <banDuplicatePomDependencyVersions/>
                 <banTransitiveDependencies>
                   <excludes>
                     <exclude>*:*:*:*:test</exclude>
                     <eclude>com.github.spotbugs:spotbugs-annotations:jar</eclude>
                   </excludes>
                 </banTransitiveDependencies>
-                <dependencyConvergence />
+                <dependencyConvergence/>
                 <requireJavaVersion>
                   <version>11</version>
                 </requireJavaVersion>
@@ -265,9 +266,9 @@
                   <version>3.6.3</version>
                 </requireMavenVersion>
                 <requirePluginVersions>
-                  <banLatest />
-                  <banRelease />
-                  <banSnapshots />
+                  <banLatest/>
+                  <banRelease/>
+                  <banSnapshots/>
                   <unCheckedPluginList>org.apache.maven.plugins:maven-site-plugin</unCheckedPluginList>
                 </requirePluginVersions>
                 <requireReleaseDeps>
@@ -278,6 +279,27 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.6</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -337,6 +359,16 @@
             <goals>
               <goal>sign</goal>
             </goals>
+            <configuration>
+              <executable>gpg</executable>
+              <keyname>${env.OSSRH_SIGNKEY_NAME}</keyname>
+              <passphraseServerId>fluent-bigdecimal-ossrh-signkey</passphraseServerId>
+              <gpgArguments>
+                <argument>--batch</argument>
+                <argument>--pinentry-mode</argument>
+                <argument>loopback</argument>
+              </gpgArguments>
+            </configuration>
           </execution>
         </executions>
       </plugin>

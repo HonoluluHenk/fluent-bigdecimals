@@ -4,11 +4,18 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
   <servers>
+
     <server>
       <id>ossrh</id>
       <username>${env.MAVEN_REPO_USER}</username>
       <password>${env.MAVEN_REPO_PASS}</password>
     </server>
+
+    <server>
+      <id>fluent-bigdecimal-ossrh-signkey</id>
+      <passphrase>${env.OSSRH_SIGNKEY_PASSPHRASE}</passphrase>
+    </server>
+
   </servers>
 
 </settings>

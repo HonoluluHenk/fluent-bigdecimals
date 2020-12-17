@@ -1,9 +1,49 @@
 include:
   - template: Auto-DevOps.gitlab-ci.yml
 
-deploy:
+build:
+  stage: build
+  image: maven:3.6-adoptopenjdk-11
+  script: |
+    apt update
+    apt install -y gnupg
+    env | sort
+    cat "${OSSRH_SIGNKEY_KEY}" | base64 -d | gpg --batch --passphrase "${OSSRH_SIGNKEY_PASSPHRASE}" --import
+    ./mvnw --settings settings.xml clean deploy
+  interruptible: true
+  artifacts:
+    expire_in: 30 min
+    paths:
+      - target
+
+
+test:
+  interruptible: true
+  # build runs in container but artifacts are expected outside ($CI_PROJECT_DIR is mapped)
+  after_script:
+    - 'cp -r -- /app/target "$CI_PROJECT_DIR"'
+  artifacts:
+    when: always
+    paths:
+      - target/site/jacoco/jacoco.xml
+    reports:
+      junit:
+        - 'target/surefire-reports/TEST-*.xml'
+        - 'target/failsafe-reports/TEST-*.xml'
+
+record_coverage:
   stage: deploy
+  needs:
+    - test
+  dependencies:
+    - test
+  image: haynes/jacoco2cobertura:1.0.4
   script:
-    - ./mvnw --batch-mode -s gitlab/.m2/settings.xml
-  only:
-    - main
+    # convert report from jacoco to cobertura
+    - 'python /opt/cover2cover.py target/site/jacoco/jacoco.xml src/main/java > target/site/cobertura.xml'
+    # gitlab does not understand the cobertura <source> tag and neads each filename to be relative to repo-root.
+    # => read the <source></source> tag and prepend the path to every filename attribute
+    - 'python /opt/source2filename.py target/site/cobertura.xml'
+  artifacts:
+    reports:
+      cobertura: target/site/cobertura.xml
