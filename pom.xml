@@ -12,7 +12,7 @@
   <!-- Using maven-release-plugin:                                             -->
   <!-- ./mvnw -B release:prepare                                               -->
   <!-- git push all  (please note: cannot write two dashes in xml comments)    -->
-  <!-- merge the tagged commit into master and wait for gitlab                 -->
+  <!-- rebase master to the the tagged commit and wait for gitlab              -->
   <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 
   <groupId>com.github.honoluluhenk.fluent-bigdecimals</groupId>
