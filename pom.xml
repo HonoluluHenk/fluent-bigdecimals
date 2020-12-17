@@ -8,8 +8,12 @@
   <!--                                                                         -->
   <!-- !!!!!!! update changelog !!!!!!!                                        -->
   <!--                                                                         -->
-  <!-- Using maven-release-plugin                                              -->
-  <!-- ./mvnw -B release:prepare release:perform -Dusername=xxx -Dpassword=yyy -->
+  <!-- checkout develop                                                        -->
+  <!--                                                                         -->
+  <!-- Using maven-release-plugin:                                             -->
+  <!-- ./mvnw -B release:prepare                                               -->
+  <!-- git push all  (please note: cannot write two dashes in xml comments)    -->
+  <!-- merge the tagged commit into master and wait for gitlab                 -->
   <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 
   <groupId>com.github.honoluluhenk.fluent-bigdecimals</groupId>
