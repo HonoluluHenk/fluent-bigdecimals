@@ -47,3 +47,8 @@ record_coverage:
   artifacts:
     reports:
       cobertura: target/site/cobertura.xml
+
+container_scanning:
+  stage: test
+  script:
+    - echo "disabled"
