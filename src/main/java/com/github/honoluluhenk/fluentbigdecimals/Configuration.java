@@ -7,10 +7,12 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 
 @Value
 @NonFinal
+@SuppressWarnings("RedundantModifiersValueLombok")
 public class Configuration<T extends AbstractFluentBigDecimal<T>> {
     private final @NonNull MathContext mathContext;
     private final @NonNull Scaler scaler;
@@ -26,21 +28,103 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> {
         );
     }
 
+    /**
+     * Create a new, <strong>un</strong>rounded instance using {@link BigDecimal#BigDecimal(String)}.
+     */
     public @NonNull T ofRaw(@NonNull String bigDecimal) {
         return ofRaw(new BigDecimal(bigDecimal));
     }
 
+    /**
+     * Create a new, <strong>un</strong>rounded instance.
+     */
     public @NonNull T ofRaw(@NonNull BigDecimal value) {
         return factory.create(value, this);
     }
 
+    /**
+     * Create a new, rounded instance.
+     */
+    public @NonNull T of(BigDecimal value) {
+        return factory.create(value, this)
+            .round();
+    }
+
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(String)}.
+     */
     public @NonNull T of(@NonNull String bigDecimal) {
         return of(new BigDecimal(bigDecimal));
     }
 
-    public @NonNull T of(BigDecimal value) {
-        return factory.create(value, this)
-            .round();
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[])}.
+     */
+    public @NonNull T of(@NonNull char[] bigDecimal) {
+        return of(new BigDecimal(bigDecimal));
+    }
+
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[], int, int)}.
+     */
+    public @NonNull T of(@NonNull char[] text, int offset, int len) {
+        return of(new BigDecimal(text, offset, len));
+    }
+
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(int)}.
+     */
+    public @NonNull T of(int val) {
+        return of(new BigDecimal(val));
+    }
+
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(BigInteger)}.
+     */
+    public @NonNull T of(@NonNull BigInteger val) {
+        return of(new BigDecimal(val));
+    }
+
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(BigInteger, int)}.
+     */
+    public @NonNull T of(@NonNull BigInteger unscaledVal, int scale) {
+        return of(new BigDecimal(unscaledVal, scale));
+    }
+
+    /**
+     * Create a new, rounded instance.
+     */
+    public @NonNull T of(long val) {
+        return of(new BigDecimal(val));
+    }
+
+    /**
+     * Create a new, rounded instance.
+     */
+    public @NonNull T of(double val) {
+        return of(new BigDecimal(val));
+    }
+
+    /**
+     * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(long)}.
+     */
+    public @NonNull T valueOf(@NonNull long val) {
+        return of(BigDecimal.valueOf(val));
+    }
+
+    /**
+     * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(double)}.
+     */
+    public @NonNull T valueOf(@NonNull double val) {
+        return of(BigDecimal.valueOf(val));
+    }
+
+    /**
+     * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(long, int)}.
+     */
+    public @NonNull T valueOf(long unscaledVal, int scale) {
+        return of(BigDecimal.valueOf(unscaledVal, scale));
     }
 
     public Configuration<T> withMathContext(@NonNull MathContext mathContext) {
@@ -62,3 +146,5 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> {
     }
 
 }
+
+
