@@ -5,6 +5,7 @@ import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.NonNull;
 
+import java.io.Serializable;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
@@ -13,7 +14,7 @@ import static java.math.RoundingMode.HALF_UP;
 /**
  * Factory class for the most common use-cases.
  */
-public class ConfigurationFactory {
+public class ConfigurationFactory implements Serializable {
     private static final long serialVersionUID = -153378950972296160L;
 
     public static final Factory<FluentBigDecimal> FLUENT_BIGDECIMAL_FACTORY = FluentBigDecimal::new;

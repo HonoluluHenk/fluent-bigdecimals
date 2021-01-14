@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -13,7 +14,9 @@ import java.math.MathContext;
 @Value
 @NonFinal
 @SuppressWarnings("RedundantModifiersValueLombok")
-public class Configuration<T extends AbstractFluentBigDecimal<T>> {
+public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Serializable {
+    private static final long serialVersionUID = -8556901571320467482L;
+
     private final @NonNull MathContext mathContext;
     private final @NonNull Scaler scaler;
     private final @NonNull Factory<T> factory;
