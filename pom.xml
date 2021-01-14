@@ -27,7 +27,7 @@
 
   <scm>
     <connection>scm:git:https://github.com/HonoluluHenk/fluent-bigdecimals.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:HonoluluHenk/fluent-bigdecimals.git</developerConnection>
+    <developerConnection>scm:git:ssh://git@github.com/HonoluluHenk/fluent-bigdecimals.git</developerConnection>
     <url>https://github.com/HonoluluHenk/fluent-bigdecimals</url>
     <tag>1.0.5</tag>
   </scm>
