@@ -365,6 +365,7 @@
             </goals>
             <configuration>
               <executable>gpg</executable>
+              <!--suppress UnresolvedMavenProperty -->
               <keyname>${env.OSSRH_SIGNKEY_NAME}</keyname>
               <passphraseServerId>fluent-bigdecimal-ossrh-signkey</passphraseServerId>
               <gpgArguments>
