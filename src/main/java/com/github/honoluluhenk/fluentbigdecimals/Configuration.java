@@ -128,13 +128,11 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> {
     }
 
     public Configuration<T> withMathContext(@NonNull MathContext mathContext) {
-        return this.mathContext == mathContext
-            ? this
-            : new Configuration<T>(mathContext, scaler, factory);
+        return new Configuration<>(mathContext, scaler, factory);
     }
 
     public Configuration<T> withScaler(@NonNull Scaler scaler) {
-        return this.scaler == scaler ? this : new Configuration<T>(mathContext, scaler, factory);
+        return new Configuration<>(mathContext, scaler, factory);
     }
 
     public <S extends Scaler & WithScale<S>> ScalingConfiguration<T> withScalingScaler(@NonNull S scaler) {

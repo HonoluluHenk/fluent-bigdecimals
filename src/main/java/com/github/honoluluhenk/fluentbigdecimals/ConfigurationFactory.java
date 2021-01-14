@@ -3,10 +3,7 @@ package com.github.honoluluhenk.fluentbigdecimals;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.CashRoundingScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.With;
 
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -16,9 +13,6 @@ import static java.math.RoundingMode.HALF_UP;
 /**
  * Factory class for the most common use-cases.
  */
-@AllArgsConstructor
-@Getter
-@With
 public class ConfigurationFactory {
     private static final long serialVersionUID = -153378950972296160L;
 
@@ -35,6 +29,7 @@ public class ConfigurationFactory {
     /**
      * Precision as required by JPA specification.
      */
+    @SuppressWarnings("unused")
     public static final int BIGDECIMAL_JPA_PRECISION = JPA_BIGDECIMAL_PRECISION + JPA_BIGDECIMAL_SCALE;
 
 
