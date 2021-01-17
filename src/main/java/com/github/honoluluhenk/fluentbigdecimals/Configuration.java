@@ -48,7 +48,7 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Create a new, rounded instance.
      */
-    public @NonNull T of(BigDecimal value) {
+    public @NonNull T of(@NonNull BigDecimal value) {
         return factory.create(value, this)
             .round();
     }
