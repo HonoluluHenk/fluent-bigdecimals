@@ -13,6 +13,8 @@ import java.math.MathContext;
 // The compiler makes sure that we cannot pass in a non-compliant scaler and thus we can expect calling
 // all with*() methods to return an assignable instance.
 public class ScalingConfiguration<T extends AbstractFluentBigDecimal<T>> extends Configuration<T> {
+    private static final long serialVersionUID = 7476797484270808023L;
+
     public <S extends Scaler & WithScale<S>> ScalingConfiguration(
         @NonNull MathContext mathContext,
         @NonNull S scaler,
