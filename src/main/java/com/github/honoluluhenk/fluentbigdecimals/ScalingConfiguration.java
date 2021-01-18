@@ -3,6 +3,7 @@ package com.github.honoluluhenk.fluentbigdecimals;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
 import lombok.NonNull;
+import lombok.var;
 
 import java.math.MathContext;
 

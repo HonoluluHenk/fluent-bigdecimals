@@ -18,7 +18,7 @@ Java 9 modules supported.
 
 ## Prerequisites/Dependencies
 
-This project requires Java >= 11.
+This project requires Java >= 9.
 
 ## Installing
 

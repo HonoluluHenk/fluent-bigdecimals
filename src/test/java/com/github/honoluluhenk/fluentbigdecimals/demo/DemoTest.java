@@ -3,6 +3,7 @@ package com.github.honoluluhenk.fluentbigdecimals.demo;
 import com.github.honoluluhenk.fluentbigdecimals.*;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
+import lombok.var;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -178,45 +179,5 @@ public class DemoTest {
                 .isEqualTo("225.23");
         }
     }
-
-    //    @Nested
-//    @Disabled
-//        // FIXME: implement excel behavior correctly
-//    class Excel {
-//
-//        @Test
-//        void excel_works_with_precision_15_by_default() {
-//            var value = EXCEL.of("1234567890.1234567890")
-//                .round();
-//
-//            assertEquals("1234567890.12346", value.getValue().toPlainString());
-//        }
-//
-//        @Nested
-//        class Excel_specific_rounding_errors {
-//            @Test
-//            void fail1() {
-//
-//                BigDecimal x = BigDecimal.valueOf(1.0d + (1.0d / 9000.0d) - 1.0d);
-//                System.out.println(x);
-//                int newScale = 15 - x.precision() + x.scale();
-//                BigDecimal significant = x.setScale(newScale, RoundingMode.HALF_UP);
-//                System.out.println(significant);
-//
-//
-//                var one = EXCEL.of(BigDecimal.ONE);
-//                var ninek = EXCEL.of("9000");
-//                var oneBy9k = one
-//                    .divide(ninek);
-//                var actual = one.add(oneBy9k)
-//                    .subtract(one);
-//
-//
-//                assertThat(actual.getValue().toPlainString())
-//                    .isEqualTo("0.000111111111111173");
-//
-//            }
-//        }
-//    }
 
 }

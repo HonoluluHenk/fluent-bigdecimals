@@ -5,6 +5,7 @@ import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
 import lombok.NonNull;
+import lombok.var;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

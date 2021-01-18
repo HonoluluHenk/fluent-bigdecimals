@@ -4,6 +4,7 @@ import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.var;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
@@ -127,10 +128,12 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
 
     @Override
     public @NonNull String toString() {
-        String result = String.format("%s[%s,%s]",
+        String result = String.format(
+            "%s[%s,%s]",
             getClass().getSimpleName(),
             value.toPlainString(),
-            getConfiguration());
+            getConfiguration()
+        );
 
         return result;
     }

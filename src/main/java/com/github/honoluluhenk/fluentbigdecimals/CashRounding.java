@@ -1,9 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.With;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

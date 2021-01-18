@@ -1,6 +1,7 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
+import lombok.var;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

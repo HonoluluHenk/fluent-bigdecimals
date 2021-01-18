@@ -2,6 +2,7 @@ package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
+import lombok.var;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
