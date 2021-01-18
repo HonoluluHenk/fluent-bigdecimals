@@ -138,7 +138,7 @@ Some more convenient factory-methods in `ConfigurationFactory`:
 
 | method | description |
 |--------|-------------|
-| ::monetary | The most common usecase: some precision with a maximum scale of 2 and HALF_UP rounding. |
+| ::monetary | The most common usecase: custom precision with a maximum scale of 2 and HALF_UP rounding. |
 | ::jpaBigDecimal | compatible with JPA/Hibernate defaults: @Column(precision = 16, scale = 2). See [JPA/Database](#JPA/Database-precision-and-scale) |
 | ::databaseJavaNotation | Scale in a database compatible way and use Java notation for precision/scale. See [JPA/Database](#JPA/Database-precision-and-scale) |
 | ::databaseDBNotation | Scale in a database compatible way and use database notation for precision/scale. See [JPA/Database](#JPA/Database-precision-and-scale) |
@@ -146,7 +146,7 @@ Some more convenient factory-methods in `ConfigurationFactory`:
 
 ### FluentBigDecimal
 
-Class: [FluentBigDecimal.java](src/main/java/com/github/honoluluhenk/fluentbigdecimals/FluentBigDecimal.java) ans [AbstractFluentBigDecimal.java](src/main/java/com/github/honoluluhenk/fluentbigdecimals/AbstractFluentBigDecimal.java)
+Class: [FluentBigDecimal.java](src/main/java/com/github/honoluluhenk/fluentbigdecimals/FluentBigDecimal.java) and [AbstractFluentBigDecimal.java](src/main/java/com/github/honoluluhenk/fluentbigdecimals/AbstractFluentBigDecimal.java)
 
 The main workhorse: apply operations on BigDecimals and keep track of precision, RoundingMode and scale (i.e.: the [Configuration](#Configuration)).
 
