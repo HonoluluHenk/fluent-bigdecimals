@@ -1,7 +1,7 @@
 # fluent-bigdecimals
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)](https://search.maven.org/artifact/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)
-[![pipeline status](https://gitlab.com/HonoluluHenk/fluent-bigdecimals/badges/main/pipeline.svg)](https://gitlab.com/HonoluluHenk/fluent-bigdecimals/-/commits/main)
+[![pipeline status](https://gitlab.com/HonoluluHenk/fluent-bigdecimals/badges/main/pipeline.svg)](https://gitlab.com/HonoluluHenk/fluent-bigdecimals/-/pipelines)
 [![Issues](https://img.shields.io/github/issues/HonoluluHenk/fluent-bigdecimals)](https://github.com/HonoluluHenk/fluent-bigdecimals/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/HonoluluHenk/fluent-bigdecimals)](https://github.com/HonoluluHenk/fluent-bigdecimals/graphs/contributors)
 [![GitHub stars](https://img.shields.io/github/stars/HonoluluHenk/fluent-bigdecimals?style=social)](https://github.com/HonoluluHenk/fluent-bigdecimals)
