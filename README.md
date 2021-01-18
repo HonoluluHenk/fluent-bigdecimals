@@ -1,10 +1,11 @@
 # fluent-bigdecimals
 
-![Maven Central](https://img.shields.io/maven-central/v/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)](https://search.maven.org/artifact/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)
 [![pipeline status](https://gitlab.com/HonoluluHenk/fluent-bigdecimals/badges/main/pipeline.svg)](https://gitlab.com/HonoluluHenk/fluent-bigdecimals/-/commits/main)
-![GitHub contributors](https://img.shields.io/github/contributors/HonoluluHenk/fluent-bigdecimals)
-![GitHub stars](https://img.shields.io/github/stars/HonoluluHenk/fluent-bigdecimals?style=social)
-![GitHub forks](https://img.shields.io/github/forks/HonoluluHenk/fluent-bigdecimals?style=social)
+[![Issues](https://img.shields.io/github/issues/HonoluluHenk/fluent-bigdecimals)](https://github.com/HonoluluHenk/fluent-bigdecimals/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/HonoluluHenk/fluent-bigdecimals)](https://github.com/HonoluluHenk/fluent-bigdecimals/graphs/contributors)
+[![GitHub stars](https://img.shields.io/github/stars/HonoluluHenk/fluent-bigdecimals?style=social)](https://github.com/HonoluluHenk/fluent-bigdecimals)
+[![GitHub forks](https://img.shields.io/github/forks/HonoluluHenk/fluent-bigdecimals?style=social)](https://github.com/HonoluluHenk/fluent-bigdecimals/network/members)
 
 fluent-bigdecimals is a library that lets Java programmers forget about BigDecimal rounding/scaling.
 
