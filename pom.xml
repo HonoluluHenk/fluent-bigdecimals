@@ -199,6 +199,9 @@
             <compilerArgs>
               <arg>-parameters</arg>
               <!-- <arg>-Awarns</arg> --> <!-- -Awarns turns type-checking errors into warnings. -->
+              <arg>-Xlint:all</arg>
+              <!-- why does this lead to compilation failure although there are no errors/warnings -->
+              <!--<arg>-Werror</arg>-->
             </compilerArgs>
           </configuration>
           <dependencies>

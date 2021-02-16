@@ -96,8 +96,10 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
 
     public <Arg> @NonNull T apply(@NonNull BiProjection<Arg> projection, @Nullable Arg argument) {
         if (argument == null) {
-            //noinspection unchecked
-            return (T) this;
+            @SuppressWarnings("unchecked")
+            T t = (T) this;
+
+            return t;
         }
 
         var result = apply((value, mathContext) -> projection.project(value, argument, mathContext));
