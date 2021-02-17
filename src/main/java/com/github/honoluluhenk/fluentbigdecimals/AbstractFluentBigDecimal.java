@@ -186,6 +186,18 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
         return result;
     }
 
+    public @NonNull T add(@NonNull double addend) {
+        var result = add(new BigDecimal(addend));
+
+        return result;
+    }
+
+    public @NonNull T add(@NonNull long addend) {
+        var result = add(new BigDecimal(addend));
+
+        return result;
+    }
+
     public @NonNull T subtract(@Nullable BigDecimal subtrahend) {
         T result = apply(BigDecimal::subtract, subtrahend);
 
@@ -200,6 +212,18 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
 
     public @NonNull T subtract(@NonNull String subtrahendBigDecimal) {
         var result = subtract(new BigDecimal(subtrahendBigDecimal));
+
+        return result;
+    }
+
+    public @NonNull T subtract(@NonNull double subtrahend) {
+        var result = subtract(new BigDecimal(subtrahend));
+
+        return result;
+    }
+
+    public @NonNull T subtract(@NonNull long subtrahend) {
+        var result = subtract(new BigDecimal(subtrahend));
 
         return result;
     }
@@ -222,6 +246,18 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
         return result;
     }
 
+    public @NonNull T multiply(@NonNull double multiplicand) {
+        T result = multiply(new BigDecimal(multiplicand));
+
+        return result;
+    }
+
+    public @NonNull T multiply(@NonNull long multiplicand) {
+        T result = multiply(new BigDecimal(multiplicand));
+
+        return result;
+    }
+
     public @NonNull T divide(@Nullable BigDecimal divisor) {
         T result = apply(BigDecimal::divide, divisor);
 
@@ -236,6 +272,18 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
 
     public @NonNull T divide(@NonNull String divisorBigDecimal) {
         var result = divide(new BigDecimal(divisorBigDecimal));
+
+        return result;
+    }
+
+    public @NonNull T divide(@NonNull double divisor) {
+        var result = divide(new BigDecimal(divisor));
+
+        return result;
+    }
+
+    public @NonNull T divide(@NonNull long divisor) {
+        var result = divide(new BigDecimal(divisor));
 
         return result;
     }

@@ -300,6 +300,19 @@ class FluentBigDecimalTest {
         void adds_and_calls_scaler(BigDecimal augend, BigDecimal addend, BigDecimal expectedValue) {
             executes_biProjection_and_calls_scaler_impl(FluentBigDecimal::add, augend, addend, expectedValue);
         }
+
+
+        @Test
+        void all_overloads_add() {
+            var expected = new BigDecimal("146.90");
+
+            assertThat(FIXTURE.add("23.45")).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.add(FIXTURE_CONFIG.of("23.45"))).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.add(new BigDecimal("23.45"))).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.add(23.45d)).isEqualTo(FIXTURE_CONFIG.of(expected));
+
+            assertThat(FIXTURE.add(23L)).isEqualTo(FIXTURE_CONFIG.of("146.45"));
+        }
     }
 
     @Nested
@@ -325,6 +338,18 @@ class FluentBigDecimalTest {
         })
         void subtracts_and_calls_scaler(BigDecimal minuend, BigDecimal subtrahend, BigDecimal expectedValue) {
             executes_biProjection_and_calls_scaler_impl(FluentBigDecimal::subtract, minuend, subtrahend, expectedValue);
+        }
+
+        @Test
+        void all_overloads_subtract() {
+            var expected = new BigDecimal("100.00");
+
+            assertThat(FIXTURE.subtract("23.45")).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.subtract(FIXTURE_CONFIG.of("23.45"))).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.subtract(new BigDecimal("23.45"))).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.subtract(23.45d)).isEqualTo(FIXTURE_CONFIG.of(expected));
+
+            assertThat(FIXTURE.subtract(23L)).isEqualTo(FIXTURE_CONFIG.of("100.45"));
         }
     }
 
@@ -358,6 +383,18 @@ class FluentBigDecimalTest {
                 expectedValue
             );
         }
+
+        @Test
+        void all_overloads_multiply() {
+            var expected = new BigDecimal("15239.9025");
+
+            assertThat(FIXTURE.multiply("123.45")).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.multiply(FIXTURE_CONFIG.of("123.45"))).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.multiply(new BigDecimal("123.45"))).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.multiply(123.45d)).isEqualTo(FIXTURE_CONFIG.of(expected));
+
+            assertThat(FIXTURE.multiply(123L)).isEqualTo(FIXTURE_CONFIG.of("15184"));
+        }
     }
 
     @Nested
@@ -384,6 +421,19 @@ class FluentBigDecimalTest {
             // Example for invalid input: 1/3
         void divides_and_calls_scaler(BigDecimal dividend, BigDecimal divisor, BigDecimal expectedValue) {
             executes_biProjection_and_calls_scaler_impl(FluentBigDecimal::divide, dividend, divisor, expectedValue);
+        }
+
+
+        @Test
+        void all_overloads_divide() {
+            var expected = new BigDecimal("61.725");
+
+            assertThat(FIXTURE.divide("2.00")).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.divide(FIXTURE_CONFIG.of("2.00"))).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.divide(new BigDecimal("2.00"))).isEqualTo(FIXTURE_CONFIG.of(expected));
+            assertThat(FIXTURE.divide(2.00d)).isEqualTo(FIXTURE_CONFIG.of(expected));
+
+            assertThat(FIXTURE.divide(2L)).isEqualTo(FIXTURE_CONFIG.of("61.725"));
         }
     }
 
