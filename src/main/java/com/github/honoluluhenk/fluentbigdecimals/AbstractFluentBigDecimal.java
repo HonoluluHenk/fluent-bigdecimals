@@ -199,7 +199,7 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
     }
 
     public @NonNull T subtract(@NonNull String subtrahendBigDecimal) {
-        var result = add(new BigDecimal(subtrahendBigDecimal));
+        var result = subtract(new BigDecimal(subtrahendBigDecimal));
 
         return result;
     }
