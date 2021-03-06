@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,9 +33,12 @@ public class ImplementsNumberTest {
 
         @Test
         void base_class_implements_all_Number_methods_and_thus_does_not_need_own_methods() {
-            var methods = NumericFluentBigDecimal.class.getDeclaredMethods();
+            var allMethods = NumericFluentBigDecimal.class.getDeclaredMethods();
+            var actualMethods = Arrays.stream(allMethods)
+                .filter(m -> !m.getName().startsWith("$jacoco"))
+                .toArray();
 
-            assertThat(methods)
+            assertThat(actualMethods)
                 .isEmpty();
         }
     }
