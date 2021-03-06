@@ -19,8 +19,11 @@ import static java.util.Objects.requireNonNull;
  * Regarding equals/hashcode/compareTo: see {@link BigDecimal};
  */
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>> implements Serializable, Comparable<T> {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public abstract
+class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
+    extends Number
+    implements Serializable, Comparable<T> {
     private static final long serialVersionUID = 1646116594300550112L;
 
     public static final BigDecimal HUNDRED = new BigDecimal("100");
@@ -298,6 +301,26 @@ public abstract class AbstractFluentBigDecimal<T extends AbstractFluentBigDecima
         T result = multiply(HUNDRED);
 
         return result;
+    }
+
+    @Override
+    public int intValue() {
+        return getValue().intValue();
+    }
+
+    @Override
+    public long longValue() {
+        return getValue().longValue();
+    }
+
+    @Override
+    public float floatValue() {
+        return getValue().floatValue();
+    }
+
+    @Override
+    public double doubleValue() {
+        return getValue().doubleValue();
     }
 
     private static @Nullable BigDecimal mapValue(@Nullable AbstractFluentBigDecimal<?> input) {
