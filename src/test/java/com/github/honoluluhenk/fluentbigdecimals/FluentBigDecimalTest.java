@@ -222,8 +222,40 @@ class FluentBigDecimalTest {
             assertThat(sut.compareTo(other))
                 .isGreaterThan(0);
         }
+    }
+
+    @Nested
+    class CompareToBigDecimal {
+        @Test
+        void compares_only_using_value() {
+
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("123.45");
+            BigDecimal other = new BigDecimal("123.45");
+
+            assertThat(sut.compareTo(other))
+                .isEqualTo(0);
+        }
+
+        @Test
+        void differs_for_a_lt_b() {
+
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("123.45");
+            BigDecimal other = new BigDecimal("543.21");
+
+            assertThat(sut.compareTo(other))
+                .isLessThan(0);
+        }
 
 
+        @Test
+        void differs_for_b_lt_a() {
+
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("543.21");
+            BigDecimal other = new BigDecimal("123.45");
+
+            assertThat(sut.compareTo(other))
+                .isGreaterThan(0);
+        }
     }
 
     @Nested
