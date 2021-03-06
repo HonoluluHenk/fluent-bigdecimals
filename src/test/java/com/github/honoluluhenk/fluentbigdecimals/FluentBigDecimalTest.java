@@ -259,6 +259,97 @@ class FluentBigDecimalTest {
     }
 
     @Nested
+    class WithValueTest {
+
+        @Test
+        void replaces_value() {
+            FluentBigDecimal sut = FIXTURE_CONFIG.of("543.21");
+
+            FluentBigDecimal actual = sut
+                .withValue(new BigDecimal("123.45"));
+
+            assertThat(actual.getValue())
+                .isEqualTo("123.45");
+        }
+    }
+
+
+    @Nested
+    class ToPlainStringTest {
+        @Test
+        void returns_the_same_value_as_bigdecimal() {
+            BigDecimal bd = new BigDecimal("543.21");
+            FluentBigDecimal actual = FIXTURE_CONFIG.of(bd);
+
+            assertThat(actual.toPlainString())
+                .isEqualTo(bd.toPlainString());
+        }
+    }
+
+    @Nested
+    class ToEngineeringStringTest {
+        @Test
+        void returns_the_same_value_as_bigdecimal() {
+            BigDecimal bd = new BigDecimal("543.21");
+            FluentBigDecimal actual = FIXTURE_CONFIG.of(bd);
+
+            assertThat(actual.toEngineeringString())
+                .isEqualTo(bd.toEngineeringString());
+        }
+    }
+
+
+    @Nested
+    class ToBigIntegerExactTest {
+        @Test
+        void returns_the_same_value_as_bigdecimal() {
+            BigDecimal bd = new BigDecimal("543");
+            FluentBigDecimal actual = FIXTURE_CONFIG.of(bd);
+
+            assertThat(actual.toBigIntegerExact())
+                .isEqualTo(bd.toBigIntegerExact());
+        }
+
+        @Test
+        void throws_the_same_as_bigdecimal() {
+            BigDecimal bd = new BigDecimal("543.21");
+            FluentBigDecimal actual = FIXTURE_CONFIG.of(bd);
+
+            var thrown = assertThrows(
+                ArithmeticException.class,
+                () -> actual.toBigIntegerExact()
+            );
+
+            //noinspection ResultOfMethodCallIgnored
+            var thrownBD = assertThrows(
+                ArithmeticException.class,
+                () -> bd.toBigIntegerExact()
+            );
+
+            assertThat(thrown)
+                .hasSameClassAs(thrownBD);
+
+            assertThat(thrown.getMessage())
+                .isEqualTo(thrownBD.getMessage());
+        }
+    }
+
+
+    @Nested
+    class ToBigIntegerTest {
+        @Test
+        void returns_the_same_value_as_bigdecimal() {
+            BigDecimal bd = new BigDecimal("543.21");
+            FluentBigDecimal actual = FIXTURE_CONFIG.of(bd);
+
+            assertThat(actual.toBigInteger())
+                .isEqualTo(bd.toBigInteger());
+        }
+
+    }
+
+
+    @Nested
     class ToString {
         @Test
         void includes_all_parameters() {
