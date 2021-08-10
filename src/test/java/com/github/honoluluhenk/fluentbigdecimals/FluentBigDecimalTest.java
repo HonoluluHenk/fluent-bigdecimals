@@ -69,6 +69,7 @@ class FluentBigDecimalTest {
     );
     private static final FluentBigDecimal FIXTURE = FIXTURE_CONFIG.of(FIXTURE_VALUE);
 
+    //<editor-fold defaultstate="collapsed" desc="TestSetup">
     @Nested
     class TestSetup {
         /**
@@ -90,7 +91,9 @@ class FluentBigDecimalTest {
                 .isEqualTo("0.45");
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Constructor">
     @Nested
     class Constructor {
 
@@ -114,6 +117,7 @@ class FluentBigDecimalTest {
 
         @Test
         void throws_for_null_value() {
+            @SuppressWarnings("ConstantConditions")
             var ex = assertThrows(
                 NullPointerException.class,
                 () -> new FluentBigDecimal(null, FIXTURE_CONFIG)
@@ -125,6 +129,7 @@ class FluentBigDecimalTest {
 
         @Test
         void throws_for_null_configuration() {
+            @SuppressWarnings("ConstantConditions")
             var ex = assertThrows(
                 NullPointerException.class,
                 () -> new FluentBigDecimal(BigDecimal.ONE, null)
@@ -134,7 +139,9 @@ class FluentBigDecimalTest {
                 .hasMessageContaining("configuration required");
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="HashCodeEquals">
     @Nested
     class HashCodeEquals {
         @Test
@@ -187,7 +194,9 @@ class FluentBigDecimalTest {
         }
 
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="CompareTo">
     @Nested
     class CompareTo {
         @Test
@@ -212,7 +221,6 @@ class FluentBigDecimalTest {
                 .isLessThan(0);
         }
 
-
         @Test
         void differs_for_b_lt_a() {
 
@@ -223,7 +231,9 @@ class FluentBigDecimalTest {
                 .isGreaterThan(0);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="CompareToBigDecimal">
     @Nested
     class CompareToBigDecimal {
         @Test
@@ -246,7 +256,6 @@ class FluentBigDecimalTest {
                 .isLessThan(0);
         }
 
-
         @Test
         void differs_for_b_lt_a() {
 
@@ -257,7 +266,9 @@ class FluentBigDecimalTest {
                 .isGreaterThan(0);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="WithValueTest">
     @Nested
     class WithValueTest {
 
@@ -272,8 +283,9 @@ class FluentBigDecimalTest {
                 .isEqualTo("123.45");
         }
     }
+    //</editor-fold>
 
-
+    //<editor-fold defaultstate="collapsed" desc="ToPlainStringTest">
     @Nested
     class ToPlainStringTest {
         @Test
@@ -285,7 +297,9 @@ class FluentBigDecimalTest {
                 .isEqualTo(bd.toPlainString());
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="ToEngineeringStringTest">
     @Nested
     class ToEngineeringStringTest {
         @Test
@@ -297,8 +311,9 @@ class FluentBigDecimalTest {
                 .isEqualTo(bd.toEngineeringString());
         }
     }
+    //</editor-fold>
 
-
+    //<editor-fold defaultstate="collapsed" desc="ToBigIntegerExactTest">
     @Nested
     class ToBigIntegerExactTest {
         @Test
@@ -333,8 +348,9 @@ class FluentBigDecimalTest {
                 .isEqualTo(thrownBD.getMessage());
         }
     }
+    //</editor-fold>
 
-
+    //<editor-fold defaultstate="collapsed" desc="ToBigIntegerTest">
     @Nested
     class ToBigIntegerTest {
         @Test
@@ -347,8 +363,9 @@ class FluentBigDecimalTest {
         }
 
     }
+    //</editor-fold>
 
-
+    //<editor-fold defaultstate="collapsed" desc="ToString">
     @Nested
     class ToString {
         @Test
@@ -361,7 +378,9 @@ class FluentBigDecimalTest {
                 .isEqualTo("FluentBigDecimal[123.45,[5,HALF_UP,DummyScaler]]");
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Round">
     @Nested
     class Round {
         @Test
@@ -376,7 +395,9 @@ class FluentBigDecimalTest {
                 .isSameAs(FIXTURE_CONFIG);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="RoundInto">
     @Nested
     class RoundInto {
         @Test
@@ -397,7 +418,9 @@ class FluentBigDecimalTest {
         }
 
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Add">
     @Nested
     class Add {
 
@@ -424,7 +447,6 @@ class FluentBigDecimalTest {
             executes_biProjection_and_calls_scaler_impl(FluentBigDecimal::add, augend, addend, expectedValue);
         }
 
-
         @Test
         void all_overloads_add() {
             var expected = new BigDecimal("146.90");
@@ -437,7 +459,9 @@ class FluentBigDecimalTest {
             assertThat(FIXTURE.add(23L)).isEqualTo(FIXTURE_CONFIG.of("146.45"));
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Subtract">
     @Nested
     class Subtract {
 
@@ -475,8 +499,9 @@ class FluentBigDecimalTest {
             assertThat(FIXTURE.subtract(23L)).isEqualTo(FIXTURE_CONFIG.of("100.45"));
         }
     }
+    //</editor-fold>
 
-
+    //<editor-fold defaultstate="collapsed" desc="Multiply">
     @Nested
     class Multiply {
 
@@ -519,7 +544,9 @@ class FluentBigDecimalTest {
             assertThat(FIXTURE.multiply(123L)).isEqualTo(FIXTURE_CONFIG.of("15184"));
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Divide">
     @Nested
     class Divide {
 
@@ -546,7 +573,6 @@ class FluentBigDecimalTest {
             executes_biProjection_and_calls_scaler_impl(FluentBigDecimal::divide, dividend, divisor, expectedValue);
         }
 
-
         @Test
         void all_overloads_divide() {
             var expected = new BigDecimal("61.725");
@@ -559,7 +585,9 @@ class FluentBigDecimalTest {
             assertThat(FIXTURE.divide(2L)).isEqualTo(FIXTURE_CONFIG.of("61.725"));
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="PctToFraction">
     @Nested
     class PctToFraction {
 
@@ -580,7 +608,9 @@ class FluentBigDecimalTest {
             executes_monoProjection_and_calls_scaler_impl(FluentBigDecimal::pctToFraction, multiplicand, expectedValue);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="FractionToPct">
     @Nested
     class FractionToPct {
 
@@ -601,7 +631,9 @@ class FluentBigDecimalTest {
             executes_monoProjection_and_calls_scaler_impl(FluentBigDecimal::fractionToPct, multiplicand, expectedValue);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Map">
     @Nested
     class Map {
         @Test
@@ -614,9 +646,12 @@ class FluentBigDecimalTest {
                 .isEqualTo(123);
         }
     }
+    //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Apply">
     @Nested
     class Apply {
+        @SuppressWarnings("ConstantConditions")
         final Scaler NULL_RETURNING_SCALER = (value, mathContext) -> null;
 
         @Nested
@@ -645,6 +680,7 @@ class FluentBigDecimalTest {
                 FluentBigDecimal sut = FIXTURE_CONFIG
                     .withScaler(new FixedValueScaler(BigDecimal.ONE))
                     .of("123.45");
+                @SuppressWarnings("ConstantConditions")
                 BiProjection<Object> nullProjection = (value, argument, mc) -> null;
 
                 NullPointerException ex = assertThrows(
@@ -683,6 +719,7 @@ class FluentBigDecimalTest {
                 FluentBigDecimal sut = FIXTURE_CONFIG
                     .withScaler(new FixedValueScaler(BigDecimal.ONE))
                     .of("123.45");
+                @SuppressWarnings("ConstantConditions")
                 Projection nullProjection = (value, mc) -> null;
 
                 NullPointerException ex = assertThrows(
@@ -697,6 +734,7 @@ class FluentBigDecimalTest {
         }
 
     }
+    //</editor-fold>
 
     void keeps_same_scaler_impl(BinaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE, FIXTURE);
@@ -718,7 +756,6 @@ class FluentBigDecimalTest {
         assertThat(actual.getValue())
             .isEqualTo(FIXTURE.getValue());
     }
-
 
     void executes_biProjection_and_calls_scaler_impl(
         BiFunction<FluentBigDecimal, FluentBigDecimal, FluentBigDecimal> operation,
