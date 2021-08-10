@@ -189,13 +189,13 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return result;
     }
 
-    public @NonNull T add(@NonNull double addend) {
+    public @NonNull T add(double addend) {
         var result = add(new BigDecimal(addend));
 
         return result;
     }
 
-    public @NonNull T add(@NonNull long addend) {
+    public @NonNull T add(long addend) {
         var result = add(new BigDecimal(addend));
 
         return result;
@@ -219,13 +219,13 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return result;
     }
 
-    public @NonNull T subtract(@NonNull double subtrahend) {
+    public @NonNull T subtract(double subtrahend) {
         var result = subtract(new BigDecimal(subtrahend));
 
         return result;
     }
 
-    public @NonNull T subtract(@NonNull long subtrahend) {
+    public @NonNull T subtract(long subtrahend) {
         var result = subtract(new BigDecimal(subtrahend));
 
         return result;
@@ -249,13 +249,13 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return result;
     }
 
-    public @NonNull T multiply(@NonNull double multiplicand) {
+    public @NonNull T multiply(double multiplicand) {
         T result = multiply(new BigDecimal(multiplicand));
 
         return result;
     }
 
-    public @NonNull T multiply(@NonNull long multiplicand) {
+    public @NonNull T multiply(long multiplicand) {
         T result = multiply(new BigDecimal(multiplicand));
 
         return result;
@@ -279,13 +279,13 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return result;
     }
 
-    public @NonNull T divide(@NonNull double divisor) {
+    public @NonNull T divide(double divisor) {
         var result = divide(new BigDecimal(divisor));
 
         return result;
     }
 
-    public @NonNull T divide(@NonNull long divisor) {
+    public @NonNull T divide(long divisor) {
         var result = divide(new BigDecimal(divisor));
 
         return result;
