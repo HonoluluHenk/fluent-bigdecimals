@@ -5,6 +5,7 @@ import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.NonNull;
 import lombok.var;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -894,6 +895,95 @@ class FluentBigDecimalTest {
         }
 
     }
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc="ComparesTo">
+    @Nested
+    class ExactGetters {
+
+        @Nested
+        class longValueExact {
+            @Test
+            void gets_desired_value() {
+                long value = FIXTURE_CONFIG.of(123)
+                    .longValueExact();
+
+                assertThat(value)
+                    .isEqualTo(123);
+            }
+
+            @Test
+            void throws_if_rounding_necessary() {
+                assertThrowsArithmeticException(() -> FIXTURE_CONFIG.of(123.45).longValueExact());
+            }
+
+        }
+
+        @Nested
+        class intValueExact {
+            @Test
+            void gets_desired_value() {
+                int value = FIXTURE_CONFIG.of(123)
+                    .intValueExact();
+
+                assertThat(value)
+                    .isEqualTo(123);
+            }
+
+            @Test
+            void throws_if_rounding_necessary() {
+                assertThrowsArithmeticException(() -> FIXTURE_CONFIG.of(123.45).intValueExact());
+            }
+
+        }
+
+        @Nested
+        class shortValueExact {
+            @Test
+            void gets_desired_value() {
+                short value = FIXTURE_CONFIG.of(123)
+                    .shortValueExact();
+
+                assertThat(value)
+                    .isEqualTo(Short.valueOf((short) 123).shortValue());
+            }
+
+            @Test
+            void throws_if_rounding_necessary() {
+                assertThrowsArithmeticException(() -> FIXTURE_CONFIG.of(123.45).shortValueExact());
+            }
+
+        }
+
+        @Nested
+        class byteValueExact {
+            @Test
+            void gets_desired_value() {
+                byte value = FIXTURE_CONFIG.of(123)
+                    .byteValueExact();
+
+                assertThat(value)
+                    .isEqualTo((byte) 123);
+            }
+
+            @Test
+            void throws_if_rounding_necessary() {
+                assertThrowsArithmeticException(() -> FIXTURE_CONFIG.of(123.45).byteValueExact());
+            }
+
+        }
+
+        private void assertThrowsArithmeticException(Executable e) {
+            ArithmeticException ex = assertThrows(
+                ArithmeticException.class,
+                e
+            );
+
+            assertThat(ex)
+                .hasMessage("Rounding necessary");
+        }
+    }
+
     //</editor-fold>
 
     void keeps_same_scaler_impl(BinaryOperator<FluentBigDecimal> fnc) {

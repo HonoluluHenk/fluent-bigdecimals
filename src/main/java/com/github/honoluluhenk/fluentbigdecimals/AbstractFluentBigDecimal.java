@@ -348,6 +348,34 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return comparesTo(BigDecimal.ZERO);
     }
 
+    /**
+     * See {@link BigDecimal#longValueExact()}.
+     */
+    public long longValueExact() {
+        return getValue().longValueExact();
+    }
+
+    /**
+     * See {@link BigDecimal#intValueExact()}.
+     */
+    public int intValueExact() {
+        return getValue().intValueExact();
+    }
+
+    /**
+     * See {@link BigDecimal#shortValueExact()}.
+     */
+    public short shortValueExact() {
+        return getValue().shortValueExact();
+    }
+
+    /**
+     * See {@link BigDecimal#byteValueExact()}.
+     */
+    public byte byteValueExact() {
+        return getValue().byteValueExact();
+    }
+
     private static @Nullable BigDecimal mapValue(@Nullable AbstractFluentBigDecimal<?> input) {
         if (input == null) {
             return null;
