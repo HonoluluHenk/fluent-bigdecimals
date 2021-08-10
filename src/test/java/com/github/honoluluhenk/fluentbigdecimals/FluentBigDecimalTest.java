@@ -802,6 +802,57 @@ class FluentBigDecimalTest {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="IsZero">
+    @Nested
+    class IsZero {
+        @Test
+        void returns_true_if_BigDecimalZERO() {
+            boolean actual = FIXTURE_CONFIG.of(BigDecimal.ZERO)
+                .isZero();
+
+            assertThat(actual)
+                .isTrue();
+        }
+
+        @Test
+        void returns_true_if_ConfigurationZERO() {
+            boolean actual = FIXTURE_CONFIG.ZERO()
+                .isZero();
+
+            assertThat(actual)
+                .isTrue();
+        }
+
+        @Test
+        void returns_true_if_0() {
+            boolean actual = FIXTURE_CONFIG.of("0")
+                .isZero();
+
+            assertThat(actual)
+                .isTrue();
+        }
+
+        @Test
+        void returns_true_for_zeroes_with_scale() {
+            boolean actual = FIXTURE_CONFIG.of("000.00")
+                .isZero();
+
+            assertThat(actual)
+                .isTrue();
+        }
+
+        @Test
+        void returns_false_for_different_value_with_same_scale() {
+            boolean actual = FIXTURE_CONFIG.of("123.45")
+                .isZero();
+
+            assertThat(actual)
+                .isFalse();
+        }
+
+    }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="ComparesTo">
     @Nested
     class PseudoConstants {

@@ -341,6 +341,13 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return compareTo(other) == 0;
     }
 
+    /**
+     * Convenience: shortcut for: foo.compareTo(BigDecimal.ZERO) == 0.
+     */
+    public boolean isZero() {
+        return comparesTo(BigDecimal.ZERO);
+    }
+
     private static @Nullable BigDecimal mapValue(@Nullable AbstractFluentBigDecimal<?> input) {
         if (input == null) {
             return null;

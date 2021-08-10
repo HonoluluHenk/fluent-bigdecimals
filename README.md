@@ -255,6 +255,10 @@ Just the scaling part is implemented by the [MaxScaleScaler](src/main/java/com/g
 
 ## Convenience
 
+### isZero()
+
+`someFluentBigDecimal.isZero()` is shorthand for `someFluentBigDecimal.compareTo(BigDecimal.ZERO) == 0`
+
 ### comparesTo()
 
 `someFluentBigDecimal.comparesTo(other)` is shorthand for `someFluentBigDecimal.compareTo(other) == 0`
