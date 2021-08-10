@@ -802,6 +802,49 @@ class FluentBigDecimalTest {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="ComparesTo">
+    @Nested
+    class PseudoConstants {
+
+        @Test
+        void ZERO_returns_ZERO() {
+            assertThat(FIXTURE_CONFIG.ZERO())
+                .isEqualByComparingTo(FIXTURE_CONFIG.of(BigDecimal.ZERO));
+        }
+
+        @Test
+        void ZERO_returns_same_instance_every_time() {
+            assertThat(FIXTURE_CONFIG.ZERO())
+                .isSameAs(FIXTURE_CONFIG.ZERO());
+        }
+
+        @Test
+        void ONE_returns_ONE() {
+            assertThat(FIXTURE_CONFIG.ONE())
+                .isEqualByComparingTo(FIXTURE_CONFIG.of(BigDecimal.ONE));
+        }
+
+        @Test
+        void ONE_returns_same_instance_every_time() {
+            assertThat(FIXTURE_CONFIG.ONE())
+                .isSameAs(FIXTURE_CONFIG.ONE());
+        }
+
+        @Test
+        void TEN_returns_TEN() {
+            assertThat(FIXTURE_CONFIG.TEN())
+                .isEqualByComparingTo(FIXTURE_CONFIG.of(BigDecimal.TEN));
+        }
+
+        @Test
+        void TEN_returns_same_instance_every_time() {
+            assertThat(FIXTURE_CONFIG.TEN())
+                .isSameAs(FIXTURE_CONFIG.TEN());
+        }
+
+    }
+    //</editor-fold>
+
     void keeps_same_scaler_impl(BinaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE, FIXTURE);
 

@@ -2,7 +2,9 @@ package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -10,6 +12,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static lombok.AccessLevel.NONE;
 
 @Value
 @NonFinal
@@ -17,9 +22,17 @@ import java.math.MathContext;
 public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Serializable {
     private static final long serialVersionUID = -8556901571320467482L;
 
+    // ZERO, ONE, TEN (at the time of this writing)
+    private static final int CONSTANTS_IN_BIGDECIMAL = 3;
+
     private final @NonNull MathContext mathContext;
     private final @NonNull Scaler scaler;
     private final @NonNull Factory<T> factory;
+
+    @Getter(NONE)
+    @Setter(NONE)
+    private final @NonNull ConcurrentHashMap<BigDecimal, T> constantsCache
+        = new ConcurrentHashMap<>(CONSTANTS_IN_BIGDECIMAL);
 
     @Override
     public @NonNull String toString() {
@@ -144,6 +157,34 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
 
     public <O extends AbstractFluentBigDecimal<O>> Configuration<O> withFactory(@NonNull Factory<O> factory) {
         return new Configuration<>(getMathContext(), getScaler(), factory);
+    }
+
+    /**
+     * For subclasses: define you own constants, see e.g. {@link #ZERO()}.
+     */
+    protected T memoizedConstant(BigDecimal constant) {
+        return constantsCache.computeIfAbsent(constant, this::of);
+    }
+
+    /**
+     * Returns a {@link BigDecimal#ZERO} in this configuration.
+     */
+    public T ZERO() {
+        return memoizedConstant(BigDecimal.ZERO);
+    }
+
+    /**
+     * Returns a {@link BigDecimal#ONE} in this configuration.
+     */
+    public T ONE() {
+        return memoizedConstant(BigDecimal.ONE);
+    }
+
+    /**
+     * Returns a {@link BigDecimal#TEN} in this configuration.
+     */
+    public T TEN() {
+        return memoizedConstant(BigDecimal.TEN);
     }
 
 }
