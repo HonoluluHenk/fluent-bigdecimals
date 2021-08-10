@@ -897,7 +897,7 @@ class FluentBigDecimalTest {
     }
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="ComparesTo">
+    //<editor-fold defaultstate="collapsed" desc="ExactGetters">
     @Nested
     class ExactGetters {
 
