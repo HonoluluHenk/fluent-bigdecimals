@@ -37,7 +37,7 @@ class FluentBigDecimalTest {
         }
 
         @Override
-        public @NonNull BigDecimal scale(BigDecimal value, @NonNull MathContext mathContext) {
+        public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
             return fixedValue;
         }
     }
