@@ -12,7 +12,7 @@ fluent-bigdecimals is a library that lets Java programmers forget about BigDecim
 It does this by wrapping Javas [BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html#compareTo-java.math.BigDecimal-)
 into a class with fancy fluent API.
 
-Very few and low-impact transitive dependencies.
+Only one runtime dependency: [checker-qual](https://checkerframework.org/) for @Nullable/@NonNull annotations.
 
 Java 9 modules supported.
 
@@ -38,7 +38,7 @@ or [Maven Central](https://search.maven.org/search?q=g:com.github.honoluluhenk.f
 
 ## Basic Usage
 
-fluent-bigdecimals requires you to only setup precision, rounding and scaling (a.k.a.: the `Configuration`) once. You can then re-use this configuration on all BigDecimal operations.
+fluent-bigdecimals requires you to only setup precision, rounding and scaling (a.k.a.: the `Configuration`) **once**. You can then re-use this configuration on all BigDecimal operations.
 
 ### Step 1: Define your rounding/scaling configurations globally
 
