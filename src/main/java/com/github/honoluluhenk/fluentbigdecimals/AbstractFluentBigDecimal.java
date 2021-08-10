@@ -323,6 +323,24 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return getValue().doubleValue();
     }
 
+    /**
+     * Convenience: shortcut for: foo.compareTo(other) == 0.
+     * <p>
+     * See semantics of {@link BigDecimal#compareTo(BigDecimal)} for more details.
+     */
+    public boolean comparesTo(T other) {
+        return compareTo(other) == 0;
+    }
+
+    /**
+     * Convenience: shortcut for: foo.compareTo(other) == 0.
+     * <p>
+     * See semantics of {@link BigDecimal#compareTo(BigDecimal)} for more details.
+     */
+    public boolean comparesTo(BigDecimal other) {
+        return compareTo(other) == 0;
+    }
+
     private static @Nullable BigDecimal mapValue(@Nullable AbstractFluentBigDecimal<?> input) {
         if (input == null) {
             return null;

@@ -736,6 +736,72 @@ class FluentBigDecimalTest {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="ComparesTo">
+    @Nested
+    class ComparesTo {
+        @Nested
+        class OtherFluentBigDecimal {
+            @Test
+            void returns_true_if_equal() {
+                boolean actual = FIXTURE_CONFIG.of("123.45")
+                    .comparesTo(FIXTURE_CONFIG.of("123.45"));
+
+                assertThat(actual)
+                    .isTrue();
+            }
+
+            @Test
+            void returns_true_for_equal_value_but_different_scale() {
+                boolean actual = FIXTURE_CONFIG.of("123.45")
+                    .comparesTo(FIXTURE_CONFIG.of("123.4500"));
+
+                assertThat(actual)
+                    .isTrue();
+            }
+
+            @Test
+            void returns_false_for_different_value_with_same_scale() {
+                boolean actual = FIXTURE_CONFIG.of("123.45")
+                    .comparesTo(FIXTURE_CONFIG.of("999.99"));
+
+                assertThat(actual)
+                    .isFalse();
+            }
+        }
+
+        @Nested
+        class OtherBigDecimal {
+            @Test
+            void returns_true_if_equal() {
+                boolean actual = FIXTURE_CONFIG.of("123.45")
+                    .comparesTo(new BigDecimal("123.45"));
+
+                assertThat(actual)
+                    .isTrue();
+            }
+
+            @Test
+            void returns_true_for_equal_value_but_different_scale() {
+                boolean actual = FIXTURE_CONFIG.of("123.45")
+                    .comparesTo(new BigDecimal("123.4500"));
+
+                assertThat(actual)
+                    .isTrue();
+            }
+
+            @Test
+            void returns_false_for_different_value_with_same_scale() {
+                boolean actual = FIXTURE_CONFIG.of("123.45")
+                    .comparesTo(new BigDecimal("999.99"));
+
+                assertThat(actual)
+                    .isFalse();
+            }
+        }
+
+    }
+    //</editor-fold>
+
     void keeps_same_scaler_impl(BinaryOperator<FluentBigDecimal> fnc) {
         FluentBigDecimal actual = fnc.apply(FIXTURE, FIXTURE);
 

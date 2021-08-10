@@ -22,7 +22,8 @@
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>Wrap Java-BigDecimals into a nice fluent API and ease up rounding user-defined precision/scale.
+  <description>
+    Wrap Java-BigDecimals into a nice fluent API and ease up rounding user-defined precision/scale.
   </description>
   <url>https://github.com/HonoluluHenk/fluent-bigdecimals</url>
 
