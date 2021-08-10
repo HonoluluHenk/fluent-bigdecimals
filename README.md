@@ -253,7 +253,21 @@ Using JPA/Hibernate notation:
 
 Just the scaling part is implemented by the [MaxScaleScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/MaxScaleScaler.java).
 
-###
+## Convenience
+
+### comparesTo()
+
+`someFluentBigDecimal.comparesTo(other)` is shorthand for `someFluentBigDecimal.compareTo(other) == 0`
+
+See [BigDecimal#compareTo(BigDecimal)](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html#compareTo-java.math.BigDecimal-) for semantic details.
+
+### pseudoconstants
+
+* `YourConfiguration.ZERO()`
+* `YourConfiguration.ONE()`
+* `YourConfiguration.TEN()`
+
+Also allows for your own predefined constants in Configuration subclasses, see [AbstractFluentBigDecimal#memoizedConstant()](src/main/java/com/github/honoluluhenk/fluentbigdecimals/AbstractFluentBigDecimal.java).
 
 ## Advanced usage
 
