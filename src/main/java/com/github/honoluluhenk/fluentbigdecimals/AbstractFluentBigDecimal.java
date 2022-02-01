@@ -59,7 +59,7 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
      * If you need to switch to a new Configuration <i>without</i> scaling/rounding,
      * use {@link #withConfiguration(Configuration)}.
      */
-    public @NonNull T roundInto(Configuration<T> configuration) {
+    public <R extends AbstractFluentBigDecimal<R>> @NonNull R roundInto(Configuration<R> configuration) {
         return newRawInstance(getValue(), configuration)
             .round();
     }
