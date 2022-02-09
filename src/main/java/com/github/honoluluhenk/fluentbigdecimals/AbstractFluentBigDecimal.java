@@ -1,17 +1,17 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.util.function.Function;
+
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.var;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.MathContext;
-import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,7 @@ import static java.util.Objects.requireNonNull;
 public abstract
 class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
     extends Number
-    implements Serializable, Comparable<T> {
+    implements Serializable, Comparable<AbstractFluentBigDecimal<?>> {
     private static final long serialVersionUID = 1646116594300550112L;
 
     public static final BigDecimal HUNDRED = new BigDecimal("100");
@@ -37,7 +37,9 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         this.configuration = requireNonNull(configuration, "configuration required");
     }
 
-    private static @NonNull <T extends AbstractFluentBigDecimal<T>> T newRawInstance(@NonNull BigDecimal value, @NonNull Configuration<T> configuration) {
+    private static @NonNull <T extends AbstractFluentBigDecimal<T>> T newRawInstance(
+        @NonNull BigDecimal value,
+        @NonNull Configuration<T> configuration) {
         return configuration
             .getFactory()
             .create(value, configuration);
@@ -84,7 +86,7 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
      * Compares current value and delegates to {@link BigDecimal#compareTo(BigDecimal)}.
      */
     @Override
-    public int compareTo(@NonNull T o) {
+    public int compareTo(@NonNull AbstractFluentBigDecimal<?> o) {
         return getValue().compareTo(o.getValue());
     }
 
@@ -175,7 +177,7 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return result;
     }
 
-    public @NonNull T add(@Nullable T addend) {
+    public <Other extends AbstractFluentBigDecimal<Other>> @NonNull T add(@Nullable Other addend) {
         T result = add(mapValue(addend));
 
         return result;
@@ -205,7 +207,7 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return result;
     }
 
-    public @NonNull T subtract(@Nullable T subtrahend) {
+    public <Other extends AbstractFluentBigDecimal<Other>> @NonNull T subtract(@Nullable Other subtrahend) {
         T result = subtract(mapValue(subtrahend));
 
         return result;
@@ -235,7 +237,7 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return result;
     }
 
-    public @NonNull T multiply(@Nullable T multiplicand) {
+    public <Other extends AbstractFluentBigDecimal<Other>> @NonNull T multiply(@Nullable Other multiplicand) {
         T result = multiply(mapValue(multiplicand));
 
         return result;
@@ -265,7 +267,7 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return result;
     }
 
-    public @NonNull T divide(@Nullable T divisor) {
+    public <Other extends AbstractFluentBigDecimal<Other>> @NonNull T divide(@Nullable Other divisor) {
         T result = divide(mapValue(divisor));
 
         return result;
@@ -326,7 +328,7 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
      * <p>
      * See semantics of {@link BigDecimal#compareTo(BigDecimal)} for more details.
      */
-    public boolean comparesTo(T other) {
+    public <Other extends AbstractFluentBigDecimal<Other>> boolean comparesTo(Other other) {
         return compareTo(other) == 0;
     }
 
