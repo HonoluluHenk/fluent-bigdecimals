@@ -1,23 +1,26 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.Value;
-import lombok.experimental.NonFinal;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.Value;
+import lombok.experimental.NonFinal;
+
 import static lombok.AccessLevel.NONE;
 
 @Value
 @NonFinal
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("RedundantModifiersValueLombok")
 public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Serializable {
     private static final long serialVersionUID = -8556901571320467482L;
@@ -33,6 +36,14 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     @Setter(NONE)
     private final @NonNull ConcurrentHashMap<BigDecimal, T> constantsCache
         = new ConcurrentHashMap<>(CONSTANTS_IN_BIGDECIMAL);
+
+    public static <T extends AbstractFluentBigDecimal<T>> Configuration<T> createConfiguration(
+        @NonNull MathContext mathContext,
+        @NonNull Scaler scaler,
+        @NonNull Factory<T> factory
+    ) {
+        return new Configuration<>(mathContext, scaler, factory);
+    }
 
     @Override
     public @NonNull String toString() {
@@ -137,7 +148,8 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     }
 
     /**
-     * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(long, int)}.
+     * Convenience: create a new, rounded instance using a wrapped BigDecimal,
+     * see: {@link BigDecimal#valueOf(long, int)}.
      */
     public @NonNull T valueOf(long unscaledVal, int scale) {
         return of(BigDecimal.valueOf(unscaledVal, scale));

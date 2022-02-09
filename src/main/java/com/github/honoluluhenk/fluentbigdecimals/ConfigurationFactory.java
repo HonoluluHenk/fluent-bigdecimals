@@ -1,13 +1,13 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import java.io.Serializable;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 import com.github.honoluluhenk.fluentbigdecimals.scaler.CashRoundingScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.NonNull;
-
-import java.io.Serializable;
-import java.math.MathContext;
-import java.math.RoundingMode;
 
 import static java.math.RoundingMode.HALF_UP;
 
@@ -33,7 +33,6 @@ public class ConfigurationFactory implements Serializable {
     @SuppressWarnings("unused")
     public static final int BIGDECIMAL_JPA_PRECISION = JPA_BIGDECIMAL_PRECISION + JPA_BIGDECIMAL_SCALE;
 
-
     /**
      * Scale 2: used by most monetary systems.
      */
@@ -44,12 +43,21 @@ public class ConfigurationFactory implements Serializable {
      */
     public static final RoundingMode DEFAULT_MONETARY_ROUNDING = HALF_UP;
 
-    public static Configuration<FluentBigDecimal> create(@NonNull MathContext mathContext, @NonNull Scaler scaler) {
-        return new Configuration<>(mathContext, scaler, FLUENT_BIGDECIMAL_FACTORY);
+    public static Configuration<FluentBigDecimal> create(
+        @NonNull MathContext mathContext,
+        @NonNull Scaler scaler
+    ) {
+        return Configuration
+            .createConfiguration(mathContext, scaler, FLUENT_BIGDECIMAL_FACTORY);
     }
 
-    public static Configuration<FluentBigDecimal> create(int precision, @NonNull RoundingMode roundingMode, @NonNull Scaler scaler) {
-        return new Configuration<>(new MathContext(precision, roundingMode), scaler, FLUENT_BIGDECIMAL_FACTORY);
+    public static Configuration<FluentBigDecimal> create(
+        int precision,
+        @NonNull RoundingMode roundingMode,
+        @NonNull Scaler scaler
+    ) {
+        return Configuration
+            .createConfiguration(new MathContext(precision, roundingMode), scaler, FLUENT_BIGDECIMAL_FACTORY);
     }
 
     /**
@@ -64,7 +72,8 @@ public class ConfigurationFactory implements Serializable {
     }
 
     /**
-     * Compatible to JPA/Hibernate defaults for BigDecimal: @Column(precision = 16, scale = 2) with {@link RoundingMode#HALF_UP}.
+     * Compatible to JPA/Hibernate defaults for BigDecimal: @Column(precision = 16, scale = 2) with
+     * {@link RoundingMode#HALF_UP}.
      */
     public static Configuration<FluentBigDecimal> jpaBigDecimal() {
         return databaseJavaNotation(JPA_BIGDECIMAL_PRECISION, JPA_BIGDECIMAL_SCALE);
@@ -85,7 +94,10 @@ public class ConfigurationFactory implements Serializable {
      * <p>
      * This means: precision is the max. number of integers, scale the max. number of decimals.
      */
-    public static Configuration<FluentBigDecimal> databaseDBNotation(int databasePrecsion, int databaseScale, @NonNull RoundingMode roundingMode) {
+    public static Configuration<FluentBigDecimal> databaseDBNotation(
+        int databasePrecsion,
+        int databaseScale,
+        @NonNull RoundingMode roundingMode) {
         int javaPrecision = databasePrecsion + databaseScale;
         return create(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
     }
