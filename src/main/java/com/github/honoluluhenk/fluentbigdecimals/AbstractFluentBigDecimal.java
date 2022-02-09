@@ -64,8 +64,6 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
             .round();
     }
 
-    //FIXME: implement roundUsing(Configuration other): do a one-time adjustment using the other Configuration but keep old config for future use.
-
     public T withValue(@NonNull BigDecimal value) {
         return newRawInstance(value, getConfiguration());
     }
