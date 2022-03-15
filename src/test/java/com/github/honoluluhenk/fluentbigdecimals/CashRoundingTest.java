@@ -1,19 +1,20 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import java.math.BigDecimal;
+
 import lombok.var;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CashRoundingTest {
+    private final CashRounding cashRounding = CashRounding.of(CashRoundingUnits.ROUND_DOT05);
 
     @Nested
     class Round {
-        private final CashRounding cashRounding = CashRounding.of(CashRoundingUnits.ROUND_DOT05);
 
         @ParameterizedTest
         @CsvSource({
@@ -51,5 +52,17 @@ class CashRoundingTest {
         }
     }
 
+    @Nested
+    class ToString {
+        @Test
+        void has_nice_message() {
+            var actual = cashRounding.toString();
+
+            assertThat(actual)
+                .contains(CashRounding.class.getSimpleName())
+                .contains("0.05")
+                .contains("HALF_UP");
+        }
+    }
 
 }

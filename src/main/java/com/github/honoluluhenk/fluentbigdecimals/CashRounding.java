@@ -1,17 +1,23 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import lombok.*;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
+import lombok.With;
+import lombok.var;
 
 import static java.math.RoundingMode.HALF_UP;
 
 @AllArgsConstructor
 @Getter
 @With
+@ToString
 public class CashRounding implements Serializable {
     private static final long serialVersionUID = 7429229149421339478L;
     public static final int CASH_ROUNDING_SCALE = 2;
@@ -39,7 +45,6 @@ public class CashRounding implements Serializable {
     public @NonNull BigDecimal round(@NonNull BigDecimal value) {
         var mathContext = new MathContext(value.precision(), roundingMode);
         var factor = unitToFactor(unit);
-
 
         var result = value
             .divide(factor, mathContext)
