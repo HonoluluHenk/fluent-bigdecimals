@@ -166,8 +166,6 @@
             </execution>
           </executions>
           <configuration>
-            <!-- required by checkerframework -->
-            <fork>true</fork>
             <compilerArguments>
               <Xmaxerrs>10000</Xmaxerrs>
               <Xmaxwarns>10000</Xmaxwarns>
