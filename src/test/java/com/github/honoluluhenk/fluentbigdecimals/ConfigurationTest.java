@@ -1,5 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import com.github.honoluluhenk.fluentbigdecimals.scaler.FixedScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.var;
@@ -13,11 +14,14 @@ import java.math.MathContext;
 
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("NewClassNamingConvention")
 public class ConfigurationTest {
 
     @Nested
@@ -31,7 +35,6 @@ public class ConfigurationTest {
 
             final Configuration<FluentBigDecimal> MOCK_CONFIG = ConfigurationFactory
                 .create(3, HALF_UP, mockScaler);
-
 
             @BeforeEach
             void beforeEach() {
@@ -131,6 +134,80 @@ public class ConfigurationTest {
 
                 assertThat(actual.getValue())
                     .isEqualTo("123.4500000");
+            }
+
+        }
+
+        @Nested
+        class OfExactAPIs {
+            private final Configuration<FluentBigDecimal> config = ConfigurationFactory.create(
+                4,
+                HALF_UP,
+                new FixedScaleScaler(2)
+            );
+
+            @Test
+            void using_BigDecimal_works_as_expected() {
+                assertAll(
+                    () -> assertThat(config.ofExact(new BigDecimal("12.34")).getValue())
+                        .isEqualByComparingTo(new BigDecimal("12.34")),
+                    () -> assertThrows(
+                        NotExactException.class,
+                        () -> config.ofExact(new BigDecimal("0.3456"))
+                    ),
+                    () -> assertThrows(
+                        NotExactException.class,
+                        () -> config.ofExact(new BigDecimal("0.0001"))
+                    )
+                );
+            }
+
+            @Test
+            void using_String_works_as_expected() {
+                assertAll(
+                    () -> assertThat(config.ofExact("12.34").getValue())
+                        .isEqualByComparingTo("12.34"),
+                    () -> assertThrows(
+                        NotExactException.class,
+                        () -> config.ofExact("0.3456")
+                    ),
+                    () -> assertThrows(
+                        NotExactException.class,
+                        () -> config.ofExact("0.0001")
+                    )
+                );
+            }
+
+            @Test
+            void using_CharArray_works_as_expected() {
+                assertAll(
+                    () -> assertThat(config.ofExact("12.34".toCharArray()).getValue())
+                        .isEqualByComparingTo("12.34"),
+                    () -> assertThrows(
+                        NotExactException.class,
+                        () -> config.ofExact("0.3456".toCharArray())
+                    ),
+                    () -> assertThrows(
+                        NotExactException.class,
+                        () -> config.ofExact("0.0001".toCharArray())
+                    )
+                );
+            }
+
+            @Test
+            void using_CharArray_Range_works_as_expected() {
+                assertAll(
+                    () -> assertThat(config.ofExact("12.34".toCharArray(), 0, 5).getValue())
+                        .isEqualByComparingTo("12.34"),
+                    () -> assertThrows(
+                        NotExactException.class,
+                        () -> config.ofExact("0.3456".toCharArray(), 0, 6)
+                    ),
+                    () -> assertThrows(
+                        NotExactException.class,
+                        () -> config.ofExact("0.0001".toCharArray(), 0, 6)
+                    )
+                );
             }
 
         }

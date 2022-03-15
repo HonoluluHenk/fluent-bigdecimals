@@ -1,20 +1,15 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
+import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
+import lombok.*;
+import lombok.experimental.NonFinal;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.Value;
-import lombok.experimental.NonFinal;
 
 import static lombok.AccessLevel.NONE;
 
@@ -131,6 +126,48 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
      */
     public @NonNull T of(double val) {
         return of(new BigDecimal(val));
+    }
+
+    /**
+     * Create a new instance but throws if value does not already match the {@link Configuration}.
+     *
+     * <p>Useful for e.g. parsing that absolutely must not do rounding.</p>
+     * <p>Example: if data from the database gets rounded this might be an error in the persistence layer.</p>
+     *
+     * @throws NotExactException if value does not already match the {@link Configuration}.
+     */
+    public @NonNull T ofExact(@NonNull BigDecimal value) {
+        T parsed = of(value);
+        if (!parsed.comparesTo(value)) {
+            throwNotExactException(value);
+        }
+
+        return parsed;
+    }
+
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(String)}.
+     */
+    public @NonNull T ofExact(@NonNull String bigDecimal) {
+        return ofExact(new BigDecimal(bigDecimal));
+    }
+
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[])}.
+     */
+    public @NonNull T ofExact(@NonNull char[] bigDecimal) {
+        return ofExact(new BigDecimal(bigDecimal));
+    }
+
+    /**
+     * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[], int, int)}.
+     */
+    public @NonNull T ofExact(@NonNull char[] text, int offset, int len) {
+        return ofExact(new BigDecimal(text, offset, len));
+    }
+
+    private void throwNotExactException(Serializable value) {
+        throw new NotExactException(value, this);
     }
 
     /**
