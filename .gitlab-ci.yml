@@ -20,6 +20,9 @@ build:
     paths:
       - target
 
+spotbugs-sast:
+  environment:
+    SAST_JAVA_VERSION: "11"
 
 test:
   interruptible: true
