@@ -21,7 +21,7 @@ build:
       - target
 
 spotbugs-sast:
-  environment:
+  variables:
     SAST_JAVA_VERSION: "11"
 
 test:
