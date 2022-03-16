@@ -61,4 +61,4 @@ container_scanning:
     - echo "disabled"
 
 dast:
-  when: manual
+  when: never
