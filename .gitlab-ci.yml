@@ -59,3 +59,6 @@ container_scanning:
   stage: test
   script:
     - echo "disabled"
+
+dast:
+  when: manual
