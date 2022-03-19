@@ -69,7 +69,7 @@
 
     <lombok.version>1.18.22</lombok.version>
     <checkerframework.version>3.21.3</checkerframework.version>
-    <mockito.version>4.3.1</mockito.version>
+    <mockito.version>4.4.0</mockito.version>
   </properties>
 
   <profiles>
@@ -80,7 +80,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.7.0</version>
+        <version>5.8.2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -412,7 +412,7 @@
           <dependency>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-junit5-plugin</artifactId>
-            <version>0.12</version>
+            <version>0.15</version>
           </dependency>
         </dependencies>
       </plugin>
