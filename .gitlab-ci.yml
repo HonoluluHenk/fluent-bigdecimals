@@ -23,8 +23,9 @@ build:
       - gemnasium-maven-plugin.json
 
 gemnasium-maven-dependency_scanning:
-  dependencies:
-    - build
+  before_script:
+    # install dependencies
+    - "asdf install"
 
 spotbugs-sast:
   variables:
