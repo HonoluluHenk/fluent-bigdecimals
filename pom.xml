@@ -393,6 +393,15 @@
       </plugin>
 
       <plugin>
+        <groupId>com.gemnasium</groupId>
+        <artifactId>gemnasium-maven-plugin</artifactId>
+        <version>0.5.0</version>
+        <configuration>
+          <ignoredScopes>test</ignoredScopes>
+        </configuration>
+      </plugin>
+
+      <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
         <version>1.5.2</version>

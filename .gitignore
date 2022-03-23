@@ -17,3 +17,6 @@ buildNumber.properties
 
 # Java stuff
 .attach_pid*
+
+# Gemnasium generated file
+/gemnasium-maven-plugin.json
