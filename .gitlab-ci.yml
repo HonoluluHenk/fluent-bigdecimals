@@ -20,6 +20,10 @@ build:
     paths:
       - target
 
+gemnasium-maven-dependency_scanning:
+  before_script:
+    - ./mvnw gemnasium:dump-dependencies
+
 spotbugs-sast:
   variables:
     SAST_JAVA_VERSION: "11"
