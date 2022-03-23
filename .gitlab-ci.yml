@@ -22,7 +22,7 @@ build:
 
 gemnasium-maven-dependency_scanning:
   before_script:
-    - ./mvnw gemnasium:dump-dependencies
+    - './mvnw gemnasium:dump-dependencies'
 
 spotbugs-sast:
   variables:
