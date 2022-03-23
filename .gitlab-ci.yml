@@ -23,6 +23,8 @@ build:
       - gemnasium-maven-plugin.json
 
 gemnasium-maven-dependency_scanning:
+  variables:
+    DS_JAVA_VERSION: "11"
   before_script:
     # there is no java installed so prevent the gemnasium-maven plugin from running and just use the prepared json
     - "rm pom.xml"
