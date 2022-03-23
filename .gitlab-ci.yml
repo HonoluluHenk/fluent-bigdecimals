@@ -21,9 +21,6 @@ build:
     paths:
       - target
 
-container_scaning:
-  when: manual
-
 spotbugs-sast:
   variables:
     SAST_JAVA_VERSION: "11"
@@ -61,6 +58,7 @@ record_coverage:
 
 container_scanning:
   stage: test
+  when: manual
   script:
     - echo "disabled"
 
