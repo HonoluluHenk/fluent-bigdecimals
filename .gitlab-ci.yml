@@ -24,8 +24,8 @@ build:
 
 gemnasium-maven-dependency_scanning:
   before_script:
-    # install dependencies
-    - "asdf install"
+    # there is no java installed so prevent the gemnasium-maven plugin from running and just use the prepared json
+    - "rm pom.xml"
 
 spotbugs-sast:
   variables:
