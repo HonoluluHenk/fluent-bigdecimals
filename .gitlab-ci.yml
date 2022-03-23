@@ -22,6 +22,9 @@ build:
       - target
       - gemnasium-maven-plugin.json
 
+container_scaning:
+  when: manual
+
 gemnasium-maven-dependency_scanning:
   before_script:
     # there is no java installed so prevent the gemnasium-maven plugin from running and just use the prepared json
