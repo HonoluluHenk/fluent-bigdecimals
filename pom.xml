@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
@@ -257,14 +259,14 @@
             <phase>validate</phase>
             <configuration>
               <rules>
-                <banDuplicatePomDependencyVersions />
+                <banDuplicatePomDependencyVersions/>
                 <banTransitiveDependencies>
                   <excludes>
                     <exclude>*:*:*:*:test</exclude>
                     <eclude>com.github.spotbugs:spotbugs-annotations:jar</eclude>
                   </excludes>
                 </banTransitiveDependencies>
-                <dependencyConvergence />
+                <dependencyConvergence/>
                 <requireJavaVersion>
                   <version>11</version>
                 </requireJavaVersion>
@@ -272,9 +274,9 @@
                   <version>3.8.5</version>
                 </requireMavenVersion>
                 <requirePluginVersions>
-                  <banLatest />
-                  <banRelease />
-                  <banSnapshots />
+                  <banLatest/>
+                  <banRelease/>
+                  <banSnapshots/>
                   <unCheckedPluginList>org.apache.maven.plugins:maven-site-plugin</unCheckedPluginList>
                 </requirePluginVersions>
                 <requireReleaseDeps>
@@ -305,7 +307,6 @@
           </execution>
         </executions>
       </plugin>
-
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -338,6 +339,21 @@
               <failOnError>false</failOnError>
               <doclint>none</doclint>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+        <version>1.2.3</version>
+        <executions>
+          <execution>
+            <id>make-index</id>
+            <goals>
+              <goal>jandex</goal>
+            </goals>
+            <!-- phase is 'process-classes by default' -->
           </execution>
         </executions>
       </plugin>
