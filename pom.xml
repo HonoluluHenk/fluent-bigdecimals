@@ -13,7 +13,7 @@
   <!-- ./mvnw -B release:prepare                                               -->
   <!-- git push all  (please note: cannot write two dashes in xml comments)    -->
   <!-- ./mvnw -B release:clean                                                 -->
-  <!-- rebase master to the the tagged commit and wait for gitlab              -->
+  <!-- rebase master to the tagged commit and wait for gitlab              -->
   <!--                                                                         -->
   <!-- Do not forget to update releases on github                              -->
   <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
