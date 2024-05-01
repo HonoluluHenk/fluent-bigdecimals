@@ -83,14 +83,14 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[])}.
      */
-    public @NonNull T of(@NonNull char[] bigDecimal) {
+    public @NonNull T of(char @NonNull [] bigDecimal) {
         return of(new BigDecimal(bigDecimal));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[], int, int)}.
      */
-    public @NonNull T of(@NonNull char[] text, int offset, int len) {
+    public @NonNull T of(char @NonNull [] text, int offset, int len) {
         return of(new BigDecimal(text, offset, len));
     }
 
@@ -156,14 +156,14 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[])}.
      */
-    public @NonNull T ofExact(@NonNull char[] bigDecimal) {
+    public @NonNull T ofExact(char[] bigDecimal) {
         return ofExact(new BigDecimal(bigDecimal));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[], int, int)}.
      */
-    public @NonNull T ofExact(@NonNull char[] text, int offset, int len) {
+    public @NonNull T ofExact(char[] text, int offset, int len) {
         return ofExact(new BigDecimal(text, offset, len));
     }
 
@@ -174,14 +174,14 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(long)}.
      */
-    public @NonNull T valueOf(@NonNull long val) {
+    public @NonNull T valueOf(long val) {
         return of(BigDecimal.valueOf(val));
     }
 
     /**
      * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(double)}.
      */
-    public @NonNull T valueOf(@NonNull double val) {
+    public @NonNull T valueOf(double val) {
         return of(BigDecimal.valueOf(val));
     }
 
