@@ -4,10 +4,10 @@ on:
     types: [ created ]
   workflow_dispatch:
     branches:
-      - master
+      - main
 
 jobs:
-  publish:
+  "build an publish":
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
         name: Install gpg secret key
         run: |
           # Install gpg secret key
-          cat <(echo -e "${{ secrets.OSSRH_SIGNKEY_KEY }}") | base64 -d  | gpg --batch--passphrase "${OSSRH_SIGNKEY_PASSPHRASE}" --import
+          cat <(echo -e "${{ secrets.OSSRH_SIGNKEY_KEY }}") | base64 -d  | gpg --batch --passphrase "${OSSRH_SIGNKEY_PASSPHRASE}" --import
           # Verify gpg secret key
           gpg --list-secret-keys --keyid-format LONG
       - name: Publish package
