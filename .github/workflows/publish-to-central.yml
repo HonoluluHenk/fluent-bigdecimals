@@ -2,7 +2,9 @@ name: Publish package to the Maven Central Repository
 on:
   release:
     types: [ created ]
-  workflow_call:
+  workflow_dispatch:
+    branches:
+      - master
 
 jobs:
   publish:
