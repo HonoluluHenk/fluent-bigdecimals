@@ -266,7 +266,7 @@
                 </banTransitiveDependencies>
                 <dependencyConvergence />
                 <requireJavaVersion>
-                  <version>11</version>
+                  <version>9</version>
                 </requireJavaVersion>
                 <requireMavenVersion>
                   <version>[3.9.5,)</version>

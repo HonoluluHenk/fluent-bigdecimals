@@ -3,7 +3,7 @@ include:
 
 build:
   stage: build
-  image: maven:3.9-adoptopenjdk-11
+  image: maven:3.9-adoptopenjdk-9
   script: |
     # signkey is only given for the main branch
     if [ -z "${OSSRH_SIGNKEY_KEY}" ]; then
@@ -23,7 +23,7 @@ build:
 
 spotbugs-sast:
   variables:
-    SAST_JAVA_VERSION: "11"
+    SAST_JAVA_VERSION: "9"
 
 test:
   interruptible: true
