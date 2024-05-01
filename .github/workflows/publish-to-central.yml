@@ -2,6 +2,8 @@ name: Publish package to the Maven Central Repository
 on:
   release:
     types: [ created ]
+  on: workflow_call
+
 jobs:
   publish:
     runs-on: ubuntu-latest
