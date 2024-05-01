@@ -1,13 +1,13 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import java.io.Serializable;
-import java.math.MathContext;
-import java.math.RoundingMode;
-
 import com.github.honoluluhenk.fluentbigdecimals.scaler.CashRoundingScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import lombok.NonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.io.Serializable;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import static java.math.RoundingMode.HALF_UP;
 

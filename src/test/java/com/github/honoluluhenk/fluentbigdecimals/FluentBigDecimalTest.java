@@ -2,8 +2,8 @@ package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import lombok.NonNull;
 import lombok.var;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -3,6 +3,7 @@ package com.github.honoluluhenk.fluentbigdecimals.scaler;
 import com.github.honoluluhenk.fluentbigdecimals.CashRounding;
 import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
 import lombok.*;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

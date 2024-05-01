@@ -1,6 +1,10 @@
 package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.With;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

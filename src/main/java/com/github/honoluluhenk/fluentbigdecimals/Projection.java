@@ -1,6 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import lombok.NonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -11,6 +11,7 @@ public interface Projection {
         return (bigDecimal, mathContext) -> bigDecimal;
     }
 
-    @NonNull BigDecimal project(@NonNull BigDecimal value, @NonNull MathContext mathContext);
+    @NonNull
+    BigDecimal project(@NonNull BigDecimal value, @NonNull MathContext mathContext);
 
 }

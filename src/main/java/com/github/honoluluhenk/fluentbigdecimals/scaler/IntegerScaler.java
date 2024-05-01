@@ -1,8 +1,8 @@
 package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.var;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

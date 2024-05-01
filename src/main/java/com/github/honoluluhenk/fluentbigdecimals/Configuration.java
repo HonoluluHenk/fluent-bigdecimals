@@ -4,6 +4,7 @@ import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
 import lombok.*;
 import lombok.experimental.NonFinal;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
