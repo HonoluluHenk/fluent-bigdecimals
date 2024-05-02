@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)](https://search.maven.org/artifact/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)
 ![Pipeline](https://github.com/HonoluluHenk/fluent-bigdecimals/actions/workflows/publish-to-central.yml/badge.svg)
-![GitHub Issues](https://img.shields.io/github/issues/HonoluluHenk/fluent-bigdecimals)(https://github.com/HonoluluHenk/fluent-bigdecimals/issues)
+![GitHub Issues](https://img.shields.io/github/issues/HonoluluHenk/fluent-bigdecimals)
 [![GitHub contributors](https://img.shields.io/github/contributors/HonoluluHenk/fluent-bigdecimals)](https://github.com/HonoluluHenk/fluent-bigdecimals/graphs/contributors)
 [![GitHub stars](https://img.shields.io/github/stars/HonoluluHenk/fluent-bigdecimals?style=social)](https://github.com/HonoluluHenk/fluent-bigdecimals)
 [![GitHub forks](https://img.shields.io/github/forks/HonoluluHenk/fluent-bigdecimals?style=social)](https://github.com/HonoluluHenk/fluent-bigdecimals/network/members)
