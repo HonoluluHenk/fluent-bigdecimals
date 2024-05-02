@@ -1,8 +1,8 @@
 # fluent-bigdecimals
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)](https://search.maven.org/artifact/com.github.honoluluhenk.fluent-bigdecimals/fluent-bigdecimals)
-[![pipeline status](https://gitlab.com/HonoluluHenk/fluent-bigdecimals/badges/main/pipeline.svg)](https://gitlab.com/HonoluluHenk/fluent-bigdecimals/-/pipelines)
-[![Issues](https://img.shields.io/github/issues/HonoluluHenk/fluent-bigdecimals)](https://github.com/HonoluluHenk/fluent-bigdecimals/issues)
+![Pipeline](https://github.com/HonoluluHenk/fluent-bigdecimals/actions/workflows/publish-to-central.yml/badge.svg)
+![GitHub Issues](https://img.shields.io/github/issues/HonoluluHenk/fluent-bigdecimals)(https://github.com/HonoluluHenk/fluent-bigdecimals/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/HonoluluHenk/fluent-bigdecimals)](https://github.com/HonoluluHenk/fluent-bigdecimals/graphs/contributors)
 [![GitHub stars](https://img.shields.io/github/stars/HonoluluHenk/fluent-bigdecimals?style=social)](https://github.com/HonoluluHenk/fluent-bigdecimals)
 [![GitHub forks](https://img.shields.io/github/forks/HonoluluHenk/fluent-bigdecimals?style=social)](https://github.com/HonoluluHenk/fluent-bigdecimals/network/members)
@@ -136,13 +136,13 @@ The most basic factory method is `ConfigurationFactory::create(MathContext, Scal
 
 Some more convenient factory-methods in `ConfigurationFactory`:
 
-| method | description |
-|--------|-------------|
-| ::monetary | The most common usecase: custom precision with a maximum scale of 2 and HALF_UP rounding. |
-| ::jpaBigDecimal | compatible with JPA/Hibernate defaults: @Column(precision = 16, scale = 2). See [JPA/Database](#JPA/Database-precision-and-scale) |
-| ::databaseJavaNotation | Scale in a database compatible way and use Java notation for precision/scale. See [JPA/Database](#JPA/Database-precision-and-scale) |
-| ::databaseDBNotation | Scale in a database compatible way and use database notation for precision/scale. See [JPA/Database](#JPA/Database-precision-and-scale) |
-| ::cashRounding | User Cash Rouding/Scaling. See [Cash Rounding](#Cash-Rounding) |
+| method                 | description                                                                                                                             |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| ::monetary             | The most common usecase: custom precision with a maximum scale of 2 and HALF_UP rounding.                                               |
+| ::jpaBigDecimal        | compatible with JPA/Hibernate defaults: @Column(precision = 16, scale = 2). See [JPA/Database](#JPA/Database-precision-and-scale)       |
+| ::databaseJavaNotation | Scale in a database compatible way and use Java notation for precision/scale. See [JPA/Database](#JPA/Database-precision-and-scale)     |
+| ::databaseDBNotation   | Scale in a database compatible way and use database notation for precision/scale. See [JPA/Database](#JPA/Database-precision-and-scale) |
+| ::cashRounding         | User Cash Rouding/Scaling. See [Cash Rounding](#Cash-Rounding)                                                                          |
 
 ### FluentBigDecimal
 
@@ -166,12 +166,12 @@ A Scaler takes care of scaling the rounded value after applying an operation.
 
 There exist some predefined Scalers:
 
-| scaler | description |
-|--------|-------------|
-| [CashRoundingScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/CashRoundingScaler.java) | See [Cash Rounding](#Cash-Rounding) |
-| [FixedScaleScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/FixedScaleScaler.java)     | reduces/expands to the desired scale |
-| [IntegerScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/IntegerScaler.java)           | Scales to scale 0 (i.e.: effectively convert to integer) |
-| [MaxScaleScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/MaxScaleScaler.java)         | Reduces scale to a given maximum |
+| scaler                                                                                                       | description                                                      |
+|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| [CashRoundingScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/CashRoundingScaler.java) | See [Cash Rounding](#Cash-Rounding)                              |
+| [FixedScaleScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/FixedScaleScaler.java)     | reduces/expands to the desired scale                             |
+| [IntegerScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/IntegerScaler.java)           | Scales to scale 0 (i.e.: effectively convert to integer)         |
+| [MaxScaleScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/MaxScaleScaler.java)         | Reduces scale to a given maximum                                 |
 | [NopScaler](src/main/java/com/github/honoluluhenk/fluentbigdecimals/scaler/NopScaler.java)                   | Does not scale at all. Use this if you just care about precision |
 
 ## Common Usecases
