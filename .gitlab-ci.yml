@@ -3,23 +3,33 @@ include:
 
 build:
   stage: build
-  image: maven:3.6-adoptopenjdk-11
+  image: maven:3.9.15-eclipse-temurin-${JDK_VERSION}
+  parallel:
+    matrix:
+      - JDK_VERSION: "11"
+        ARTIFACT_PATH: ".no-artifacts"
+      - JDK_VERSION: "17"
+        ARTIFACT_PATH: ".no-artifacts"
+      - JDK_VERSION: "21"
+        ARTIFACT_PATH: ".no-artifacts"
+      - JDK_VERSION: "25"
+        ARTIFACT_PATH: ".no-artifacts"
   script: |
-    # signkey is only given for the main branch
-    if [ -z "${OSSRH_SIGNKEY_KEY}" ]; then
-      ./mvnw --settings settings.xml clean verify
-    else
+    # signkey is only given for the main branch; only Java 8 publishes artifacts
+    if [ "${JDK_VERSION}" = "11" ] && [ -n "${OSSRH_SIGNKEY_KEY}" ]; then
       apt update
       apt install -y gnupg
       cat "${OSSRH_SIGNKEY_KEY}" | base64 -d | gpg --batch --passphrase "${OSSRH_SIGNKEY_PASSPHRASE}" --import
       ./mvnw --settings settings.xml clean deploy
+    else
+      ./mvnw --settings settings.xml clean verify
     fi
     ./mvnw gemnasium:dump-dependencies
   interruptible: true
   artifacts:
     expire_in: 30 min
     paths:
-      - target
+      - ${ARTIFACT_PATH}
 
 spotbugs-sast:
   variables:

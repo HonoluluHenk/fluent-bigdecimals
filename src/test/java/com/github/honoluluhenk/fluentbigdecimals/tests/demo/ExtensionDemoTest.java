@@ -1,11 +1,11 @@
-package com.github.honoluluhenk.fluentbigdecimals.demo;
+package com.github.honoluluhenk.fluentbigdecimals.tests.demo;
 
 import com.github.honoluluhenk.fluentbigdecimals.AbstractFluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
-import lombok.NonNull;
-import lombok.var;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

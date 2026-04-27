@@ -1,16 +1,12 @@
-package com.github.honoluluhenk.fluentbigdecimals.customtypes;
+package com.github.honoluluhenk.fluentbigdecimals.tests.customtypes;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-
-import com.github.honoluluhenk.fluentbigdecimals.AbstractFluentBigDecimal;
-import com.github.honoluluhenk.fluentbigdecimals.CashRounding;
-import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
-import com.github.honoluluhenk.fluentbigdecimals.Configuration;
-import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
+import com.github.honoluluhenk.fluentbigdecimals.*;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.CashRoundingScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import lombok.experimental.UtilityClass;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 import static java.math.RoundingMode.HALF_UP;
 
@@ -32,7 +28,7 @@ public class TypeFixtures {
             )
             .withFactory(Target::new);
 
-    static class Target extends AbstractFluentBigDecimal<Target> {
+    public static class Target extends AbstractFluentBigDecimal<Target> {
         private static final long serialVersionUID = 6461737803039223285L;
 
         Target(BigDecimal value, Configuration<Target> configuration) {
@@ -40,7 +36,7 @@ public class TypeFixtures {
         }
     }
 
-    static class Source extends AbstractFluentBigDecimal<Source> {
+    public static class Source extends AbstractFluentBigDecimal<Source> {
         private static final long serialVersionUID = 1136059771822861030L;
 
         Source(BigDecimal value, Configuration<Source> configuration) {

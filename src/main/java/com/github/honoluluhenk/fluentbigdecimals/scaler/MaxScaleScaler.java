@@ -2,7 +2,7 @@ package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import lombok.With;
 
 import java.math.BigDecimal;

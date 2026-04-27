@@ -1,4 +1,4 @@
-package com.github.honoluluhenk.fluentbigdecimals;
+package com.github.honoluluhenk.fluentbigdecimals.tests;
 
 import org.junit.jupiter.api.Test;
 

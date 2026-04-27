@@ -7,7 +7,7 @@ import java.math.RoundingMode;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.CashRoundingScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import lombok.NonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static java.math.RoundingMode.HALF_UP;
 

@@ -1,8 +1,11 @@
-package com.github.honoluluhenk.fluentbigdecimals;
+package com.github.honoluluhenk.fluentbigdecimals.tests;
 
+import com.github.honoluluhenk.fluentbigdecimals.Configuration;
+import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
+import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import lombok.var;
+
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

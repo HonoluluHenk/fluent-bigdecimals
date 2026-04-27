@@ -60,16 +60,17 @@
   </developers>
 
   <properties>
-    <maven.compiler.source>9</maven.compiler.source>
-    <maven.compiler.target>9</maven.compiler.target>
-    <maven.compiler.release>9</maven.compiler.release>
+    <compiler.java.version>11</compiler.java.version>
+    <maven.compiler.source>${compiler.java.version}</maven.compiler.source>
+    <maven.compiler.target>${compiler.java.version}</maven.compiler.target>
+    <maven.compiler.release>${compiler.java.version}</maven.compiler.release>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <lombok.version>1.18.22</lombok.version>
-    <checkerframework.version>3.21.3</checkerframework.version>
-    <mockito.version>4.4.0</mockito.version>
+    <lombok.version>1.18.46</lombok.version>
+    <checkerframework.version>3.55.1</checkerframework.version>
+    <mockito.version>5.23.0</mockito.version>
   </properties>
 
   <profiles>
@@ -80,9 +81,14 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.8.2</version>
+        <version>6.0.3</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -98,36 +104,25 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.github.spotbugs</groupId>
       <artifactId>spotbugs-annotations</artifactId>
-      <version>4.6.0</version>
+      <version>4.9.8</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
+      <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.22.0</version>
+      <version>3.27.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -149,93 +144,72 @@
       <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.4.0</version>
         </plugin>
 
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.3.1</version>
         </plugin>
 
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>3.13.0</version>
           <executions>
             <execution>
               <id>default-compile</id>
             </execution>
           </executions>
           <configuration>
-            <compilerArguments>
-              <Xmaxerrs>10000</Xmaxerrs>
-              <Xmaxwarns>10000</Xmaxwarns>
-            </compilerArguments>
+            <compilerArgs>
+              <arg>-parameters</arg>
+              <arg>-Xlint:all</arg>
+<!--              <arg>-Xmaxerrs</arg>-->
+<!--              <arg>10000</arg>-->
+<!--              <arg>-Xmaxwarns</arg>-->
+<!--              <arg>10000</arg>-->
+              <!-- <arg>-Awarns</arg> --> <!-- -Awarns turns type-checking errors into warnings. -->
+              <!-- why does this lead to compilation failure although there are no errors/warnings -->
+              <!--<arg>-Werror</arg>-->
+            </compilerArgs>
             <annotationProcessorPaths>
               <path>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-              </path>
-              <path>
-                <groupId>org.checkerframework</groupId>
-                <artifactId>checker</artifactId>
-                <version>${checkerframework.version}</version>
+<!--                <version>${lombok.version}</version>-->
               </path>
             </annotationProcessorPaths>
             <annotationProcessors>
-              <!-- Add all the checkers you want to enable here -->
-              <!-- FIXME: current IntelliJ version is b0rked :( -->
-              <!--<annotationProcessor>-->
-              <!--  org.checkerframework.checker.nullness.NullnessChecker-->
-              <!--</annotationProcessor>-->
-              <annotationProcessor>
-                lombok.launch.AnnotationProcessorHider$AnnotationProcessor
-              </annotationProcessor>
-              <annotationProcessor>
-                lombok.launch.AnnotationProcessorHider$ClaimingProcessor
-              </annotationProcessor>
+              <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+              <annotationProcessor>lombok.launch.AnnotationProcessorHider$ClaimingProcessor</annotationProcessor>
             </annotationProcessors>
-            <compilerArgs>
-              <arg>-parameters</arg>
-              <!-- <arg>-Awarns</arg> --> <!-- -Awarns turns type-checking errors into warnings. -->
-              <arg>-Xlint:all</arg>
-              <!-- why does this lead to compilation failure although there are no errors/warnings -->
-              <!--<arg>-Werror</arg>-->
-            </compilerArgs>
           </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>org.checkerframework</groupId>
-              <artifactId>checker</artifactId>
-              <version>${checkerframework.version}</version>
-            </dependency>
-          </dependencies>
         </plugin>
 
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.5.5</version>
         </plugin>
 
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.4.2</version>
         </plugin>
 
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
+          <version>3.1.3</version>
         </plugin>
 
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
+          <version>3.1.3</version>
         </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>3.0.0-M1</version>
+          <version>3.1.1</version>
           <configuration>
             <tagNameFormat>@{version}</tagNameFormat>
           </configuration>
@@ -247,7 +221,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.0.0-M2</version>
+        <version>3.5.0</version>
         <executions>
           <execution>
             <id>enforce</id>
@@ -266,10 +240,10 @@
                 </banTransitiveDependencies>
                 <dependencyConvergence />
                 <requireJavaVersion>
-                  <version>11</version>
+                  <version>${compiler.java.version}</version>
                 </requireJavaVersion>
                 <requireMavenVersion>
-                  <version>3.8.5</version>
+                  <version>[3.9.15]</version>
                 </requireMavenVersion>
                 <requirePluginVersions>
                   <banLatest />
@@ -289,7 +263,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.6</version>
+        <version>0.8.12</version>
         <executions>
           <execution>
             <goals>
@@ -310,7 +284,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.1</version>
         <executions>
           <execution>
             <id>1-sources</id>
@@ -325,7 +299,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.10.1</version>
         <executions>
           <execution>
             <id>javadoc</id>
@@ -357,7 +331,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.6</version>
+        <version>3.2.7</version>
         <executions>
           <execution>
             <id>sign-artifacts</id>
@@ -383,7 +357,7 @@
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.8</version>
+        <version>1.7.0</version>
         <extensions>true</extensions>
         <configuration>
           <serverId>ossrh</serverId>
@@ -395,7 +369,7 @@
       <plugin>
         <groupId>com.gemnasium</groupId>
         <artifactId>gemnasium-maven-plugin</artifactId>
-        <version>0.5.0</version>
+        <version>0.6.0</version>
         <configuration>
           <ignoredScopes>test</ignoredScopes>
         </configuration>

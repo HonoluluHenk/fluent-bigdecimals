@@ -2,8 +2,7 @@ package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
-import lombok.NonNull;
-import lombok.var;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.MathContext;
 

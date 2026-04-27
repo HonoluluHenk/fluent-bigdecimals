@@ -1,6 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
-import lombok.NonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

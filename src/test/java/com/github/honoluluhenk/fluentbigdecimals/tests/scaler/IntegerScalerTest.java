@@ -1,9 +1,10 @@
-package com.github.honoluluhenk.fluentbigdecimals.scaler;
+package com.github.honoluluhenk.fluentbigdecimals.tests.scaler;
 
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
 import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
-import lombok.var;
+
+import com.github.honoluluhenk.fluentbigdecimals.scaler.IntegerScaler;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -12,21 +13,23 @@ import java.math.RoundingMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NopScalerTest {
+class IntegerScalerTest {
+
     public static final Configuration<FluentBigDecimal> CONFIG = ConfigurationFactory
-        .create(4, RoundingMode.HALF_UP, new NopScaler());
+        .create(5, RoundingMode.HALF_UP, new IntegerScaler());
+
     public static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
 
     @Nested
     class Scale {
 
         @Test
-        void rounds_to_precision() {
+        void rounds_to_integer() {
             var actual = CONFIG.of(FIXTURE_VALUE)
                 .round();
 
             assertThat(actual.getValue().toPlainString())
-                .isEqualTo("123.5");
+                .isEqualTo("123");
         }
     }
 
@@ -35,8 +38,8 @@ class NopScalerTest {
 
         @Test
         void contains_class_name() {
-            assertThat(new NopScaler().toString())
-                .isEqualTo(NopScaler.class.getSimpleName());
+            assertThat(new IntegerScaler().toString())
+                .isEqualTo(IntegerScaler.class.getSimpleName());
         }
     }
 
