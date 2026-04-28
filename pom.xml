@@ -331,7 +331,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.2.7</version>
+        <version>3.2.8</version>
         <executions>
           <execution>
             <id>sign-artifacts</id>
@@ -340,15 +340,9 @@
               <goal>sign</goal>
             </goals>
             <configuration>
-              <executable>gpg</executable>
-              <!--suppress UnresolvedMavenProperty -->
-              <keyname>${env.OSSRH_SIGNKEY_NAME}</keyname>
-              <passphraseServerId>fluent-bigdecimal-ossrh-signkey</passphraseServerId>
-              <gpgArguments>
-                <argument>--batch</argument>
-                <argument>--pinentry-mode</argument>
-                <argument>loopback</argument>
-              </gpgArguments>
+              <signer>bc</signer>
+              <keyEnvName>OSSRH_SIGNKEY_KEY</keyEnvName>
+              <passphraseEnvName>OSSRH_SIGNKEY_PASSPHRASE</passphraseEnvName>
             </configuration>
           </execution>
         </executions>

@@ -15,11 +15,8 @@ build:
       - JDK_VERSION: "25"
         ARTIFACT_PATH: ".no-artifacts"
   script: |
-    # signkey is only given for the main branch; only Java 8 publishes artifacts
-    if [ "${JDK_VERSION}" = "11" ] && [ -n "${OSSRH_SIGNKEY_KEY}" ]; then
-      apt update
-      apt install -y gnupg
-      cat "${OSSRH_SIGNKEY_KEY}" | base64 -d | gpg --batch --passphrase "${OSSRH_SIGNKEY_PASSPHRASE}" --import
+    # only Java 11 publishes artifacts
+    if [ "${JDK_VERSION}" = "11" ]; then
       ./mvnw --settings settings.xml clean deploy
     else
       ./mvnw --settings settings.xml clean verify

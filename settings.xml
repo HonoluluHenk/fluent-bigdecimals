@@ -11,11 +11,6 @@
       <password>${env.MAVEN_REPO_PASS}</password>
     </server>
 
-    <server>
-      <id>fluent-bigdecimal-ossrh-signkey</id>
-      <passphrase>${env.OSSRH_SIGNKEY_PASSPHRASE}</passphrase>
-    </server>
-
   </servers>
 
 </settings>
