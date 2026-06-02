@@ -1,8 +1,10 @@
-package com.github.honoluluhenk.fluentbigdecimals.scaler;
+package com.github.honoluluhenk.fluentbigdecimals.tests.scaler;
 
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
 import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
+
+import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

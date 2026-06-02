@@ -1,5 +1,6 @@
-package com.github.honoluluhenk.fluentbigdecimals;
+package com.github.honoluluhenk.fluentbigdecimals.tests;
 
+import com.github.honoluluhenk.fluentbigdecimals.*;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -62,7 +63,7 @@ class FluentBigDecimalTest {
     private static final BigDecimal FIXTURE_VALUE = new BigDecimal("123.45");
     private static final MathContext FIXTURE_MATH_CONTEXT = new MathContext(5, HALF_UP);
     private static final Scaler FIXTURE_SCALER = new NopScaler();
-    private static final Configuration<FluentBigDecimal> FIXTURE_CONFIG = new Configuration<>(
+    private static final Configuration<FluentBigDecimal> FIXTURE_CONFIG = Configuration.createConfiguration(
         FIXTURE_MATH_CONTEXT,
         FIXTURE_SCALER,
         FluentBigDecimal::new

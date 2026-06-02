@@ -1,5 +1,7 @@
-package com.github.honoluluhenk.fluentbigdecimals;
+package com.github.honoluluhenk.fluentbigdecimals.tests;
 
+import com.github.honoluluhenk.fluentbigdecimals.CashRounding;
+import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

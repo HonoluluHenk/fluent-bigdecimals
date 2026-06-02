@@ -1,6 +1,11 @@
-package com.github.honoluluhenk.fluentbigdecimals;
+package com.github.honoluluhenk.fluentbigdecimals.tests;
 
+import com.github.honoluluhenk.fluentbigdecimals.Configuration;
+import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
+import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
+import com.github.honoluluhenk.fluentbigdecimals.NotExactException;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
+
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;

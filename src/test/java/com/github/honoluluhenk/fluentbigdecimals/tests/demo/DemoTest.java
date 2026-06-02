@@ -1,4 +1,4 @@
-package com.github.honoluluhenk.fluentbigdecimals.demo;
+package com.github.honoluluhenk.fluentbigdecimals.tests.demo;
 
 import com.github.honoluluhenk.fluentbigdecimals.*;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;

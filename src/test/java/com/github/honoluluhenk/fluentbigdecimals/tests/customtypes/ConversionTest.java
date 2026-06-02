@@ -1,7 +1,7 @@
-package com.github.honoluluhenk.fluentbigdecimals.customtypes;
+package com.github.honoluluhenk.fluentbigdecimals.tests.customtypes;
 
-import com.github.honoluluhenk.fluentbigdecimals.customtypes.TypeFixtures.Source;
-import com.github.honoluluhenk.fluentbigdecimals.customtypes.TypeFixtures.Target;
+import com.github.honoluluhenk.fluentbigdecimals.tests.customtypes.TypeFixtures.Source;
+import com.github.honoluluhenk.fluentbigdecimals.tests.customtypes.TypeFixtures.Target;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

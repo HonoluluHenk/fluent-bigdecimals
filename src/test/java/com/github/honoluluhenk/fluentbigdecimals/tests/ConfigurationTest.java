@@ -1,8 +1,13 @@
-package com.github.honoluluhenk.fluentbigdecimals;
+package com.github.honoluluhenk.fluentbigdecimals.tests;
 
+import com.github.honoluluhenk.fluentbigdecimals.Configuration;
+import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
+import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
+import com.github.honoluluhenk.fluentbigdecimals.NotExactException;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.FixedScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,7 +25,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-@SuppressWarnings("NewClassNamingConvention")
 public class ConfigurationTest {
 
     @Nested

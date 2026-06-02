@@ -20,3 +20,6 @@ buildNumber.properties
 
 # Gemnasium generated file
 /gemnasium-maven-plugin.json
+
+# AI
+/.junie/memory/

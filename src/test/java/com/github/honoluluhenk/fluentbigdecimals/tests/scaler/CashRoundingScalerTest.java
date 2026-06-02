@@ -1,7 +1,8 @@
-package com.github.honoluluhenk.fluentbigdecimals.scaler;
+package com.github.honoluluhenk.fluentbigdecimals.tests.scaler;
 
 import com.github.honoluluhenk.fluentbigdecimals.CashRounding;
 import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.CashRoundingScaler;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

@@ -156,14 +156,14 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[])}.
      */
-    public @NonNull T ofExact(char[] bigDecimal) {
+    public @NonNull T ofExact(char @NonNull [] bigDecimal) {
         return ofExact(new BigDecimal(bigDecimal));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[], int, int)}.
      */
-    public @NonNull T ofExact(char[] text, int offset, int len) {
+    public @NonNull T ofExact(char @NonNull [] text, int offset, int len) {
         return ofExact(new BigDecimal(text, offset, len));
     }
 
@@ -238,5 +238,3 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     }
 
 }
-
-
