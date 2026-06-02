@@ -1,7 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
-import lombok.var;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -15,7 +14,7 @@ import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-public class ImplementsNumberTest {
+class ImplementsNumberTest {
     public static class NumericFluentBigDecimal extends AbstractFluentBigDecimal<NumericFluentBigDecimal> {
         private static final long serialVersionUID = -2810595855995466398L;
 

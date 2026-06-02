@@ -4,7 +4,6 @@ import com.github.honoluluhenk.fluentbigdecimals.AbstractFluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
-import lombok.var;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Test;
 

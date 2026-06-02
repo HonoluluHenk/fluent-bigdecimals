@@ -3,7 +3,6 @@ package com.github.honoluluhenk.fluentbigdecimals.demo;
 import com.github.honoluluhenk.fluentbigdecimals.*;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
-import lombok.var;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

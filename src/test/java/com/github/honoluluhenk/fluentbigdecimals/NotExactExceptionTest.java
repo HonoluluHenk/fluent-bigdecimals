@@ -1,7 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
-import lombok.var;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;

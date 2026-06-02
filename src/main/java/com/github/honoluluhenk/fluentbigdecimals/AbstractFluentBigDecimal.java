@@ -3,7 +3,6 @@ package com.github.honoluluhenk.fluentbigdecimals;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.var;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
