@@ -143,7 +143,7 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     public T ofExact(BigDecimal value) {
         T parsed = of(value);
         if (!parsed.comparesTo(value)) {
-            throwNotExactException(value);
+            throw new NotExactException(value, this);
         }
 
         return parsed;
@@ -170,9 +170,6 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
         return ofExact(new BigDecimal(text, offset, len));
     }
 
-    private void throwNotExactException(Serializable value) {
-        throw new NotExactException(value, this);
-    }
 
     /**
      * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(long)}.
