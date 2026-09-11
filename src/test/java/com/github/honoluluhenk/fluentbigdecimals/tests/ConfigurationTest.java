@@ -3,8 +3,11 @@ package com.github.honoluluhenk.fluentbigdecimals.tests;
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
 import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
+import com.github.honoluluhenk.fluentbigdecimals.Factory;
 import com.github.honoluluhenk.fluentbigdecimals.NotExactException;
+import com.github.honoluluhenk.fluentbigdecimals.ScalingConfiguration;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.FixedScaleScaler;
+import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 
@@ -16,6 +19,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 
+import static com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory.FLUENT_BIGDECIMAL_FACTORY;
+import static java.math.RoundingMode.DOWN;
 import static java.math.RoundingMode.HALF_UP;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -245,6 +250,81 @@ public class ConfigurationTest {
             }
         }
 
+    }
+
+    @Nested
+    class WithX {
+        private final MathContext mathContext = new MathContext(7, HALF_UP);
+        private final Scaler scaler = new NopScaler();
+        private final Configuration<FluentBigDecimal> config = Configuration.createConfiguration(
+            mathContext,
+            scaler,
+            FLUENT_BIGDECIMAL_FACTORY
+        );
+
+        @Test
+        void withMathContext_keeps_scaler_and_factory() {
+            MathContext newMathContext = new MathContext(3, DOWN);
+
+            Configuration<FluentBigDecimal> actual = config.withMathContext(newMathContext);
+
+            assertThat(actual)
+                .isNotSameAs(config);
+            assertConfiguration(actual, newMathContext, scaler, FLUENT_BIGDECIMAL_FACTORY);
+        }
+
+        @Test
+        void withScaler_keeps_mathContext_and_factory() {
+            Scaler newScaler = MaxScaleScaler.of(5);
+
+            Configuration<FluentBigDecimal> actual = config.withScaler(newScaler);
+
+            assertThat(actual)
+                .isNotSameAs(config);
+            assertConfiguration(actual, mathContext, newScaler, FLUENT_BIGDECIMAL_FACTORY);
+        }
+
+        @Test
+        void withScalingScaler_upgrades_to_ScalingConfiguration() {
+            MaxScaleScaler newScaler = MaxScaleScaler.of(5);
+
+            Configuration<FluentBigDecimal> actual = config.withScalingScaler(newScaler);
+
+            assertThat(actual)
+                .isNotSameAs(config)
+                .isInstanceOf(ScalingConfiguration.class);
+            assertConfiguration(actual, mathContext, newScaler, FLUENT_BIGDECIMAL_FACTORY);
+        }
+
+        @Test
+        void withFactory_keeps_mathContext_and_scaler() {
+            Factory<FluentBigDecimal> newFactory = FluentBigDecimal::new;
+
+            Configuration<FluentBigDecimal> actual = config.withFactory(newFactory);
+
+            assertThat(actual)
+                .isNotSameAs(config);
+            assertConfiguration(actual, mathContext, scaler, newFactory);
+        }
+
+        private void assertConfiguration(
+            Configuration<FluentBigDecimal> actual,
+            MathContext expectedMathContext,
+            Scaler expectedScaler,
+            Factory<FluentBigDecimal> expectedFactory
+        ) {
+            assertThat(actual.getMathContext())
+                .describedAs("MathContext")
+                .isEqualTo(expectedMathContext);
+
+            assertThat(actual.getScaler())
+                .describedAs("Scaler")
+                .isEqualTo(expectedScaler);
+
+            assertThat(actual.getFactory())
+                .describedAs("Factory")
+                .isSameAs(expectedFactory);
+        }
     }
 
 }

@@ -28,8 +28,8 @@ class NotExactExceptionTest {
         var actual = new NotExactException(new BigDecimal("123.45"), config);
 
         assertThat(actual)
-            .hasMessageContaining("123.45")
-            .hasMessageContaining("[4,HALF_UP,MaxScaleScaler[2]]");
+            .hasMessage("The value 123.45 needed rounding/scaling"
+                + " which is not permitted by [4,HALF_UP,MaxScaleScaler[2]]");
     }
 
 }

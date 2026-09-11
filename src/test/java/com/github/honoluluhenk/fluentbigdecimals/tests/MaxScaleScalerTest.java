@@ -60,6 +60,32 @@ class MaxScaleScalerTest {
     }
 
     @Nested
+    class WithScale {
+        private final MaxScaleScaler actual = FIXTURE.withScale(4);
+
+        @Test
+        void creates_new_instance() {
+            assertThat(actual)
+                .isNotSameAs(FIXTURE);
+        }
+
+        @Test
+        void updates_maxScale() {
+            assertThat(actual)
+                .isEqualTo(MaxScaleScaler.of(4));
+
+            assertThat(actual.getMaxScale())
+                .isEqualTo(4);
+        }
+
+        @Test
+        void keeps_original_untouched() {
+            assertThat(FIXTURE.getMaxScale())
+                .isEqualTo(2);
+        }
+    }
+
+    @Nested
     class HashCodeEquals {
 
         @Test
@@ -189,10 +215,25 @@ class MaxScaleScalerTest {
         })
         void throws_on_values_exceeding_remaining(BigDecimal input) {
 
-            assertThrows(
+            var thrown = assertThrows(
                 ArithmeticException.class,
                 () -> FIXTURE.scale(input, MATH_CONTEXT)
             );
+
+            assertThat(thrown)
+                .hasMessage("Cannot fit computed outcome " + input.toPlainString()
+                    + " into precision 5 while still allowing for 2 decimals.");
+        }
+
+        @Test
+        void throws_with_a_nice_message() {
+            var thrown = assertThrows(
+                ArithmeticException.class,
+                () -> FIXTURE.scale(new BigDecimal("9999.9"), MATH_CONTEXT)
+            );
+
+            assertThat(thrown)
+                .hasMessage("Cannot fit computed outcome 9999.9 into precision 5 while still allowing for 2 decimals.");
         }
 
     }

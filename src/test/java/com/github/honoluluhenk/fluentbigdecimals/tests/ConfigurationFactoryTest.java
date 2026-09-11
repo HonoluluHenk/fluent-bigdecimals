@@ -1,5 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals.tests;
 
+import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
 import com.github.honoluluhenk.fluentbigdecimals.FluentBigDecimal;
@@ -19,6 +20,39 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 class ConfigurationFactoryTest {
+    @Test
+    void is_a_plain_instantiable_factory_holder() {
+        assertThat(new ConfigurationFactory())
+            .isNotNull();
+    }
+
+    @Test
+    void create_with_precision_and_roundingMode_builds_mathContext() {
+        Scaler scaler = mock(Scaler.class);
+
+        var actual = ConfigurationFactory.create(5, HALF_UP, scaler);
+
+        assertConfiguration(actual, new MathContext(5, HALF_UP), scaler);
+    }
+
+    @Test
+    void monetary_uses_MaxScaleScaler_with_default_monetary_scale() {
+        var actual = ConfigurationFactory.monetary(10);
+
+        assertConfiguration(actual, new MathContext(10, HALF_UP), new MaxScaleScaler(2));
+    }
+
+    @Test
+    void cashRounding_uses_CashRoundingScaler() {
+        var actual = ConfigurationFactory.cashRounding(10, CashRoundingUnits.ROUND_DOT05);
+
+        assertThat(actual.getMathContext())
+            .isEqualTo(new MathContext(10, HALF_UP));
+
+        assertThat(actual.getScaler())
+            .hasToString("CashRoundingScaler[CashRounding(0.05, HALF_UP)]");
+    }
+
     @Test
     void creates_instance_with_given_values() {
         BigDecimal value = new BigDecimal("123.45");

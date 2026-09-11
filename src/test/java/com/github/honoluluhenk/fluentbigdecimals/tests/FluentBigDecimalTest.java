@@ -363,6 +363,38 @@ class FluentBigDecimalTest {
     }
     //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="WithMathContext">
+    @Nested
+    class WithMathContext {
+        private final MathContext newMathContext = new MathContext(3, DOWN);
+        private final FluentBigDecimal actual = FIXTURE.withMathContext(newMathContext);
+
+        @Test
+        void creates_new_instance_with_same_value() {
+            assertThat(actual)
+                .isNotSameAs(FIXTURE);
+
+            assertThat(actual.getValue())
+                .isEqualTo(FIXTURE.getValue());
+        }
+
+        @Test
+        void replaces_only_the_mathContext() {
+            assertThat(actual.getConfiguration().getMathContext())
+                .isEqualTo(newMathContext);
+
+            assertThat(actual.getConfiguration().getScaler())
+                .isSameAs(FIXTURE_SCALER);
+        }
+
+        @Test
+        void keeps_the_original_untouched() {
+            assertThat(FIXTURE.getConfiguration().getMathContext())
+                .isEqualTo(FIXTURE_MATH_CONTEXT);
+        }
+    }
+    //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="ToString">
     @Nested
     class ToString {
