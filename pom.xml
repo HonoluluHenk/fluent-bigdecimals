@@ -481,12 +481,6 @@
             (same observable behaviour, therefore not killable by any test):
             A) MaxScaleScaler.adjustScale (<= -> <): at scale() == maxScale,
                BigDecimal.setScale returns 'this', so both branches return the same object.
-            B) CashRounding.round/unitToFactor (precision call removal, naked receivers,
-               scale() - 2 -> + 2): for the supported CashRoundingUnits (all of scale 2)
-               the intermediate scales coincide, so value and scale are unchanged.
-               These only become observable for units of another scale, where the current
-               implementation is already incorrect; pinning that behaviour down in a test
-               (or fixing it) is out of scope here.
             Therefore the threshold is pinned at the achieved score instead of 100.
           -->
           <mutationThreshold>99</mutationThreshold>

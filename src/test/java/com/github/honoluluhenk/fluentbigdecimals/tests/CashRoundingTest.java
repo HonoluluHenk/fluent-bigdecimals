@@ -139,6 +139,20 @@ class CashRoundingTest {
             "ROUND_DOT25, 12.5 , 12.50",
             "ROUND_DOT25, -0.13, -0.25",
             "ROUND_DOT25, 3.000, 3.00",
+            "ROUND_1    , 0    , 0",
+            "ROUND_1    , 12.4 , 12",
+            "ROUND_1    , 12.5 , 13",
+            "ROUND_1    , 12.6 , 13",
+            "ROUND_1    , -12.4, -12",
+            "ROUND_1    , -12.5, -13",
+            "ROUND_1    , 3.000, 3",
+            "ROUND_5    , 0    , 0",
+            "ROUND_5    , 12.4 , 10",
+            "ROUND_5    , 12.5 , 15",
+            "ROUND_5    , 13   , 15",
+            "ROUND_5    , -12.4, -10",
+            "ROUND_5    , -12.5, -15",
+            "ROUND_5    , 3.000, 5",
         })
         void rounds_to_the_nearest_unit(CashRoundingUnits unit, BigDecimal input, BigDecimal expected) {
             var actual = CashRounding.of(unit)
@@ -158,6 +172,14 @@ class CashRoundingTest {
             "ROUND_DOT25, 0.13 , 0.00",
             "ROUND_DOT25, 12.4 , 12.25",
             "ROUND_DOT25, -0.13, 0.00",
+            "ROUND_1    , 12.4 , 12",
+            "ROUND_1    , 12.9 , 12",
+            "ROUND_1    , -12.4, -12",
+            "ROUND_1    , -12.9, -12",
+            "ROUND_5    , 12.4 , 10",
+            "ROUND_5    , 14.9 , 10",
+            "ROUND_5    , -12.4, -10",
+            "ROUND_5    , -14.9, -10",
         })
         void rounds_down_if_told_so(CashRoundingUnits unit, BigDecimal input, BigDecimal expected) {
             var actual = CashRounding.of(unit, DOWN)
@@ -177,8 +199,60 @@ class CashRoundingTest {
             "ROUND_DOT25, 0.07 , 0.25",
             "ROUND_DOT25, 12.4 , 12.50",
             "ROUND_DOT25, -0.13, -0.25",
+            "ROUND_1    , 12.1 , 13",
+            "ROUND_1    , 12.9 , 13",
+            "ROUND_1    , -12.1, -13",
+            "ROUND_5    , 11   , 15",
+            "ROUND_5    , 14.9 , 15",
+            "ROUND_5    , -11  , -15",
         })
         void rounds_up_if_told_so(CashRoundingUnits unit, BigDecimal input, BigDecimal expected) {
+            var actual = CashRounding.of(unit, UP)
+                .round(input);
+
+            assertThat(actual)
+                .isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0.1  , 1.24 , 1.2",
+            "0.1  , 1.25 , 1.3",
+            "0.1  , 1.26 , 1.3",
+            "0.005, 0.012, 0.010",
+            "0.005, 0.013, 0.015",
+            "50   , 120  , 100",
+            "50   , 130  , 150",
+        })
+        void rounds_arbitrary_scales_nearest(BigDecimal unit, BigDecimal input, BigDecimal expected) {
+            var actual = CashRounding.of(unit)
+                .round(input);
+
+            assertThat(actual)
+                .isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0.1  , 1.29 , 1.2",
+            "0.005, 0.014, 0.010",
+            "50   , 149  , 100",
+        })
+        void rounds_arbitrary_scales_down(BigDecimal unit, BigDecimal input, BigDecimal expected) {
+            var actual = CashRounding.of(unit, DOWN)
+                .round(input);
+
+            assertThat(actual)
+                .isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "0.1  , 1.21 , 1.3",
+            "0.005, 0.011, 0.015",
+            "50   , 101  , 150",
+        })
+        void rounds_arbitrary_scales_up(BigDecimal unit, BigDecimal input, BigDecimal expected) {
             var actual = CashRounding.of(unit, UP)
                 .round(input);
 

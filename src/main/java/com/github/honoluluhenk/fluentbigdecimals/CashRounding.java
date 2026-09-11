@@ -7,7 +7,6 @@ import lombok.With;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 
 import static java.math.RoundingMode.HALF_UP;
@@ -41,19 +40,9 @@ public class CashRounding implements Serializable {
     }
 
     public BigDecimal round(BigDecimal value) {
-        var mathContext = new MathContext(value.precision(), roundingMode);
-        var factor = unitToFactor(unit);
-
         return value
-            .divide(factor, unit.scale(), mathContext.getRoundingMode())
-            .setScale(unit.scale(), mathContext.getRoundingMode())
-            .multiply(factor)
-            .setScale(unit.scale(), mathContext.getRoundingMode());
-    }
-
-    private static BigDecimal unitToFactor(BigDecimal unit) {
-        return unit.multiply(BigDecimal.valueOf(100))
-            .setScale(unit.scale() - 2, RoundingMode.UNNECESSARY);
+            .divide(unit, 0, roundingMode)
+            .multiply(unit);
     }
 
 }
