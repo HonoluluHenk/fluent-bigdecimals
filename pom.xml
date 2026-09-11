@@ -476,19 +476,7 @@
             <avoidCallsTo>java.util.Objects</avoidCallsTo>
             <avoidCallsTo>java.lang.String</avoidCallsTo>
           </avoidCallsTo>
-          <!--
-            Every mutant is either killed or a documented equivalent mutant
-            (same observable behaviour, therefore not killable by any test):
-            A) MaxScaleScaler.adjustScale (<= -> <): at scale() == maxScale,
-               BigDecimal.setScale returns 'this', so both branches return the same object.
-            Therefore the threshold is pinned at the achieved score instead of 100.
-          -->
-          <mutationThreshold>99</mutationThreshold>
-          <!--
-            JaCoCo reports 100% line coverage; pitest counts lines of the mutated
-            classes differently (206/210), hence 98 instead of 100 here.
-          -->
-          <coverageThreshold>98</coverageThreshold>
+          <mutationThreshold>100</mutationThreshold>
         </configuration>
       </plugin>
     </plugins>

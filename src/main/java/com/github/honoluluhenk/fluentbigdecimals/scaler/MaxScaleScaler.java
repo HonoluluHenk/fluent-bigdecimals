@@ -40,12 +40,8 @@ public class MaxScaleScaler implements Scaler, WithScale<MaxScaleScaler> {
     }
 
     private BigDecimal adjustScale(BigDecimal value, RoundingMode roundingMode) {
-        boolean isScaleOk = value.scale() <= getMaxScale();
-        if (isScaleOk) {
-            return value;
-        }
-
-        return value.setScale(getMaxScale(), roundingMode);
+        int newScale = Math.min(value.scale(), getMaxScale());
+        return value.setScale(newScale, roundingMode);
     }
 
     public static MaxScaleScaler of(int maxScale) {
