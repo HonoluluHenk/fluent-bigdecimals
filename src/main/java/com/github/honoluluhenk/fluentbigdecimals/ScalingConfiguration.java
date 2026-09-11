@@ -2,7 +2,6 @@ package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.MathContext;
 
@@ -16,9 +15,9 @@ public class ScalingConfiguration<T extends AbstractFluentBigDecimal<T>> extends
     private static final long serialVersionUID = 7476797484270808023L;
 
     public <S extends Scaler & WithScale<S>> ScalingConfiguration(
-        @NonNull MathContext mathContext,
-        @NonNull S scaler,
-        @NonNull Factory<T> factory
+        MathContext mathContext,
+        S scaler,
+        Factory<T> factory
     ) {
         super(mathContext, scaler, factory);
     }
@@ -34,42 +33,31 @@ public class ScalingConfiguration<T extends AbstractFluentBigDecimal<T>> extends
     }
 
     @Override
-    public ScalingConfiguration<T> withMathContext(@NonNull MathContext mathContext) {
-        var result = from(super.withMathContext(mathContext));
-
-        return result;
+    public ScalingConfiguration<T> withMathContext(MathContext mathContext) {
+        return from(super.withMathContext(mathContext));
     }
 
     @Override
-    public ScalingConfiguration<T> withScaler(@NonNull Scaler scaler) {
-        var result = from(super.withScaler(scaler));
-
-        return result;
+    public ScalingConfiguration<T> withScaler(Scaler scaler) {
+        return from(super.withScaler(scaler));
     }
 
     @Override
-    public <S extends Scaler & WithScale<S>> ScalingConfiguration<T> withScalingScaler(@NonNull S scaler) {
-        var result = from(super.withScalingScaler(scaler));
-
-        return result;
+    public <S extends Scaler & WithScale<S>> ScalingConfiguration<T> withScalingScaler(S scaler) {
+        return from(super.withScalingScaler(scaler));
     }
 
     @Override
-    public <O extends AbstractFluentBigDecimal<O>> ScalingConfiguration<O> withFactory(@NonNull Factory<O> factory) {
-        var result = from(super.withFactory(factory));
-
-        return result;
+    public <O extends AbstractFluentBigDecimal<O>> ScalingConfiguration<O> withFactory(Factory<O> factory) {
+        return from(super.withFactory(factory));
     }
 
-    public <S extends Scaler & WithScale<S>> @NonNull ScalingConfiguration<T> withScale(int newScale) {
+    public <S extends Scaler & WithScale<S>> ScalingConfiguration<T> withScale(int newScale) {
         @SuppressWarnings("unchecked")
         WithScale<S> scaler = (WithScale<S>) getScaler();
 
-        S newScaler = scaler.withScale(newScale)
-            .withScale(newScale);
+        S newScaler = scaler.withScale(newScale);
 
-        var result = new ScalingConfiguration<>(getMathContext(), newScaler, getFactory());
-
-        return result;
+        return new ScalingConfiguration<>(getMathContext(), newScaler, getFactory());
     }
 }

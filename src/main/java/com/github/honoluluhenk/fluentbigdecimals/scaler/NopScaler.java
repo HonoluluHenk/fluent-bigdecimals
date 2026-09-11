@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.With;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -20,7 +19,7 @@ public class NopScaler implements Scaler {
     private static final long serialVersionUID = 7043803811609303754L;
 
     @Override
-    public BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
+    public BigDecimal scale(BigDecimal value, MathContext mathContext) {
         return value;
     }
 

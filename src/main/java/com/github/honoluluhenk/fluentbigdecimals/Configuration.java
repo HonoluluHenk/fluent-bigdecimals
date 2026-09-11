@@ -2,9 +2,12 @@ package com.github.honoluluhenk.fluentbigdecimals;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.WithScale;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 import lombok.experimental.NonFinal;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -24,25 +27,25 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     // ZERO, ONE, TEN (at the time of this writing)
     private static final int CONSTANTS_IN_BIGDECIMAL = 3;
 
-    private final @NonNull MathContext mathContext;
-    private final @NonNull Scaler scaler;
-    private final @NonNull Factory<T> factory;
+    private final MathContext mathContext;
+    private final Scaler scaler;
+    private final Factory<T> factory;
 
     @Getter(NONE)
     @Setter(NONE)
-    private final @NonNull ConcurrentHashMap<BigDecimal, T> constantsCache
+    private final ConcurrentHashMap<BigDecimal, T> constantsCache
         = new ConcurrentHashMap<>(CONSTANTS_IN_BIGDECIMAL);
 
     public static <T extends AbstractFluentBigDecimal<T>> Configuration<T> createConfiguration(
-        @NonNull MathContext mathContext,
-        @NonNull Scaler scaler,
-        @NonNull Factory<T> factory
+        MathContext mathContext,
+        Scaler scaler,
+        Factory<T> factory
     ) {
         return new Configuration<>(mathContext, scaler, factory);
     }
 
     @Override
-    public @NonNull String toString() {
+    public String toString() {
         return String.format(
             "[%s,%s,%s]",
             getMathContext().getPrecision(),
@@ -54,21 +57,21 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Create a new, <strong>un</strong>rounded instance using {@link BigDecimal#BigDecimal(String)}.
      */
-    public @NonNull T ofRaw(@NonNull String bigDecimal) {
+    public T ofRaw(String bigDecimal) {
         return ofRaw(new BigDecimal(bigDecimal));
     }
 
     /**
      * Create a new, <strong>un</strong>rounded instance.
      */
-    public @NonNull T ofRaw(@NonNull BigDecimal value) {
+    public T ofRaw(BigDecimal value) {
         return factory.create(value, this);
     }
 
     /**
      * Create a new, rounded instance.
      */
-    public @NonNull T of(@NonNull BigDecimal value) {
+    public T of(BigDecimal value) {
         return factory.create(value, this)
             .round();
     }
@@ -76,56 +79,56 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(String)}.
      */
-    public @NonNull T of(@NonNull String bigDecimal) {
+    public T of(String bigDecimal) {
         return of(new BigDecimal(bigDecimal));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[])}.
      */
-    public @NonNull T of(char @NonNull [] bigDecimal) {
+    public T of(char[] bigDecimal) {
         return of(new BigDecimal(bigDecimal));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[], int, int)}.
      */
-    public @NonNull T of(char @NonNull [] text, int offset, int len) {
+    public T of(char[] text, int offset, int len) {
         return of(new BigDecimal(text, offset, len));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(int)}.
      */
-    public @NonNull T of(int val) {
+    public T of(int val) {
         return of(new BigDecimal(val));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(BigInteger)}.
      */
-    public @NonNull T of(@NonNull BigInteger val) {
+    public T of(BigInteger val) {
         return of(new BigDecimal(val));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(BigInteger, int)}.
      */
-    public @NonNull T of(@NonNull BigInteger unscaledVal, int scale) {
+    public T of(BigInteger unscaledVal, int scale) {
         return of(new BigDecimal(unscaledVal, scale));
     }
 
     /**
      * Create a new, rounded instance.
      */
-    public @NonNull T of(long val) {
+    public T of(long val) {
         return of(new BigDecimal(val));
     }
 
     /**
      * Create a new, rounded instance.
      */
-    public @NonNull T of(double val) {
+    public T of(double val) {
         return of(new BigDecimal(val));
     }
 
@@ -137,7 +140,7 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
      *
      * @throws NotExactException if value does not already match the {@link Configuration}.
      */
-    public @NonNull T ofExact(@NonNull BigDecimal value) {
+    public T ofExact(BigDecimal value) {
         T parsed = of(value);
         if (!parsed.comparesTo(value)) {
             throwNotExactException(value);
@@ -149,21 +152,21 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(String)}.
      */
-    public @NonNull T ofExact(@NonNull String bigDecimal) {
+    public T ofExact(String bigDecimal) {
         return ofExact(new BigDecimal(bigDecimal));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[])}.
      */
-    public @NonNull T ofExact(char @NonNull [] bigDecimal) {
+    public T ofExact(char[] bigDecimal) {
         return ofExact(new BigDecimal(bigDecimal));
     }
 
     /**
      * Create a new, rounded instance using {@link BigDecimal#BigDecimal(char[], int, int)}.
      */
-    public @NonNull T ofExact(char @NonNull [] text, int offset, int len) {
+    public T ofExact(char[] text, int offset, int len) {
         return ofExact(new BigDecimal(text, offset, len));
     }
 
@@ -174,14 +177,14 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
     /**
      * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(long)}.
      */
-    public @NonNull T valueOf(long val) {
+    public T valueOf(long val) {
         return of(BigDecimal.valueOf(val));
     }
 
     /**
      * Convenience: create a new, rounded instance using a wrapped BigDecimal, see: {@link BigDecimal#valueOf(double)}.
      */
-    public @NonNull T valueOf(double val) {
+    public T valueOf(double val) {
         return of(BigDecimal.valueOf(val));
     }
 
@@ -189,23 +192,23 @@ public class Configuration<T extends AbstractFluentBigDecimal<T>> implements Ser
      * Convenience: create a new, rounded instance using a wrapped BigDecimal,
      * see: {@link BigDecimal#valueOf(long, int)}.
      */
-    public @NonNull T valueOf(long unscaledVal, int scale) {
+    public T valueOf(long unscaledVal, int scale) {
         return of(BigDecimal.valueOf(unscaledVal, scale));
     }
 
-    public Configuration<T> withMathContext(@NonNull MathContext mathContext) {
+    public Configuration<T> withMathContext(MathContext mathContext) {
         return new Configuration<>(mathContext, scaler, factory);
     }
 
-    public Configuration<T> withScaler(@NonNull Scaler scaler) {
+    public Configuration<T> withScaler(Scaler scaler) {
         return new Configuration<>(mathContext, scaler, factory);
     }
 
-    public <S extends Scaler & WithScale<S>> ScalingConfiguration<T> withScalingScaler(@NonNull S scaler) {
+    public <S extends Scaler & WithScale<S>> ScalingConfiguration<T> withScalingScaler(S scaler) {
         return new ScalingConfiguration<>(getMathContext(), scaler, getFactory());
     }
 
-    public <O extends AbstractFluentBigDecimal<O>> Configuration<O> withFactory(@NonNull Factory<O> factory) {
+    public <O extends AbstractFluentBigDecimal<O>> Configuration<O> withFactory(Factory<O> factory) {
         return new Configuration<>(getMathContext(), getScaler(), factory);
     }
 

@@ -1,7 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals.tests.scaler;
 
 import com.github.honoluluhenk.fluentbigdecimals.scaler.FixedScaleScaler;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +28,7 @@ class FixedScaleScalerTest {
             "123.989, 123.99",
             "123.999, 124.00",
         })
-        void always_scales_to_fixed_scale(@NonNull BigDecimal input, BigDecimal expected) {
+        void always_scales_to_fixed_scale(BigDecimal input, BigDecimal expected) {
 
             BigDecimal scaled = new FixedScaleScaler(2).scale(input, MATH_CONTEXT);
             assertThat(scaled)

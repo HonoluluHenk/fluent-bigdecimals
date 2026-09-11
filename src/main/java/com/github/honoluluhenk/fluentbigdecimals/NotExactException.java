@@ -1,8 +1,5 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import lombok.Getter;
-
-@Getter
 public class NotExactException extends ArithmeticException {
     private static final long serialVersionUID = 2018470829221504406L;
 

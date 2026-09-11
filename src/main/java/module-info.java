@@ -3,8 +3,9 @@ open module com.github.honoluluhenk.fluentbigdecimals {
     exports com.github.honoluluhenk.fluentbigdecimals;
     exports com.github.honoluluhenk.fluentbigdecimals.scaler;
 
-    requires transitive org.checkerframework.checker.qual;
+    // JSpecify annotations appear in exported signatures: -Xlint:exports demands 'transitive'
+    requires transitive org.jspecify;
 
-    requires static transitive lombok;
-    requires static transitive com.github.spotbugs.annotations;
+    // lombok is compile-time only and does not appear in exported signatures
+    requires static lombok;
 }

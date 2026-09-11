@@ -3,7 +3,6 @@ package com.github.honoluluhenk.fluentbigdecimals;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.CashRoundingScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.MaxScaleScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Serializable;
 import java.math.MathContext;
@@ -44,8 +43,8 @@ public class ConfigurationFactory implements Serializable {
     public static final RoundingMode DEFAULT_MONETARY_ROUNDING = HALF_UP;
 
     public static Configuration<FluentBigDecimal> create(
-        @NonNull MathContext mathContext,
-        @NonNull Scaler scaler
+        MathContext mathContext,
+        Scaler scaler
     ) {
         return Configuration
             .createConfiguration(mathContext, scaler, FLUENT_BIGDECIMAL_FACTORY);
@@ -53,8 +52,8 @@ public class ConfigurationFactory implements Serializable {
 
     public static Configuration<FluentBigDecimal> create(
         int precision,
-        @NonNull RoundingMode roundingMode,
-        @NonNull Scaler scaler
+        RoundingMode roundingMode,
+        Scaler scaler
     ) {
         return Configuration
             .createConfiguration(new MathContext(precision, roundingMode), scaler, FLUENT_BIGDECIMAL_FACTORY);
@@ -82,8 +81,8 @@ public class ConfigurationFactory implements Serializable {
     /**
      * Custom precision/scale with a {@link MaxScaleScaler} (used by most SQL database systems).
      */
-    public static Configuration<FluentBigDecimal> databaseJavaNotation(int databasePrecsion, int databaseScale) {
-        int javaPrecision = databasePrecsion + databaseScale;
+    public static Configuration<FluentBigDecimal> databaseJavaNotation(int databasePrecision, int databaseScale) {
+        int javaPrecision = databasePrecision + databaseScale;
         return create(new MathContext(javaPrecision, HALF_UP), new MaxScaleScaler(databaseScale));
     }
 
@@ -95,17 +94,17 @@ public class ConfigurationFactory implements Serializable {
      * This means: precision is the max. number of integers, scale the max. number of decimals.
      */
     public static Configuration<FluentBigDecimal> databaseDBNotation(
-        int databasePrecsion,
+        int databasePrecision,
         int databaseScale,
-        @NonNull RoundingMode roundingMode) {
-        int javaPrecision = databasePrecsion + databaseScale;
+        RoundingMode roundingMode) {
+        int javaPrecision = databasePrecision + databaseScale;
         return create(new MathContext(javaPrecision, roundingMode), new MaxScaleScaler(databaseScale));
     }
 
     /**
      * Custom precision and scale of the rounding unit.
      */
-    public static Configuration<FluentBigDecimal> cashRounding(int precision, @NonNull CashRoundingUnits units) {
+    public static Configuration<FluentBigDecimal> cashRounding(int precision, CashRoundingUnits units) {
         CashRounding rounding = CashRounding.of(units);
         return create(new MathContext(precision, rounding.getRoundingMode()), new CashRoundingScaler(rounding));
     }

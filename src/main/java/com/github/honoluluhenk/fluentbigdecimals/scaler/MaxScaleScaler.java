@@ -3,7 +3,6 @@ package com.github.honoluluhenk.fluentbigdecimals.scaler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.With;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -27,30 +26,26 @@ public class MaxScaleScaler implements Scaler, WithScale<MaxScaleScaler> {
     }
 
     @Override
-    public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
+    public BigDecimal scale(BigDecimal value, MathContext mathContext) {
         int maxIntegerPrecision = mathContext.getPrecision() - getMaxScale();
 
         int intPrecision = value.precision() - value.scale();
         boolean precisionExceeded = intPrecision > maxIntegerPrecision;
         if (precisionExceeded) {
-            throw new ArithmeticException(String.format("Cannot fit computed outcome %s into precision %s while still alowing for %s decimals.",
+            throw new ArithmeticException(String.format("Cannot fit computed outcome %s into precision %s while still allowing for %s decimals.",
                 value.toPlainString(), mathContext.getPrecision(), getMaxScale()));
         }
 
-        BigDecimal scaled = adjustScale(value, mathContext.getRoundingMode());
-
-        return scaled;
+        return adjustScale(value, mathContext.getRoundingMode());
     }
 
-    private @NonNull BigDecimal adjustScale(@NonNull BigDecimal value, @NonNull RoundingMode roundingMode) {
+    private BigDecimal adjustScale(BigDecimal value, RoundingMode roundingMode) {
         boolean isScaleOk = value.scale() <= getMaxScale();
         if (isScaleOk) {
             return value;
         }
 
-        BigDecimal result = value.setScale(getMaxScale(), roundingMode);
-
-        return result;
+        return value.setScale(getMaxScale(), roundingMode);
     }
 
     public static MaxScaleScaler of(int maxScale) {

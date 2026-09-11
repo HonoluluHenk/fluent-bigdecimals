@@ -1,8 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-
 import lombok.Getter;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.BigDecimal;
 
@@ -14,9 +12,9 @@ public enum CashRoundingUnits {
     ROUND_1("1"),
     ROUND_5("5");
 
-    private final @NonNull BigDecimal unit;
+    private final BigDecimal unit;
 
-    CashRoundingUnits(@NonNull String unit) {
+    CashRoundingUnits(String unit) {
         this.unit = new BigDecimal(unit);
     }
 }

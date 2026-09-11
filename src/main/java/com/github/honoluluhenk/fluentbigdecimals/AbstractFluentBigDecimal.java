@@ -3,8 +3,7 @@ package com.github.honoluluhenk.fluentbigdecimals;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -25,20 +24,20 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
     implements Serializable, Comparable<AbstractFluentBigDecimal<?>> {
     private static final long serialVersionUID = 1646116594300550112L;
 
-    public static final BigDecimal HUNDRED = new BigDecimal("100");
+    public static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
 
     @EqualsAndHashCode.Include
-    private final @NonNull BigDecimal value;
-    private final @NonNull Configuration<T> configuration;
+    private final BigDecimal value;
+    private final Configuration<T> configuration;
 
-    protected AbstractFluentBigDecimal(@NonNull BigDecimal value, @NonNull Configuration<T> configuration) {
+    protected AbstractFluentBigDecimal(BigDecimal value, Configuration<T> configuration) {
         this.value = requireNonNull(value, "value required");
         this.configuration = requireNonNull(configuration, "configuration required");
     }
 
-    private static @NonNull <T extends AbstractFluentBigDecimal<T>> T newRawInstance(
-        @NonNull BigDecimal value,
-        @NonNull Configuration<T> configuration) {
+    private static <T extends AbstractFluentBigDecimal<T>> T newRawInstance(
+        BigDecimal value,
+        Configuration<T> configuration) {
         return configuration
             .getFactory()
             .create(value, configuration);
@@ -49,9 +48,8 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
      * <p>
      * Mostly needed when you started with a raw value and need to round it.
      */
-    public @NonNull T round() {
-        @NonNull T result = apply(BigDecimal::round);
-        return result;
+    public T round() {
+        return apply(BigDecimal::round);
     }
 
     /**
@@ -60,24 +58,24 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
      * If you need to switch to a new Configuration <i>without</i> scaling/rounding,
      * use {@link #withConfiguration(Configuration)}.
      */
-    public <R extends AbstractFluentBigDecimal<R>> @NonNull R roundInto(Configuration<R> configuration) {
+    public <R extends AbstractFluentBigDecimal<R>> R roundInto(Configuration<R> configuration) {
         return newRawInstance(getValue(), configuration)
             .round();
     }
 
-    public T withValue(@NonNull BigDecimal value) {
+    public T withValue(BigDecimal value) {
         return newRawInstance(value, getConfiguration());
     }
 
-    public T withConfiguration(@NonNull Configuration<T> configuration) {
+    public T withConfiguration(Configuration<T> configuration) {
         return newRawInstance(getValue(), configuration);
     }
 
-    public @NonNull T withMathContext(MathContext mathContext) {
+    public T withMathContext(MathContext mathContext) {
         return newRawInstance(getValue(), getConfiguration().withMathContext(mathContext));
     }
 
-    public @NonNull T withScaler(Scaler scaler) {
+    public T withScaler(Scaler scaler) {
         return newRawInstance(getValue(), getConfiguration().withScaler(scaler));
     }
 
@@ -85,18 +83,18 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
      * Compares current value and delegates to {@link BigDecimal#compareTo(BigDecimal)}.
      */
     @Override
-    public int compareTo(@NonNull AbstractFluentBigDecimal<?> o) {
+    public int compareTo(AbstractFluentBigDecimal<?> o) {
         return getValue().compareTo(o.getValue());
     }
 
     /**
      * Convenience: compare current value to other using {@link BigDecimal#compareTo(BigDecimal)}.
      */
-    public int compareTo(@NonNull BigDecimal other) {
+    public int compareTo(BigDecimal other) {
         return getValue().compareTo(other);
     }
 
-    public <Arg> @NonNull T apply(@NonNull BiProjection<Arg> projection, @Nullable Arg argument) {
+    public <Arg> T apply(BiProjection<Arg> projection, @Nullable Arg argument) {
         if (argument == null) {
             @SuppressWarnings("unchecked")
             T t = (T) this;
@@ -104,12 +102,10 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
             return t;
         }
 
-        var result = apply((value, mathContext) -> projection.project(value, argument, mathContext));
-
-        return result;
+        return apply((value, mathContext) -> projection.project(value, argument, mathContext));
     }
 
-    public @NonNull T apply(@NonNull Projection projection) {
+    public T apply(Projection projection) {
         Configuration<T> configuration = getConfiguration();
 
         var outcome = projection.project(value, configuration.getMathContext());
@@ -119,40 +115,34 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         var scaled = scaler.scale(outcome, configuration.getMathContext());
         requireNonNull(scaled, "Scaler must not return null");
 
-        var result = newRawInstance(scaled, configuration);
-
-        return result;
+        return newRawInstance(scaled, configuration);
     }
 
-    public <R> R map(@NonNull Function<BigDecimal, R> projection) {
-        var result = projection.apply(getValue());
-
-        return result;
+    public <R> R map(Function<BigDecimal, R> projection) {
+        return projection.apply(getValue());
     }
 
     @Override
-    public @NonNull String toString() {
-        String result = String.format(
+    public String toString() {
+        return String.format(
             "%s[%s,%s]",
             getClass().getSimpleName(),
             value.toPlainString(),
             getConfiguration()
         );
-
-        return result;
     }
 
     /**
      * See {@link BigDecimal#toPlainString()}.
      */
-    public @NonNull String toPlainString() {
+    public String toPlainString() {
         return getValue().toPlainString();
     }
 
     /**
      * See {@link BigDecimal#toEngineeringString()}.
      */
-    public @NonNull String toEngineeringString() {
+    public String toEngineeringString() {
         return getValue().toEngineeringString();
     }
 
@@ -170,136 +160,92 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         return getValue().toBigIntegerExact();
     }
 
-    public @NonNull T add(@Nullable BigDecimal addend) {
-        var result = apply(BigDecimal::add, addend);
-
-        return result;
+    public T add(@Nullable BigDecimal addend) {
+        return apply(BigDecimal::add, addend);
     }
 
-    public <Other extends AbstractFluentBigDecimal<Other>> @NonNull T add(@Nullable Other addend) {
-        T result = add(mapValue(addend));
-
-        return result;
+    public <Other extends AbstractFluentBigDecimal<Other>> T add(@Nullable Other addend) {
+        return add(mapValue(addend));
     }
 
-    public @NonNull T add(@NonNull String addendBigDecimal) {
-        var result = add(new BigDecimal(addendBigDecimal));
-
-        return result;
+    public T add(String addendBigDecimal) {
+        return add(new BigDecimal(addendBigDecimal));
     }
 
-    public @NonNull T add(double addend) {
-        var result = add(new BigDecimal(addend));
-
-        return result;
+    public T add(double addend) {
+        return add(new BigDecimal(addend));
     }
 
-    public @NonNull T add(long addend) {
-        var result = add(new BigDecimal(addend));
-
-        return result;
+    public T add(long addend) {
+        return add(new BigDecimal(addend));
     }
 
-    public @NonNull T subtract(@Nullable BigDecimal subtrahend) {
-        T result = apply(BigDecimal::subtract, subtrahend);
-
-        return result;
+    public T subtract(@Nullable BigDecimal subtrahend) {
+        return apply(BigDecimal::subtract, subtrahend);
     }
 
-    public <Other extends AbstractFluentBigDecimal<Other>> @NonNull T subtract(@Nullable Other subtrahend) {
-        T result = subtract(mapValue(subtrahend));
-
-        return result;
+    public <Other extends AbstractFluentBigDecimal<Other>> T subtract(@Nullable Other subtrahend) {
+        return subtract(mapValue(subtrahend));
     }
 
-    public @NonNull T subtract(@NonNull String subtrahendBigDecimal) {
-        var result = subtract(new BigDecimal(subtrahendBigDecimal));
-
-        return result;
+    public T subtract(String subtrahendBigDecimal) {
+        return subtract(new BigDecimal(subtrahendBigDecimal));
     }
 
-    public @NonNull T subtract(double subtrahend) {
-        var result = subtract(new BigDecimal(subtrahend));
-
-        return result;
+    public T subtract(double subtrahend) {
+        return subtract(new BigDecimal(subtrahend));
     }
 
-    public @NonNull T subtract(long subtrahend) {
-        var result = subtract(new BigDecimal(subtrahend));
-
-        return result;
+    public T subtract(long subtrahend) {
+        return subtract(new BigDecimal(subtrahend));
     }
 
-    public @NonNull T multiply(@Nullable BigDecimal multiplicand) {
-        T result = apply(BigDecimal::multiply, multiplicand);
-
-        return result;
+    public T multiply(@Nullable BigDecimal multiplicand) {
+        return apply(BigDecimal::multiply, multiplicand);
     }
 
-    public <Other extends AbstractFluentBigDecimal<Other>> @NonNull T multiply(@Nullable Other multiplicand) {
-        T result = multiply(mapValue(multiplicand));
-
-        return result;
+    public <Other extends AbstractFluentBigDecimal<Other>> T multiply(@Nullable Other multiplicand) {
+        return multiply(mapValue(multiplicand));
     }
 
-    public @NonNull T multiply(@NonNull String multiplicandBigDecimal) {
-        T result = multiply(new BigDecimal(multiplicandBigDecimal));
-
-        return result;
+    public T multiply(String multiplicandBigDecimal) {
+        return multiply(new BigDecimal(multiplicandBigDecimal));
     }
 
-    public @NonNull T multiply(double multiplicand) {
-        T result = multiply(new BigDecimal(multiplicand));
-
-        return result;
+    public T multiply(double multiplicand) {
+        return multiply(new BigDecimal(multiplicand));
     }
 
-    public @NonNull T multiply(long multiplicand) {
-        T result = multiply(new BigDecimal(multiplicand));
-
-        return result;
+    public T multiply(long multiplicand) {
+        return multiply(new BigDecimal(multiplicand));
     }
 
-    public @NonNull T divide(@Nullable BigDecimal divisor) {
-        T result = apply(BigDecimal::divide, divisor);
-
-        return result;
+    public T divide(@Nullable BigDecimal divisor) {
+        return apply(BigDecimal::divide, divisor);
     }
 
-    public <Other extends AbstractFluentBigDecimal<Other>> @NonNull T divide(@Nullable Other divisor) {
-        T result = divide(mapValue(divisor));
-
-        return result;
+    public <Other extends AbstractFluentBigDecimal<Other>> T divide(@Nullable Other divisor) {
+        return divide(mapValue(divisor));
     }
 
-    public @NonNull T divide(@NonNull String divisorBigDecimal) {
-        var result = divide(new BigDecimal(divisorBigDecimal));
-
-        return result;
+    public T divide(String divisorBigDecimal) {
+        return divide(new BigDecimal(divisorBigDecimal));
     }
 
-    public @NonNull T divide(double divisor) {
-        var result = divide(new BigDecimal(divisor));
-
-        return result;
+    public T divide(double divisor) {
+        return divide(new BigDecimal(divisor));
     }
 
-    public @NonNull T divide(long divisor) {
-        var result = divide(new BigDecimal(divisor));
-
-        return result;
+    public T divide(long divisor) {
+        return divide(new BigDecimal(divisor));
     }
 
-    public @NonNull T pctToFraction() {
-        T result = divide(HUNDRED);
-
-        return result;
+    public T pctToFraction() {
+        return divide(HUNDRED);
     }
 
-    public @NonNull T fractionToPct() {
-        T result = multiply(HUNDRED);
-
-        return result;
+    public T fractionToPct() {
+        return multiply(HUNDRED);
     }
 
     @Override
@@ -379,9 +325,7 @@ class AbstractFluentBigDecimal<T extends AbstractFluentBigDecimal<T>>
         if (input == null) {
             return null;
         }
-        BigDecimal result = input.getValue();
-
-        return result;
+        return input.getValue();
     }
 
 }

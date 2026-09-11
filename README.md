@@ -12,13 +12,18 @@ fluent-bigdecimals is a library that lets Java programmers forget about BigDecim
 It does this by wrapping Javas [BigDecimal](https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html#compareTo-java.math.BigDecimal-)
 into a class with fancy fluent API.
 
-Only one runtime dependency: [checker-qual](https://checkerframework.org/) for @Nullable/@NonNull annotations.
+Only one runtime dependency: [JSpecify](https://jspecify.dev/) for nullness annotations.
 
-Java 9 modules supported.
+JPMS (Java modules) supported.
 
 ## Prerequisites/Dependencies
 
-This project requires Java >= 9.
+This project requires Java >= 11.
+
+### Building
+
+The build itself requires JDK 11 exactly (enforced by `maven-enforcer-plugin`); the toolchain is pinned in `mise.toml`,
+so use `mise exec -- ./mvnw verify`.
 
 ## Installing
 
@@ -104,7 +109,10 @@ See [Semantic versioning](https://semver.org/)
 
 ### Nullability
 
-All method arguments and return values are @NonNull if not explicitly stated otherwise (see param/method annotations).
+All packages are `@NullMarked` ([JSpecify](https://jspecify.dev/)): every method argument and return value is non-null
+unless explicitly annotated `@Nullable`. IntelliJ, NullAway/Error Prone, Kotlin and the Checker Framework understand
+these annotations out of the box. (Versions before the JSpecify migration shipped Checker Framework `checker-qual`
+annotations instead.)
 
 Passing an *illegal* null parameter will immediately result in a `NullPointerException`.
 
@@ -399,7 +407,7 @@ public class MyConfig {
 public class MyMath extends AbstractFluentBigDecimal<MyMath> {
   private static final long serialVersionUID = -1828369497254888980L;
 
-  protected MyMath(@NonNull BigDecimal value, @NonNull Configuration<MyMath> configuration) {
+  protected MyMath(BigDecimal value, Configuration<MyMath> configuration) {
     super(value, configuration);
   }
 

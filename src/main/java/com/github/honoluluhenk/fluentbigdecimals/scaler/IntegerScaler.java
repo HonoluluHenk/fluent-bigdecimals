@@ -1,7 +1,6 @@
 package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
 import lombok.EqualsAndHashCode;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -14,10 +13,8 @@ public class IntegerScaler implements Scaler {
     private static final long serialVersionUID = 1951794142376474049L;
 
     @Override
-    public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
-        var result = value.setScale(0, mathContext.getRoundingMode());
-
-        return result;
+    public BigDecimal scale(BigDecimal value, MathContext mathContext) {
+        return value.setScale(0, mathContext.getRoundingMode());
     }
 
     @Override

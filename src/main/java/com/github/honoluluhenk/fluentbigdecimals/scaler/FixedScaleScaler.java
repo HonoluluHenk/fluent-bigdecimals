@@ -1,7 +1,9 @@
 package com.github.honoluluhenk.fluentbigdecimals.scaler;
 
-import lombok.*;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.With;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -16,10 +18,8 @@ public class FixedScaleScaler implements Scaler, WithScale<FixedScaleScaler> {
     private final int scale;
 
     @Override
-    public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
-        var result = value.setScale(scale, mathContext.getRoundingMode());
-
-        return result;
+    public BigDecimal scale(BigDecimal value, MathContext mathContext) {
+        return value.setScale(scale, mathContext.getRoundingMode());
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.github.honoluluhenk.fluentbigdecimals.tests;
 import com.github.honoluluhenk.fluentbigdecimals.*;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.Scaler;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,8 +23,6 @@ import static org.mockito.Mockito.*;
 
 @DisplayNameGeneration(DisplayNameGenerator.IndicativeSentences.class)
 @IndicativeSentencesGeneration(generator = DisplayNameGenerator.ReplaceUnderscores.class)
-// FIXME: create checker annotations for AssertJ
-@SuppressWarnings({"nullable", "argument.type.incompatible", "return.type.incompatible", "initialization.fields.uninitialized"})
 class FluentBigDecimalTest {
 
     //<editor-fold defaultstate="collapsed" desc="FixedValueScaler">
@@ -38,7 +35,7 @@ class FluentBigDecimalTest {
         }
 
         @Override
-        public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
+        public BigDecimal scale(BigDecimal value, MathContext mathContext) {
             return fixedValue;
         }
     }
@@ -49,7 +46,7 @@ class FluentBigDecimalTest {
         private static final long serialVersionUID = 4432500901893639859L;
 
         @Override
-        public @NonNull BigDecimal scale(@NonNull BigDecimal value, @NonNull MathContext mathContext) {
+        public BigDecimal scale(BigDecimal value, MathContext mathContext) {
             throw new IllegalStateException("should not be needed");
         }
 

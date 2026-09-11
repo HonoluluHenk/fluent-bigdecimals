@@ -1,6 +1,9 @@
 package com.github.honoluluhenk.fluentbigdecimals;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.With;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -18,43 +21,39 @@ public class CashRounding implements Serializable {
     public static final int CASH_ROUNDING_SCALE = 2;
     public static final RoundingMode CASH_ROUNDING_MODE = HALF_UP;
 
-    private final @NonNull BigDecimal unit;
-    private final @NonNull RoundingMode roundingMode;
+    private final BigDecimal unit;
+    private final RoundingMode roundingMode;
 
-    public static @NonNull CashRounding of(@NonNull BigDecimal unit) {
+    public static CashRounding of(BigDecimal unit) {
         return of(unit, CASH_ROUNDING_MODE);
     }
 
-    public static @NonNull CashRounding of(@NonNull CashRoundingUnits unit) {
+    public static CashRounding of(CashRoundingUnits unit) {
         return of(unit.getUnit(), CASH_ROUNDING_MODE);
     }
 
-    public static @NonNull CashRounding of(@NonNull CashRoundingUnits unit, @NonNull RoundingMode roundingMode) {
+    public static CashRounding of(CashRoundingUnits unit, RoundingMode roundingMode) {
         return of(unit.getUnit(), roundingMode);
     }
 
-    public static @NonNull CashRounding of(@NonNull BigDecimal unit, @NonNull RoundingMode roundingMode) {
+    public static CashRounding of(BigDecimal unit, RoundingMode roundingMode) {
         return new CashRounding(unit, roundingMode);
     }
 
-    public @NonNull BigDecimal round(@NonNull BigDecimal value) {
+    public BigDecimal round(BigDecimal value) {
         var mathContext = new MathContext(value.precision(), roundingMode);
         var factor = unitToFactor(unit);
 
-        var result = value
+        return value
             .divide(factor, unit.scale(), mathContext.getRoundingMode())
             .setScale(unit.scale(), mathContext.getRoundingMode())
             .multiply(factor)
             .setScale(unit.scale(), mathContext.getRoundingMode());
-
-        return result;
     }
 
-    private static BigDecimal unitToFactor(@NonNull BigDecimal unit) {
-        BigDecimal result = unit.multiply(new BigDecimal("100"))
+    private static BigDecimal unitToFactor(BigDecimal unit) {
+        return unit.multiply(BigDecimal.valueOf(100))
             .setScale(unit.scale() - 2, RoundingMode.UNNECESSARY);
-
-        return result;
     }
 
 }

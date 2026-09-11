@@ -4,7 +4,6 @@ import com.github.honoluluhenk.fluentbigdecimals.AbstractFluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.CashRoundingUnits;
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -23,7 +22,7 @@ class ExtensionDemoTest {
     public static class MyMath extends AbstractFluentBigDecimal<MyMath> {
         private static final long serialVersionUID = -1828369497254888980L;
 
-        protected MyMath(@NonNull BigDecimal value, @NonNull Configuration<MyMath> configuration) {
+        protected MyMath(BigDecimal value, Configuration<MyMath> configuration) {
             super(value, configuration);
         }
 

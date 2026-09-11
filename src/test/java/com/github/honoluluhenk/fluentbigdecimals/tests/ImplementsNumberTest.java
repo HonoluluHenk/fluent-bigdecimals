@@ -4,7 +4,6 @@ import com.github.honoluluhenk.fluentbigdecimals.AbstractFluentBigDecimal;
 import com.github.honoluluhenk.fluentbigdecimals.Configuration;
 import com.github.honoluluhenk.fluentbigdecimals.ConfigurationFactory;
 import com.github.honoluluhenk.fluentbigdecimals.scaler.NopScaler;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Nested;
@@ -21,7 +20,7 @@ class ImplementsNumberTest {
     public static class NumericFluentBigDecimal extends AbstractFluentBigDecimal<NumericFluentBigDecimal> {
         private static final long serialVersionUID = -2810595855995466398L;
 
-        protected NumericFluentBigDecimal(@NonNull BigDecimal value, @NonNull Configuration<NumericFluentBigDecimal> configuration) {
+        protected NumericFluentBigDecimal(BigDecimal value, Configuration<NumericFluentBigDecimal> configuration) {
             super(value, configuration);
         }
     }
